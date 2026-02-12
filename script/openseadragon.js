@@ -1224,25 +1224,25 @@ function OpenSeadragon( options ){
             navImages: {
                 zoomIn: {
                     REST:   '../img/zoomin_rest.png',
-                    GROUP:  'zoomin_grouphover.png',
+                    GROUP:  '../zoomin_grouphover.png',
                     HOVER:  '../img/zoomin_hover.png',
                     DOWN:   '../img/zoomin_pressed.png'
                 },
                 zoomOut: {
                     REST:   '../img/zoomout_rest.png',
-                    GROUP:  'zoomout_grouphover.png',
+                    GROUP:  '../zoomout_grouphover.png',
                     HOVER:  '../img/zoomout_hover.png',
                     DOWN:   '../img/zoomout_pressed.png'
                 },
                 home: {
                     REST:   '../img/home_rest.png',
-                    GROUP:  'home_grouphover.png',
+                    GROUP:  '../home_grouphover.png',
                     HOVER:  '../img/home_hover.png',
                     DOWN:   '../img/home_pressed.png'
                 },
                 fullpage: {
                     REST:   '../img/fullpage_rest.png',
-                    GROUP:  'fullpage_grouphover.png',
+                    GROUP:  '../fullpage_grouphover.png',
                     HOVER:  '../img/fullpage_hover.png',
                     DOWN:   '../img/fullpage_pressed.png'
                 },
