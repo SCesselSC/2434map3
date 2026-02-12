@@ -1,64 +1,314 @@
-<!DOCTYPE html>
-<html><head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
-<script src="config.js"></script>
-<link href="https://use.fontawesome.com/releases/v5.11.1/css/all.css" rel="stylesheet">
-<link rel="stylesheet" type="text/css" href="style.css">
-<link rel="shortcut icon" href="images/favicon.ico" type="image/vnd.microsoft.icon">
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-145408095-1"></script>
-<script>
-	window.dataLayer = window.dataLayer || [];
-	function gtag(){dataLayer.push(arguments);}
-	gtag('js', new Date());
-	gtag('config', 'UA-145408095-1');
-</script>
-<title>にじさんじサーバ通常地図</title>
-</head><body>
-<main id="main"></main>
-<script type="text/javascript">
 
-	var vh = 6400;
-	var vw = 9067;
+<!--<!DOCTYPE html>-->
+<html lang="ja">
 
-	var markerfile = "marker.csv";
-	var marker = [];
+<head>
 
-	function readMarkerCsv(data) {
-		var csv = $.csv.toArrays(data);
-		for(var i=0; i<csv.length; i++) if(i>0) marker.push(csv[i]);
-	}
-	$.get(markerfile, readMarkerCsv, 'text');// マーカー情報
+	<meta charset="UTF-8">
+	<link rel="stylesheet" type="text/css" href="test.css" >
+	<script src="script/openseadragon.js"></script>
+	<title>2434map</title>
 
-	$(document).ajaxStop(function() {
 
-		// CSV読み込みが完了する前にviewerを生成するとopen時の描写がされない
-		var viewer = OpenSeadragon({
-			id: "main", 
-			prefixUrl: "images/", 
-			showNavigator: true, 
-			tileSources: {
-				Image: {
-					xmlns:    "http://schemas.microsoft.com/deepzoom/2008",
-					Url:      "tiles/",
-					Format:   "jpg", 
-					Overlap:  1, 
-					TileSize: 256,
-					Size: {
-						Height: vh,
-						Width:  vw
-					}
-				}
-			}
+<style type="text/css">
+
+
+
+#_TOP2{
+	margin:10px;
+	width:15000px;/*ここを固定長にしないとブラウザの横幅に従って変形する*/
+	float:left;
+	/*border:1px solid blue;テスト用*/
+}
+#_TOP2 img {/*こう書けば_TOP以下の全部のimgに反映される*/
+	margin:0;/*img毎、隣との隙間をなくす*/
+	float:left;/*左上から積み下げていく*/
+	/*vertical-align: middle;*/
+}
+
+
+
+.relative {
+    position: relative; /*relative*/
+	width: 15000px;
+	height: 12000px;
+}
+
+
+
+/*
+.site-header{
+    position: fixed;
+}
+*/
+
+
+/*中央拠点*/
+.Center {
+    position: absolute;
+	right: 2000px;
+	bottom: -8500px;
+}
+
+
+/*井戸先*/
+.well {
+    position: absolute; /*absolute*/
+	right: 13000px;
+	bottom: -2800px;
+}
+
+
+/*openseadragonの地図をクリック拡大すると上部タブが消えるための対応*/
+.osd_disp{
+	height: 96%;
+}
+
+/*タブ部分*/
+.navi {
+    height: 20px;
+    position: fixed;
+    z-index: 999;
+}
+
+#a1 {
+	position: absolute;
+}
+#a2 {
+	position: absolute;
+}
+
+
+</style>
+</head>
+
+
+<body>
+<a name="wrap"></a>
+<div class="cp_tab">
+	
+	<input type="radio" name="cp_tab" id="tab1_1" aria-controls="normal_tab01" checked>
+	<label for="tab1_1">通常地図</label>
+
+	<input type="radio" name="cp_tab" id="tab1_2" aria-controls="all_tab01">
+	<label for="tab1_2">全体地図</label>
+
+	<input type="radio" name="cp_tab" id="tab1_3" aria-controls="nether_tab01">
+	<label for="tab1_3">ネザー地図</label>
+
+	<input type="radio" name="cp_tab" id="tab1_4" aria-controls="land_tab01">
+	<label for="tab1_4">にじさんじランド</label>
+
+	<input type="radio" name="cp_tab" id="tab1_5" aria-controls="newworld_tab01">
+	<label for="tab1_5">新鯖通常地図</label>
+
+
+	<input type="radio" name="cp_tab" id="tab1_6" aria-controls="newworld_all_tab01">
+	<label for="tab1_6">新鯖全体地図</label>
+
+
+	<input type="radio" name="cp_tab" id="tab1_7" aria-controls="newworld_nether_tab01">
+	<label for="tab1_7">新鯖ネザー</label>
+
+	<input type="radio" name="cp_tab" id="tab1_8" aria-controls="sakura_tab01">
+	<label for="tab1_8">桜ンボ村</label>
+		
+	<input type="radio" name="cp_tab" id="tab1_9" aria-controls="ark_tab01">
+	<label for="tab1_9">夏祭り会場2023</label>
+<!--
+	<input type="radio" name="cp_tab" id="tab1_10" aria-controls="member_tab01">
+	<label for="tab1_10">ライバー参考</label>
+-->
+	<input type="radio" name="cp_tab" id="tab1_11" aria-controls="etc_tab01">
+	<label for="tab1_11">他(連絡先等)</label>
+<!--
+	<input type="radio" name="cp_tab" id="tab1_12" aria-controls="ex_tab01">
+	<label for="tab1_12">試験運用</label>
+-->
+<div class="cp_tabpanels">
+
+
+
+
+
+<!--通常地図タブ-->
+<div id="normal_tab01" class="cp_tabpanel">
+	<div id="contentDiv_main" class="osd_disp"></div>
+	<script type="text/javascript">
+
+		OpenSeadragon({
+			showNavigator: true,
+			id:              "contentDiv_main",
+			prefixUrl:       "2434map_files/",
+			tileSources:     "2434map.xml"
 		});
-		viewer.nav("index");// ナビボタン
-		viewer.bookmarkUrl();// 座標URL
-		viewer.stalkerImage();// アニメーションポインター
-		viewer.markerLink(marker, vw);// マーカーリンク
-		viewer.saveImage();// 画像ダウンロード
-		viewer.printMode();// 印刷モード
-	});
-</script>
-</body>
-</html>
+	</script>
+</div>
 
+
+
+
+
+<!--全体地図タブ-->
+<div id="all_tab01" class="cp_tabpanel">
+	<div id="contentDiv_all" class="osd_disp"></div>
+	<script type="text/javascript">
+		OpenSeadragon({
+			showNavigator: true,
+			id:              "contentDiv_all",
+			prefixUrl:       "2434map_all_files/",
+			tileSources:     "2434map_all.xml"
+		});
+	</script>
+</div>
+
+
+
+<!-- 全体地図の旧ファイル分割式
+<div id="all_tab01" class="cp_tabpanel">
+	
+	<div class="navi">
+		<a href="#wrap" class="btn-flat-vertical-border">メニューへ</a>
+		<a href="#a1" class="btn-flat-vertical-border">中央拠点へ</a>
+		<a href="#a2" class="btn-flat-vertical-border">井戸の先へ</a>
+	</div>
+
+	<div class="relative">
+		<div id="a1" class="Center"></div>
+		<div id="a2" class="well"></div>
+	</div>
+
+		<div id="_TOP2">
+			<img src="img/all-a01.png"><img src="img/all-a02.png"><img src="img/all-a03.png"><img src="img/all-a04.png"><img src="img/all-a05.png">
+			<img src="img/all-b01.png"><img src="img/all-b02.png"><img src="img/all-b03.png"><img src="img/all-b04.png"><img src="img/all-b05.png">
+			<img src="img/all-c01.png"><img src="img/all-c02.png"><img src="img/all-c03.png"><img src="img/all-c04.png"><img src="img/all-c05.png">
+			<img src="img/all-d01.png"><img src="img/all-d02.png"><img src="img/all-d03.png"><img src="img/all-d04.png"><img src="img/all-d05.png">
+		</div>
+</div>
+-->
+
+
+
+
+<!--ネザー地図タブ-->
+<div id="nether_tab01" class="cp_tabpanel">
+	<div id="contentDiv_nether" class="osd_disp"></div>
+	<script type="text/javascript">
+		OpenSeadragon({
+			showNavigator: true,
+			id:              "contentDiv_nether",
+			prefixUrl:       "2434map_nether_files/",
+			tileSources:     "2434map_nether.xml"
+		});
+	</script>
+</div>
+
+
+<!--にじさんじランドタブ-->
+<div id="land_tab01" class="cp_tabpanel">
+	<p id="PageTopBtn"><a href="#wrap">▲</a></p>
+	<img src="img/2434map_land.png">
+</div>
+
+
+<!--新規開拓ワールドタブ-->
+<div id="newworld_tab01" class="cp_tabpanel">
+	<div id="contentDiv_new" class="osd_disp"></div>
+	<script type="text/javascript">
+		OpenSeadragon({
+			showNavigator: true,
+			id:              "contentDiv_new",
+			prefixUrl:       "2434map_new_files/",
+			tileSources:     "2434map_new.xml"
+		});
+	</script>
+</div>
+
+
+
+
+<!--新規開拓ワールド全体タブ-->
+<div id="newworld_all_tab01" class="cp_tabpanel">
+	<div id="contentDiv_new_all" class="osd_disp"></div>
+	<script type="text/javascript">
+		OpenSeadragon({
+			showNavigator: true,
+			id:              "contentDiv_new_all",
+			prefixUrl:       "2434map_new_all_files/",
+			tileSources:     "2434map_new_all.xml"
+		});
+	</script>
+</div>
+
+
+
+
+<!--新規開拓ワールドネザータブ-->
+<div id="newworld_nether_tab01" class="cp_tabpanel">
+	<div id="contentDiv_new_nether" class="osd_disp"></div>
+	<script type="text/javascript">
+		OpenSeadragon({
+			showNavigator: true,
+			id:              "contentDiv_new_nether",
+			prefixUrl:       "2434map_new_nether_files/",
+			tileSources:     "2434map_new_nether.xml"
+		});
+	</script>
+</div>
+
+
+<!--桜ンボ村タブ-->
+<div id="sakura_tab01" class="cp_tabpanel">
+	<p id="PageTopBtn"><a href="#wrap">▲</a></p>
+	<img src="img/2434map_nbo.png">
+</div>
+
+
+<!--お祭り会場2023タブ-->
+<div id="ark_tab01" class="cp_tabpanel">
+	<div id="contentDiv_ark" class="osd_disp"></div>
+	<script type="text/javascript">
+		OpenSeadragon({
+			showNavigator: true,
+			id:              "contentDiv_omatsuri2023",
+			prefixUrl:       "omatsuri2023_files/",
+			tileSources:     "omatsuri2023.xml"
+		});
+	</script>
+</div>
+
+
+<!--ライバー参考タブ
+<div id="member_tab01" class="cp_tabpanel">
+		<img src="img/2434member.png"><br><br>
+		<img src="img/2434birthday.png">
+</div>
+-->
+
+<!--他(連絡先)タブ-->
+<div id="etc_tab01" class="cp_tabpanel">
+		<br>
+2434map 1	にじさんじサーバーまとめ/名所 > 地図画像下の<a href="https://2434map.github.io/1/">[地図ブラウズ]</a>リンクから　更新2019年頃まで。<br>
+2434map 2	にじさんじサーバーまとめ <a href="https://cyokin.cloudfree.jp/2434map.html">地図画像リンク</a>から 更新2022年9月頃まで。<br>
+</div>
+
+
+<!--試験運用タブ-->
+
+<!--
+<div id="ex_tab01" class="cp_tabpanel">
+	<div id="contentDiv_ex" class="osd_disp"></div>
+	<script type="text/javascript">
+		OpenSeadragon({
+			showNavigator: true,
+			id:              "contentDiv_ex",
+			prefixUrl:       "2434map_all_files/",
+			tileSources:     "2434map_all.xml"
+		});
+	</script>
+</div>
+-->
+
+</body>
+
+</html>

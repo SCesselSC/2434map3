@@ -1,0 +1,303 @@
+2026/02/12
+プロジェクト編集
+https://github.com/SCesselSC/2434map3
+
+表示先
+https://scesselsc.github.io/2434map3/
+
+地図画像タイル構成
+
+0_0 1_0 2_0 3_0 …
+0_1 1_1 2_1 3_1
+0_2 1_2 2_2
+0_3 1_3
+:
+
+11	257*257	0_6~6_6	3		使ってなさそうな画像
+各.xmlのWidth="11086" Height="8905"は14の画像の合計で
+画像の最大画像の幅または高さのうち大きい方の値でズームサイズが自動的に決まる　ズームレベルは「最大サイズが 2 の何乗か」によって決まり
+2^13 = 8192 < 11086
+2^14 = 16384 ≥ 11086 　最大ズームレベルは 14
+なので(2434通常map)は0~14の15段階ズーム
+
+作成新サイト		元サイト			
+0			0	1*1	
+1			8	32*25			ワイプ画面より小さい(8<ワイプ<9)
+2			9	257*200			ワイプ画面より大きい
+3			10	257*257	0_3~3_3 16枚
+4			13	257*258 0_12		0_12まで使用? 途中までカット
+5			14	0_25~メイン画像・最大ズーム画像
+
+本鯖通常地図		Width="9067" Height="6400"縦0~25 横0~35	 TileSize="256"	横257(0)+258*(1~9)+108　縦257(0)+258*23(1~23)+257(24)+68 =6516 35_25まで
+本鯖全体地図
+本鯖ネザー地図
+にじさんじランド
+新鯖通常地図
+新鯖全体地図
+新鯖ネザー地図
+桜ンボ村
+夏祭り会場2023
+
+GIMPで画像分割  Gimpの編集ファイル .xcfファイルにはユーザー情報は含まれない。
+① GIMPでPythonスクリプトを有効化しているか確認
+
+通常のGIMPインストール（Windows/macOS/Linux）では、Python-Fu が有効になっていれば使えます。
+GIMPメニューに フィルター > Python-Fu > コンソール があればOK。
+
+スクリプトコード（tile_export.py という名前で保存）
+
+if,forは:で始まり、次の行は 必ずインデント(字下げ)されていなければならない。次の段はスペース4個（推奨）
+
+-----------------------------------------------------------------↓ tile_export.pyここから------------
+
+#!/usr/bin/env python #Linux用
+
+from gimpfu import *
+
+def draw_guide_grid(image, tile_width=257, tile_height=258, offset_x=0, offset_y=0):
+    """
+    画像切り出し用のガイドグリッド（赤線・実線）を描画
+    offset_x, offset_y: グリッドの原点(0,0)のずれ調整用
+    """
+    pdb.gimp_image_undo_group_start(image)
+
+    # 既存のガイドグリッドレイヤー削除
+    for layer in image.layers:
+        if layer.name == "Guide Grid":
+            pdb.gimp_image_remove_layer(image, layer)
+
+    # 新規透明レイヤー作成
+    guide_layer = pdb.gimp_layer_new(image, image.width, image.height, RGBA_IMAGE, "Guide Grid", 100, NORMAL_MODE)
+    pdb.gimp_image_insert_layer(image, guide_layer, None, 0)
+
+    
+    # 描画用の描画コンテキストを取得
+    drawable = guide_layer
+    pdb.gimp_context_set_foreground((255, 0, 0))  # 赤い線
+    
+    # 線の太さ
+    pdb.gimp_context_set_line_width(1)
+    
+    # 縦線（offset考慮）
+    x = offset_x
+    while x <= image.width:
+        pdb.gimp_pencil(drawable, 2, [x, 0, x, image.height])
+        x += tile_width
+
+    # 横線（offset考慮）
+    y = offset_y
+    while y <= image.height:
+        pdb.gimp_pencil(drawable, 2, [0, y, image.width, y])
+        y += tile_height
+    
+    pdb.gimp_image_undo_group_end(image)
+    pdb.gimp_displays_flush()
+    pdb.gimp_message("切り出しガイドグリッドを描画しました。")
+
+def draw_info_grid(image, tile_width=257, tile_height=258, offset_x=0, offset_y=0):
+    """
+    画像情報用グリッド。実線太線で囲み、真ん中に十字グリッドを描画。
+    offset_x, offset_y: グリッドの原点(0,0)のずれ調整用
+    """
+    pdb.gimp_image_undo_group_start(image)
+
+    # 既存の情報グリッドレイヤー削除
+    for layer in image.layers:
+        if layer.name == "Info Grid":
+            pdb.gimp_image_remove_layer(image, layer)
+
+    info_layer = pdb.gimp_layer_new(image, image.width, image.height, RGBA_IMAGE, "Info Grid", 100, NORMAL_MODE)
+    pdb.gimp_image_insert_layer(image, info_layer, None, 0)
+
+    pdb.gimp_context_set_foreground((0, 0, 255))  # 青など区別しやすい色
+    drawable = info_layer
+
+    # 実線で正方形グリッドの枠を描く
+    x = offset_x
+    while x <= image.width:
+        # 縦線（太線・幅4）
+        for i in range(4):
+            pdb.gimp_pencil(drawable, 2, [x+i, 0, x+i, image.height])
+        x += tile_width
+
+    y = offset_y
+    while y <= image.height:
+        # 横線（太線・幅4）
+        for i in range(4):
+            pdb.gimp_pencil(drawable, 2, [0, y+i, image.width, y+i])
+        y += tile_height
+
+    # 各タイルの中心に十字グリッド(細線・幅1)
+    x = offset_x + tile_width // 2
+    while x <= image.width:
+        y = offset_y + tile_height // 2
+        while y <= image.height:
+            # 十字を描く（短めの線）
+            size = 10
+            # 縦線
+            pdb.gimp_pencil(drawable, 2, [x, y - size, x, y + size])
+            # 横線
+            pdb.gimp_pencil(drawable, 2, [x - size, y, x + size, y])
+            y += tile_height
+        x += tile_width
+
+    pdb.gimp_image_undo_group_end(image)
+    pdb.gimp_displays_flush()
+    pdb.gimp_message("情報グリッドを描画しました。")
+
+
+
+def export_tile(image, drawable, tile_x, tile_y, tile_width=257, tile_height=258, export_folder="/tmp", include_grid=False):
+    # アンドゥ履歴記録を無効化（パフォーマンス向上）
+    pdb.gimp_image_undo_group_start(image)
+
+    # グリッドレイヤーを作成して描画（必要な場合のみ）
+    grid_layer = None
+    if include_grid:
+        grid_layer = draw_grid(image, tile_width, tile_height)
+        # 画像をフラット化しないため、結合はせずそのままにする
+
+    # タイル位置のピクセル計算
+    x_offset = tile_x * tile_width
+    y_offset = tile_y * tile_height
+
+    # 範囲外チェック
+    if x_offset >= image.width or y_offset >= image.height:
+        pdb.gimp_message("指定タイルは画像外です。")
+        if grid_layer:
+            image.remove_layer(grid_layer)
+        pdb.gimp_image_undo_group_end(image)
+        return
+
+    # 範囲内におさまるように実際の切り出しサイズを決定
+    actual_width = min(tile_width, image.width - x_offset)
+    actual_height = min(tile_height, image.height - y_offset)
+
+    # 選択範囲を指定位置に設定
+    pdb.gimp_image_select_rectangle(image, CHANNEL_OP_REPLACE, x_offset, y_offset, actual_width, actual_height)
+
+    # 選択範囲を新規画像にコピー（レイヤー複数でも選択範囲のみペーストされる）
+    temp_image = pdb.gimp_edit_named_copy(image.active_layer, "tile_copy")
+    new_image = pdb.gimp_edit_named_paste_as_new()
+
+    # 保存ファイル名
+    file_name = "%d_%d.jpg" % (tile_x, tile_y)
+    full_path = export_folder.rstrip("/") + "/" + file_name
+
+    # JPEG保存
+    pdb.file_jpeg_save(new_image, new_image.active_layer, full_path, file_name, 0.9, 0, 1, 0, "", 0, 1, 0, 0)
+
+    # 終了処理
+    pdb.gimp_image_delete(new_image)
+    if grid_layer:
+        image.remove_layer(grid_layer)
+    pdb.gimp_image_undo_group_end(image)
+
+    pdb.gimp_message("タイル %d_%d を保存しました: %s" % (tile_x, tile_y, full_path))
+
+register(
+    "python_fu_draw_guide_grid",
+    "切り出し用ガイドグリッド描画",
+    "赤線で切り出し位置を示すガイドグリッドを描画します。原点オフセット調整可能。",
+    "あなたの名前",
+    "あなたの名前",
+    "2025",
+    "切り出し用ガイドグリッドを描画...",
+    "*",
+    [
+        (PF_IMAGE, "image", "Image", None),
+        (PF_DRAWABLE, "drawable", "Drawable", None),
+        (PF_INT, "tile_width", "タイル幅", 257),
+        (PF_INT, "tile_height", "タイル高さ", 258),
+        (PF_INT, "offset_x", "原点Xオフセット", 0),
+        (PF_INT, "offset_y", "原点Yオフセット", 0),
+    ],
+    [],
+    draw_guide_grid,
+    menu="<Image>/タイル処理"
+)
+
+register(
+    "python_fu_draw_info_grid",
+    "画像情報用グリッド描画",
+    "実線の太線グリッド＋各タイル中央に十字を描画します。原点オフセット調整可能。",
+    "あなたの名前",
+    "あなたの名前",
+    "2025",
+    "画像情報用グリッドを描画...",
+    "*",
+    [
+        (PF_IMAGE, "image", "Image", None),
+        (PF_DRAWABLE, "drawable", "Drawable", None),
+        (PF_INT, "tile_width", "タイル幅", 257),
+        (PF_INT, "tile_height", "タイル高さ", 258),
+        (PF_INT, "offset_x", "原点Xオフセット", 0),
+        (PF_INT, "offset_y", "原点Yオフセット", 0),
+    ],
+    [],
+    draw_info_grid,
+    menu="<Image>/タイル処理"
+)
+
+register(
+    "python_fu_export_tile",
+    "タイルを x_y 指定で切り出して保存",
+    "指定位置のタイルを自動で切り出し、JPEGで保存。グリッド線の描画も可能。",
+    "あなたの名前",
+    "あなたの名前",
+    "2025",
+    "タイルを切り出して保存...",
+    "*",  # 対象となる画像タイプ
+    [
+        (PF_IMAGE, "image", "Image", None),
+        (PF_DRAWABLE, "drawable", "Drawable", None),
+        (PF_INT, "tile_x", "タイルX (例: 3)", 0),
+        (PF_INT, "tile_y", "タイルY (例: 5)", 0),
+        (PF_INT, "tile_width", "タイル幅", 257),
+        (PF_INT, "tile_height", "タイル高さ", 258),
+        (PF_DIRNAME, "export_folder", "保存先フォルダ", "/tmp"),
+        (PF_BOOL, "include_grid", "グリッド線を含める", False)
+    ],
+    [],
+    export_tile,
+    menu="<Image>/タイル処理"
+)
+
+main()
+
+-----------------------------------------------------------------↑ tile_export.pyここまで------------
+
+① スクリプトの保存先（GIMPのスクリプトフォルダ）
+
+以下のいずれかに tile_export.py を保存してください：
+
+Windows
+C:\Users\<あなたのユーザー名>\AppData\Roaming\GIMP\2.10\plug-ins\
+
+macOS / Linux
+~/.config/GIMP/2.10/plug-ins/
+
+保存後、ファイルに「実行権限」を与える必要があります（Linux/macOS）（Windowsでは不要）：chmod +x tile_export.py
+GIMPを再起動
+
+② GIMPでスクリプトを実行
+
+GIMPで画像を開く（元の全体画像）
+
+メニューから
+画像 > タイル処理 > タイルを切り出して保存... を選ぶ
+
+以下のように入力：
+
+タイルX：3
+
+タイルY：5
+
+タイル幅：257
+
+タイル高さ：258
+
+保存先フォルダ：例 /Users/yourname/Desktop/tiles
+
+OKを押すと、自動でその位置の範囲が切り出されてJPEG保存されます
+→ ファイル名は 3_5.jpg のようになります

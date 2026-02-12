@@ -1,0 +1,207 @@
+@charset "utf-8";
+
+/*　タブ　*/
+.cp_tab *, .cp_tab *:before, .cp_tab *:after {
+	-webkit-box-sizing: border-box;
+	        box-sizing: border-box;
+}
+.cp_tab {
+	margin: 1em auto;
+}
+.cp_tab > input[type='radio'] {
+	margin: 0;
+	padding: 0;
+	border: none;
+	border-radius: 0;
+	outline: none;
+	background: none;
+	-webkit-appearance: none;
+	        appearance: none;
+	display: none;
+}
+
+.cp_tab .cp_tabpanel {
+	display: none;
+}
+.cp_tab > input:first-child:checked ~ .cp_tabpanels > .cp_tabpanel:first-child,
+.cp_tab > input:nth-child(3):checked ~ .cp_tabpanels > .cp_tabpanel:nth-child(2),
+.cp_tab > input:nth-child(5):checked ~ .cp_tabpanels > .cp_tabpanel:nth-child(3),
+.cp_tab > input:nth-child(7):checked ~ .cp_tabpanels > .cp_tabpanel:nth-child(4),
+.cp_tab > input:nth-child(9):checked ~ .cp_tabpanels > .cp_tabpanel:nth-child(5),
+.cp_tab > input:nth-child(11):checked ~ .cp_tabpanels > .cp_tabpanel:nth-child(6),
+.cp_tab > input:nth-child(13):checked ~ .cp_tabpanels > .cp_tabpanel:nth-child(7),
+.cp_tab > input:nth-child(15):checked ~ .cp_tabpanels > .cp_tabpanel:nth-child(8),
+.cp_tab > input:nth-child(17):checked ~ .cp_tabpanels > .cp_tabpanel:nth-child(9),
+.cp_tab > input:nth-child(19):checked ~ .cp_tabpanels > .cp_tabpanel:nth-child(10),
+.cp_tab > input:nth-child(21):checked ~ .cp_tabpanels > .cp_tabpanel:nth-child(11),
+.cp_tab > input:nth-child(23):checked ~ .cp_tabpanels > .cp_tabpanel:nth-child(12),
+.cp_tab > input:nth-child(25):checked ~ .cp_tabpanels > .cp_tabpanel:nth-child(13) {	
+	display: block;
+}
+.cp_tab > label {
+	position: relative;
+	display: inline-block;
+	padding: 15px;
+	cursor: pointer;
+	border: 1px solid transparent;
+	border-bottom: 0;
+}
+.cp_tab > label:hover,
+.cp_tab > input:focus + label {
+	color: #0066cc;
+}
+.cp_tab > input:checked + label {
+	margin-bottom: -1px;
+	border-color: #cccccc;
+	border-bottom: 1px solid #ffffff;/*背景色と同じ*/
+	border-radius: 6px 6px 0 0;
+}
+.cp_tab .cp_tabpanel {
+	padding: 0.5em 1em;
+	border-top: 1px solid #cccccc;
+}
+@media (max-width: 480px) {
+	.cp_tab {
+		width: 100%;
+		font-size: 0.8em;
+	}
+	.cp_tab label {
+		padding: 0.5em;
+	}
+}
+
+
+/* ボタン */
+.btn-flat-vertical-border {
+  position: relative;
+  display: inline-block;
+  font-weight: bold;
+  padding: 0.5em 1em;
+  text-decoration: none;
+  border-left: solid 4px #668ad8;
+  border-right: solid 4px #668ad8;
+  color: #668ad8;
+  background: #e1f3ff;
+  transition: .4s;
+}
+
+.btn-flat-vertical-border:hover {
+  background: #668ad8;
+  color: #FFF;
+}
+
+
+/*　Twitterアイコン縦位置　*/
+.tsp007 {
+ vertical-align: top;
+}
+.tsp008 {
+ vertical-align: middle;
+}
+.tsp009 {
+ vertical-align: text-bottom;
+}
+
+
+/*　ジャンプ先の調整
+a.anchor{
+    display: block;
+    padding-top: 70px;
+    margin-top: -70px;
+}
+*/
+
+/* 右下ボタン */
+/* パソコン・スマホ共通のCSS */
+#PageTopBtn {
+    position: fixed; /*ボタンの配置場所を固定*/
+    bottom: -10px; /*下からのボタンの配置場所を指定*/
+    right: 10px; /*右からのボタンの配置場所を指定*/
+}
+#PageTopBtn a {
+    display: block; /*配置の調整*/
+    text-decoration: none; /*文字の下線を消す*/
+    color: #fff; /*文字の色*/
+    background: #ffa500; /*ボタンの背景色*/
+    text-align: center; /*文字を中央に配置*/
+    border-radius: 50%; /*ボタンを丸くする*/
+    outline: none; /*クリックしたときの黒い枠を消す*/
+}
+#PageTopBtn a:hover {
+    text-decoration: none;
+    background: #ffd700; /*マウスオーバー時の背景色*/
+}
+
+/* パソコンで表示する場合のCSS */
+@media (min-width: 768px) {
+#PageTopBtn {
+    font-size: 13px; /*文字のサイズ*/
+}
+
+#PageTopBtn a {
+    width: 50px; /*ボタンの幅*/
+    height:50px; /*ボタンの高さ*/
+    padding: 15px; /*文字の配置場所の調整*/
+}
+
+
+
+
+#_TOP{
+	margin:10px;
+	width:6000px;/*ここを固定長にしないとブラウザの横幅に従って変形する*/
+	float:left;
+	/*border:1px solid blue;テスト用*/
+}
+
+#_TOP img {/*こう書けば_TOP以下の全部のimgに反映される*/
+	margin:0;/*img毎、隣との隙間をなくす*/
+	float:left;/*左上から積み下げていく*/
+	/*vertical-align: middle;*/
+}
+
+#_TOP2{
+	margin:10px;
+	width:15000px;/*ここを固定長にしないとブラウザの横幅に従って変形する*/
+	float:left;
+	/*border:1px solid blue;テスト用*/
+}
+
+#_TOP2 img {/*こう書けば_TOP以下の全部のimgに反映される*/
+	margin:0;/*img毎、隣との隙間をなくす*/
+	float:left;/*左上から積み下げていく*/
+	/*vertical-align: middle;*/
+}
+
+#_TOP3{
+	margin:10px;
+	width:8000px;/*ここを固定長にしないとブラウザの横幅に従って変形する*/
+	float:left;
+	/*border:1px solid blue;テスト用*/
+}
+
+#_TOP3 img {/*こう書けば_TOP以下の全部のimgに反映される*/
+	margin:0;/*img毎、隣との隙間をなくす*/
+	float:left;/*左上から積み下げていく*/
+	/*vertical-align: middle;*/
+}
+
+.relative {
+    position: relative;
+		width: 15000px;
+		/*hight: 12000px;　エラー吐いてたのでこの行一時消し*/
+}
+
+.well {
+    position: absolute;
+		/*top: 10px;*/
+		right: 10900px;
+		bottom: -2800px;
+}
+
+.Center {
+    position: absolute;
+		/*top: 10px;*/
+		right: 2000px;
+		bottom: -8500px;
+}
