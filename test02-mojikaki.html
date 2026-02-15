@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>DeepZoom タブ付きベクター編集サンプル</title>
+<script src="https://openseadragon.github.io/openseadragon/openseadragon.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  .osd_disp { width: 800px; height: 600px; position: relative; border:1px solid #ccc; margin-bottom:20px; }
+  canvas { position: absolute; top:0; left:0; pointer-events: auto; }
+</style>
+</head>
+<body>
+<h2>DeepZoom + ベクターレイヤー編集サンプル</h2>
+
+<!-- タブ1 -->
+<div>
+  <h3>通常地図</h3>
+  <div id="viewer_main" class="osd_disp"></div>
+  <canvas id="overlay_main"></canvas>
+  <button id="save_main">保存</button>
+</div>
+
+<script>
+// --- Supabase設定（置き換えてください） ---
+const supabaseUrl = 'https://sbwfgkzmruesocvzvkur.supabase.co';
+const supabaseKey = 'sb_publishable_aaBZ938HOWD6-v3XTtypfA_7ZdoizBh';
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+// --- 描画用データ ---
+let annotations = [];
+
+// --- OpenSeadragon初期化 ---
+const viewer = OpenSeadragon({
+    id: "viewer_main",
+    prefixUrl: "2434map_files/",  // XMLのタイルプレフィックス
+    tileSources: "2434map.xml",
+    showNavigator: true
+});
+
+// --- Canvasレイヤー ---
+const overlay = document.getElementById('overlay_main');
+overlay.width = 800;
+overlay.height = 600;
+const ctx = overlay.getContext('2d');
+
+// --- クリックで文字を追加 ---
+overlay.addEventListener('click', (e) => {
+    const rect = overlay.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / overlay.width;  // 0~1に正規化
+    const y = (e.clientY - rect.top) / overlay.height;
+    const text = prompt("文字を入力してください");
+    if(text){
+        annotations.push({type:"text", x, y, content:text, color:"red", fontSize:24});
+        drawAnnotations();
+    }
+});
+
+// --- 描画関数 ---
+function drawAnnotations(){
+    ctx.clearRect(0,0,overlay.width, overlay.height);
+    annotations.forEach(a=>{
+        if(a.type==="text"){
+            ctx.fillStyle = a.color;
+            ctx.font = `${a.fontSize}px sans-serif`;
+            ctx.fillText(a.content, a.x*overlay.width, a.y*overlay.height);
+        }
+    });
+}
+
+// --- Supabaseに保存 ---
+document.getElementById('save_main').addEventListener('click', async ()=>{
+    const { data, error } = await supabase
+        .from('test01')  // 保存先テーブル名
+        .insert([{data: annotations}]);
+    if(error) alert("保存エラー: "+error.message);
+    else alert("保存完了！");
+});
+
+// --- ページロード時に読み込み ---
+async function loadAnnotations(){
+    const { data, error } = await supabase
+        .from('test01')
+        .select('data');
+    if(data){
+        data.forEach(row=>{
+            if(row.data) annotations.push(...row.data);
+        });
+        drawAnnotations();
+    }
+}
+
+loadAnnotations();
+
+</script>
+</body>
+</html>
