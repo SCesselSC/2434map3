@@ -329,7 +329,7 @@
 
 <script>
 // マーカー設置追加関数
-function addMarker(viewer, imageX, imageY, text, icon, spriteX, spriteY, iconSize){
+function addMarker(viewer, imageX, imageY, label, icon, spriteX, spriteY, iconSize){
 
   const viewportPoint =  viewer.viewport.imageToViewportCoordinates(imageX, imageY);
 
@@ -339,7 +339,7 @@ function addMarker(viewer, imageX, imageY, text, icon, spriteX, spriteY, iconSiz
   // 1セルのサイズ
   const cellSize = 176; // 
 
-  // アイコン表示
+  // アイコン画像がある場合のみ表示
   let iconHTML = "";
   if(icon && iconSize > 0){
     iconHTML = `
@@ -349,18 +349,19 @@ function addMarker(viewer, imageX, imageY, text, icon, spriteX, spriteY, iconSiz
            height:${iconSize}px;
            background-image:url(${icon});
            background-position:-${cellSize*(spriteX-1)}px -${cellSize*(spriteY-1)}px;
-           background-size:176px 176px;
+           background-size:${cellSize}px ${cellSize}px;
 	   margin:0;
          ">
     </div>`;
   }
 
-  // 文字表示
+  // 文字がある場合のみ表示
   let labelHTML = "";
   if(label && label.trim() !== ""){
     labelHTML = `<div style="margin:0; line-height:1; font-size:6px;">${label}</div>`;
   }
 
+  // HTMLにまとめる
   el.innerHTML = iconHTML + labelHTML;
 
 
