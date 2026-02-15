@@ -172,9 +172,11 @@
 		});
 		viewer_2434map_main.addHandler('open', function(){
 		   loadMarkers(viewer_2434map_main, "2434map_marker.csv");
+		   attachZoomHandler(viewer_2434map_main,0.4);		//拡大倍率 値が大きいほど、拡大スピードが速い
 		});
 	</script>
 </div>
+
 
 
 
@@ -192,6 +194,7 @@
 		});
 		viewer_2434map_all.addHandler('open', function(){
 		   loadMarkers(viewer_2434map_all, "2434map_all_marker.csv");
+		   attachZoomHandler(viewer_2434map_all, 0.2);
 		});
 	</script>
 </div>
@@ -236,6 +239,7 @@
 		});
 		viewer_2434map_nether.addHandler('open', function(){
 		   loadMarkers(viewer_2434map_nether, "2434map_nether_marker.csv");
+		   attachZoomHandler(viewer_2434map_nether, 0.6);
 		});
 	</script>
 </div>
@@ -260,6 +264,7 @@
 		});
 		viewer_2434map_new.addHandler('open', function(){
 		   loadMarkers(viewer_2434map_new, "2434map_new_marker.csv");
+		   attachZoomHandler(viewer_2434map_new, 0.4);
 		});
 	</script>
 </div>
@@ -279,6 +284,7 @@
 		});
 		viewer_2434map_new_all.addHandler('open', function(){
 		   loadMarkers(viewer_2434map_new_all, "2434map_new_all_marker.csv");
+		   attachZoomHandler(viewer_2434map_new_all, 0.2);
 		});
 	</script>
 </div>
@@ -298,6 +304,7 @@
 		});
 		viewer_2434map_new_nether.addHandler('open', function(){
 		   loadMarkers(viewer_2434map_new_nether, "2434map_new_nether_marker.csv");
+		   attachZoomHandler(viewer_2434map_new_nether, 0.6);
 		});
 	</script>
 </div>
@@ -416,13 +423,6 @@ function attachZoomHandler(viewer, zoomFactor){//各地図の倍率のための�
     viewer.addHandler('zoom', updateScale);
     viewer.addHandler('open', updateScale);
 }
-
-attachZoomHandler(viewer_2434map_main,0.4);//拡大倍率 値が大きいほど、拡大スピードが速い
-attachZoomHandler(viewer_2434map_all, 0.2);
-attachZoomHandler(viewer_2434map_nether, 0.6);
-attachZoomHandler(viewer_2434map_new, 0.4);
-attachZoomHandler(viewer_2434map_new_all, 0.2);
-attachZoomHandler(viewer_2434map_new_nether, 0.6);
 
 
 
