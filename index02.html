@@ -380,6 +380,10 @@ function addMarker(viewer, imageX, imageY, label, icon, spriteX, spriteY, iconSi
      location: viewer.viewport.imageToViewportCoordinates(imageX, imageY),
     placement: "CENTER"  // 中心に合わせる
   });
+// 初期 transform を保持しておく
+  const initialTransform = el.style.transform;
+  el.dataset.initialTransform = initialTransform;
+
 }
 
 // ▼ CSV読み込み
@@ -416,12 +420,8 @@ function attachZoomHandler(viewer, zoomFactor){//各地図の倍率のための�
         const scale = zoom * zoomFactor;		// 最小倍率を基準にスケーリング
 
         viewer.element.querySelectorAll('.map-marker').forEach(el => {
-            // 元の translate を保持したまま scale を掛ける
-            const transform = el.style.transform || "";
-            // transform 内に translate(...) があるか確認
-            const translateMatch = transform.match(/translate\([^)]+\)/);
-            const translateStr = translateMatch ? translateMatch[0] : "translate(0px, 0px)";
-            el.style.transform = `${translateStr} scale(${scale})`;
+            const initial = el.dataset.initialTransform || "";
+            el.style.transform = `${initial} scale(${scale})`;
         });
     }
 
@@ -429,6 +429,9 @@ function attachZoomHandler(viewer, zoomFactor){//各地図の倍率のための�
     viewer.addHandler('zoom', updateScale);
     viewer.addHandler('open', updateScale);
     viewer.addHandler('animation', updateScale); // ズームアニメーション対応
+
+    // 初期表示時も適用
+    updateScale();
 }
 
 
