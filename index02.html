@@ -82,7 +82,7 @@
 .map-marker{
  /* transform: translate(-50%, -100%);	一旦削除 */
   transform-origin: center bottom; /* アイコンの中心を基準に拡大 */
-  transform: scale(0.3);          /* 初期倍率に応じて小さくする */
+  /* transform: scale(0.3);          /* 初期倍率に応じて小さくする */
   transition: transform 0.2s;
 
   text-align: center;
@@ -403,24 +403,26 @@ function loadMarkers(viewer, csvFile){
 }
 
 //addHandler関数
-function attachZoomHandler(viewer){
-    viewer.addHandler('zoom', function(){
-        const zoom = viewer.viewport.getZoom();		// 現在の倍率
-        const minZoom = viewer.viewport.getMinZoom();
-        const scale = zoom / minZoom;			// 最小倍率を基準にスケーリング
+function attachZoomHandler(viewer, zoomFactor){//各地図の倍率のための設定
+    function updateScale(){
+        const zoom = viewer.viewport.getZoom(true);	// 現在の倍率
+        const scale = zoom / zoomFactor;		// 最小倍率を基準にスケーリング
+
 
         viewer.container.querySelectorAll('.map-marker').forEach(el => {
             el.style.transform = `scale(${scale})`;
         });
-    });
+    }
+    viewer.addHandler('zoom', updateScale);
+    viewer.addHandler('open', updateScale);
 }
 
-attachZoomHandler(viewer_2434map_main);
-attachZoomHandler(viewer_2434map_all);
-attachZoomHandler(viewer_2434map_nether);
-attachZoomHandler(viewer_2434map_new);
-attachZoomHandler(viewer_2434map_new_all);
-attachZoomHandler(viewer_2434map_new_nether);
+attachZoomHandler(viewer_2434map_main,0.4);//拡大倍率 値が大きいほど、拡大スピードが速い
+attachZoomHandler(viewer_2434map_all, 0.2);
+attachZoomHandler(viewer_2434map_nether, 0.6);
+attachZoomHandler(viewer_2434map_new, 0.4);
+attachZoomHandler(viewer_2434map_new_all, 0.2);
+attachZoomHandler(viewer_2434map_new_nether, 0.6);
 
 
 
