@@ -415,13 +415,19 @@ function attachZoomHandler(viewer, zoomFactor){//各地図の倍率のための�
         const zoom = viewer.viewport.getZoom(true);	// 現在の倍率
         const scale = zoom * zoomFactor;		// 最小倍率を基準にスケーリング
 
-
-        viewer.element.querySelectorAll('.map-marker').forEach(el => {
-            el.style.transform = `scale(${scale})`;
+        // OpenSeadragon overlay 配下のマーカーを取得
+        const overlays = viewer.overlays || [];
+        overlays.forEach(overlay => {
+            if(overlay.element.classList.contains("map-marker")){
+                overlay.element.style.transform = `scale(${scale})`;
+            }
         });
     }
+
+    // 初期化＆ズーム時に呼び出す
     viewer.addHandler('zoom', updateScale);
     viewer.addHandler('open', updateScale);
+    viewer.addHandler('animation', updateScale); // ズームアニメーション対応
 }
 
 
