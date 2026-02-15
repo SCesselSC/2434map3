@@ -81,6 +81,10 @@
 
 .map-marker{
  /* transform: translate(-50%, -100%);	一旦削除 */
+  transform-origin: center bottom; /* アイコンの中心を基準に拡大 */
+  transform: scale(0.3);          /* 初期倍率に応じて小さくする */
+  transition: transform 0.2s;
+
   text-align: center;
   font-size: 6px; /* 文字サイズを調整 */
 }
@@ -325,29 +329,40 @@
 
 <script>
 // マーカー設置追加関数
-function addMarker(viewer, imageX, imageY, text, icon, spriteX, spriteY){
+function addMarker(viewer, imageX, imageY, text, icon, spriteX, spriteY, iconSize){
 
-  const viewportPoint =
-    viewer.viewport.imageToViewportCoordinates(imageX, imageY);
+  const viewportPoint =  viewer.viewport.imageToViewportCoordinates(imageX, imageY);
 
   const el = document.createElement("div");
   el.className = "map-marker";
 
   // 1セルのサイズ
-  const cellSize = 44; // 176/16
+  const cellSize = 176; // 
 
-  el.innerHTML = `
+  // アイコン表示
+  let iconHTML = "";
+  if(icon && iconSize > 0){
+    iconHTML = `
     <div class="marker-icon-sprite"
          style="
-           width:${cellSize}px;
-           height:${cellSize}px;
+           width:${iconSize}px;
+           height:${iconSize}px;
            background-image:url(${icon});
            background-position:-${cellSize*(spriteX-1)}px -${cellSize*(spriteY-1)}px;
            background-size:176px 176px;
 	   margin:0;
          ">
-    </div>
-    <div style="margin:0; line-height:1; font-size:6px;">${text}</div>`;
+    </div>`;
+  }
+
+  // 文字表示
+  let labelHTML = "";
+  if(label && label.trim() !== ""){
+    labelHTML = `<div style="margin:0; line-height:1; font-size:6px;">${label}</div>`;
+  }
+
+  el.innerHTML = iconHTML + labelHTML;
+
 
   // OpenSeadragon でズームに追従させる
   viewer.addOverlay({
@@ -367,22 +382,33 @@ function loadMarkers(viewer, csvFile){
       const rows = text.split("\n").slice(1);
 
       rows.forEach(row => {
-	const cols = row.split(",");
-        if(cols.length < 6) return; // 列が足りなければスキップ
+        //if(cols.length < 6) return; // 列が足りなければスキップ
 
-        const [x,z,label,icon,spriteX,spriteY] = cols;
+        const [x,z,label,icon,spriteX,spriteY,iconSize] = row.split(",");
 
 	// 数値化と空文字チェック
         const xi = parseFloat(x);
         const zi = parseFloat(z);		// Zを画像Y座標として扱う
         const sX = parseInt(spriteX) || 1;
         const sY = parseInt(spriteY) || 1;
+	const size = parseFloat(iconSize) || 0;
 	if(isNaN(xi) || isNaN(zi)) return;
 
-        addMarker(viewer, xi, zi, label, icon, sX, sY);
+        addMarker(viewer, xi, zi, label, icon, sX, sY, size);
       });
     });
 }
+
+
+viewer.addHandler('zoom', function() {
+    const zoom = viewer.viewport.getZoom(); // 現在の倍率
+    const minZoom = viewer.viewport.getMinZoom(); 
+    const scale = zoom / minZoom;           // 最小倍率を基準にスケーリング
+    document.querySelectorAll('.map-marker').forEach(el => {
+        el.style.transform = `scale(${scale})`;
+    });
+});
+
 </script>
 
 
