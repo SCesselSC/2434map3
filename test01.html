@@ -21,6 +21,9 @@ const supabaseUrl = 'https://sbwfgkzmruesocvzvkur.supabase.co'  // ここを置�
 const supabaseKey = 'sb_publishable_aaBZ938HOWD6-v3XTtypfA_7ZdoizBh'                     // ここを置き換え
 const supabase = supabase.createClient(supabaseUrl, supabaseKey)
 
+// 描画データ
+let annotations = [];
+
 // OpenSeadragonでタイル表示
 var viewer = OpenSeadragon({
     id: "viewer",
@@ -47,31 +50,33 @@ var viewer = OpenSeadragon({
 });
 
 // Canvasレイヤー
-var canvas = document.getElementById('overlay');
-canvas.width = 800;
-canvas.height = 600;
-var ctx = canvas.getContext('2d');
+const overlay = document.getElementById('overlay');
+overlay.width = 800;
+overlay.height = 600;
+overlay.style.left = viewer.container.offsetLeft + 'px';
+overlay.style.top = viewer.container.offsetTop + 'px';
+const ctx = overlay.getContext('2d');
 
-var annotations = []
-
-// クリックで点を描画
-viewer.addHandler('canvas-click', function(event){
-    var webPoint = event.position;
-    var viewportPoint = viewer.viewport.pointFromPixel(webPoint);
-    var imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
-    var x = imagePoint.x / viewer.world.getItemAt(0).getContentSize().x;
-    var y = imagePoint.y / viewer.world.getItemAt(0).getContentSize().y;
-
-    ctx.fillStyle = 'red';
-    ctx.beginPath();
-    ctx.arc(webPoint.x, webPoint.y, 5, 0, Math.PI*2);
-    ctx.fill();
-
-    annotations.push({x:x, y:y, type:'dot', color:'red'});
+overlay.addEventListener('click', function(e){
+  const rect = overlay.getBoundingClientRect();
+  const x = (e.clientX - rect.left) / overlay.width;
+  const y = (e.clientY - rect.top) / overlay.height;
+  annotations.push({x,y,color:'red'});
+  drawAnnotations();
 });
 
-// 保存関数
-async function saveAnnotations(){
+function drawAnnotations(){
+  ctx.clearRect(0,0,overlay.width,overlay.height);
+  annotations.forEach(dot=>{
+    ctx.fillStyle = dot.color;
+    ctx.beginPath();
+    ctx.arc(dot.x*overlay.width, dot.y*overlay.height,5,0,2*Math.PI);
+    ctx.fill();
+  });
+}
+
+// 保存関数		//async function saveAnnotations(){
+document.getElementById('saveBtn').addEventListener('click', async ()=>{
     const { data, error } = await supabase
         .from('test01')
         .insert([{data: annotations}]);			// Dataカラムに保存
@@ -83,7 +88,7 @@ async function saveAnnotations(){
 async function loadAnnotations() {
     const { data, error } = await supabase
         .from('test01')
-        .select('Data');
+        .select('data');
     if(data) {
         data.forEach(item => {
             item.Data.forEach(dot => {
@@ -96,6 +101,7 @@ async function loadAnnotations() {
     }
 }
 
+loadAnnotations();
 
 </script>
 </body>
