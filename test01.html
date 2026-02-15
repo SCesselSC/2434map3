@@ -59,7 +59,7 @@ viewer.addHandler('canvas-click', function(event){
 // 保存関数
 async function saveAnnotations(){
     const { data, error } = await supabase
-        .from('annotations')
+        .from('test01')
         .insert([{data: annotations}]);
     if(error) alert('保存エラー:'+error.message);
     else alert('保存完了!');
