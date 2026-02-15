@@ -367,16 +367,19 @@ function loadMarkers(viewer, csvFile){
       const rows = text.split("\n").slice(1);
 
       rows.forEach(row => {
-        const [x,z,label,icon,spriteX,spriteY] = row.split(",");
+	const cols = row.split(",");
+        if(cols.length < 6) return; // 列が足りなければスキップ
 
-        addMarker(viewer,
-          parseFloat(x),
-          parseFloat(z),// Zを画像Y座標として扱う
-          label,
-          icon,
-          parseInt(spriteX),
-          parseInt(spriteY)
-        );
+        const [x,z,label,icon,spriteX,spriteY] = cols;
+
+	// 数値化と空文字チェック
+        const xi = parseFloat(x);
+        const zi = parseFloat(z);		// Zを画像Y座標として扱う
+        const sX = parseInt(spriteX) || 1;
+        const sY = parseInt(spriteY) || 1;
+	if(isNaN(xi) || isNaN(zi)) return;
+
+        addMarker(viewer, xi, zi, label, icon, sX, sY);
       });
     });
 }
