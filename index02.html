@@ -331,7 +331,7 @@ function addMarker(viewer, imageX, imageY, text, icon){
   el.className = "map-marker";
 
   el.innerHTML =
-    `<img src="img/${icon}" width="24"><br>${text}`;
+    `<img src="${icon}" width="24"><br>${text}`;
 
   viewer.addOverlay({
     element: el,
@@ -349,11 +349,11 @@ function loadMarkers(viewer, csvFile){
       const rows = text.split("\n").slice(1);
 
       rows.forEach(row => {
-        const [x,y,label,icon] = row.split(",");
+        const [x,z,icon,label] = row.split(",");
 
         addMarker(viewer,
           parseFloat(x),
-          parseFloat(y),
+          parseFloat(z),// Zを画像Y座標として扱う
           label,
           icon
         );
