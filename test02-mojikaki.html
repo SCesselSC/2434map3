@@ -6,7 +6,7 @@
 <script src="https://openseadragon.github.io/openseadragon/openseadragon.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  .osd_disp { width: 800px; height: 600px; position: relative; border:1px solid #ccc; margin-bottom:10px; }
+  .osd_disp { width: 7166px; height: 7166px; position: relative; border:1px solid #ccc; margin-bottom:10px; }
   canvas { position: absolute; top:0; left:0; pointer-events: auto; }
 </style>
 </head>
@@ -31,78 +31,56 @@ let annotations = []; // {type:'text'|'line'|'icon', ...}
 // ----------------- OpenSeadragon 初期化 -----------------
 const viewer = OpenSeadragon({
     id: "viewer_main",
-    prefixUrl: "2434map_files/",
-    tileSources: "2434map.xml",
+    prefixUrl: "2434map_new_files/",
+    tileSources: "2434map_new.xml",
     showNavigator: true
 });
 
 // ----------------- Canvasレイヤー -----------------
 const overlay = document.getElementById('overlay_main');
-overlay.width = 800;
-overlay.height = 600;
+overlay.width = 7166;
+overlay.height = 7166;
+overlay.style.left = viewer.container.offsetLeft + 'px';
+overlay.style.top  = viewer.container.offsetTop + 'px';
 const ctx = overlay.getContext('2d');
+
+
+// ==== クリックで文字入力 & 即描画 ====
+overlay.addEventListener('click', function(e){
+  const rect = overlay.getBoundingClientRect();
+  const x = (e.clientX - rect.left) / overlay.width;
+  const y = (e.clientY - rect.top) / overlay.height;
+
+  const inputText = prompt("文字を入力してください"); //  OKで文字取得
+  if(!inputText) return; // キャンセルなら終了
+
+  // annotations に追加
+  annotations.push({x, y, color:'red', text: inputText});
+
+  // 画面に即反映
+  drawAnnotations();
+});
+
 
 // ----------------- 描画関数 -----------------
 function drawAnnotations(){
     ctx.clearRect(0,0,overlay.width, overlay.height);
-    annotations.forEach(a=>{
-        switch(a.type){
-            case "text":
-                ctx.fillStyle = a.color;
-                ctx.font = `${a.fontSize}px sans-serif`;
-                ctx.fillText(a.content, a.x*overlay.width, a.y*overlay.height);
-                break;
-            case "line":
-                ctx.strokeStyle = a.color;
-                ctx.lineWidth = a.width;
-                ctx.beginPath();
-                ctx.moveTo(a.x1*overlay.width, a.y1*overlay.height);
-                ctx.lineTo(a.x2*overlay.width, a.y2*overlay.height);
-                ctx.stroke();
-                break;
-            case "icon":
-                // ここでは小さな円をアイコンとして描く
-                ctx.fillStyle = a.color;
-                ctx.beginPath();
-                ctx.arc(a.x*overlay.width, a.y*overlay.height, a.size, 0, 2*Math.PI);
-                ctx.fill();
-                break;
-        }
-    });
+    annotations.forEach(dot=>{
+    // マーカー
+    ctx.fillStyle = dot.color;
+    ctx.beginPath();
+    ctx.arc(dot.x*overlay.width, dot.y*overlay.height,5,0,2*Math.PI);
+    ctx.fill();
+    // 文字
+    if(dot.text){
+      ctx.fillStyle = 'black';
+      ctx.font = '14px sans-serif';
+      ctx.fillText(dot.text, dot.x*overlay.width + 6, dot.y*overlay.height - 6);
+    }
+  });
 }
 
-// ----------------- ユーザー操作 -----------------
-let drawingLine = false;
-let lineStart = null;
 
-overlay.addEventListener('click', async (e)=>{
-    const rect = overlay.getBoundingClientRect();
-    const x = (e.clientX - rect.left)/overlay.width;
-    const y = (e.clientY - rect.top)/overlay.height;
-
-    const action = prompt("選択: text/line/icon");
-    if(!action) return;
-
-    if(action==="text"){
-        const content = prompt("文字を入力");
-        if(content) {
-            annotations.push({type:"text", x, y, content, color:"red", fontSize:24});
-        }
-    } else if(action==="line"){
-        if(!drawingLine){
-            lineStart = {x,y};
-            drawingLine = true;
-            alert("始点登録しました。次のクリックで終点を決定");
-        } else {
-            annotations.push({type:"line", x1:lineStart.x, y1:lineStart.y, x2:x, y2:y, color:"blue", width:3});
-            drawingLine = false;
-            lineStart = null;
-        }
-    } else if(action==="icon"){
-        annotations.push({type:"icon", x, y, color:"green", size:10});
-    }
-    drawAnnotations();
-});
 
 // ----------------- 保存 -----------------
 document.getElementById('save_main').addEventListener('click', async ()=>{
