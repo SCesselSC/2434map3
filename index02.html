@@ -402,55 +402,29 @@ function loadMarkers(viewer, csvFile){
     });
 }
 
+//addHandler関数
+function attachZoomHandler(viewer){
+    viewer.addHandler('zoom', function(){
+        const zoom = viewer.viewport.getZoom();		// 現在の倍率
+        const minZoom = viewer.viewport.getMinZoom();
+        const scale = zoom / minZoom;			/ 最小倍率を基準にスケーリング
 
-viewer_2434map_main.addHandler('zoom', function() {
-    const zoom = viewer.viewport.getZoom(); // 現在の倍率
-    const minZoom = viewer.viewport.getMinZoom(); 
-    const scale = zoom / minZoom;           // 最小倍率を基準にスケーリング
-    document.querySelectorAll('.map-marker').forEach(el => {
-        el.style.transform = `scale(${scale})`;
+        viewer.container.querySelectorAll('.map-marker').forEach(el => {
+            el.style.transform = `scale(${scale})`;
+        });
     });
-});
-viewer_2434map_all.addHandler('zoom', function() {
-    const zoom = viewer.viewport.getZoom(); // 現在の倍率
-    const minZoom = viewer.viewport.getMinZoom(); 
-    const scale = zoom / minZoom;           // 最小倍率を基準にスケーリング
-    document.querySelectorAll('.map-marker').forEach(el => {
-        el.style.transform = `scale(${scale})`;
-    });
-});
-viewer_2434map_nether.addHandler('zoom', function() {
-    const zoom = viewer.viewport.getZoom(); // 現在の倍率
-    const minZoom = viewer.viewport.getMinZoom(); 
-    const scale = zoom / minZoom;           // 最小倍率を基準にスケーリング
-    document.querySelectorAll('.map-marker').forEach(el => {
-        el.style.transform = `scale(${scale})`;
-    });
-});
-viewer_2434map_new.addHandler('zoom', function() {
-    const zoom = viewer.viewport.getZoom(); // 現在の倍率
-    const minZoom = viewer.viewport.getMinZoom(); 
-    const scale = zoom / minZoom;           // 最小倍率を基準にスケーリング
-    document.querySelectorAll('.map-marker').forEach(el => {
-        el.style.transform = `scale(${scale})`;
-    });
-});
-viewer_2434map_new_all.addHandler('zoom', function() {
-    const zoom = viewer.viewport.getZoom(); // 現在の倍率
-    const minZoom = viewer.viewport.getMinZoom(); 
-    const scale = zoom / minZoom;           // 最小倍率を基準にスケーリング
-    document.querySelectorAll('.map-marker').forEach(el => {
-        el.style.transform = `scale(${scale})`;
-    });
-});
-viewer_2434map_new_nether.addHandler('zoom', function() {
-    const zoom = viewer.viewport.getZoom(); // 現在の倍率
-    const minZoom = viewer.viewport.getMinZoom(); 
-    const scale = zoom / minZoom;           // 最小倍率を基準にスケーリング
-    document.querySelectorAll('.map-marker').forEach(el => {
-        el.style.transform = `scale(${scale})`;
-    });
-});
+}
+
+attachZoomHandler(viewer_2434map_main);
+attachZoomHandler(viewer_2434map_all);
+attachZoomHandler(viewer_2434map_nether);
+attachZoomHandler(viewer_2434map_new);
+attachZoomHandler(viewer_2434map_new_all);
+attachZoomHandler(viewer_2434map_new_nether);
+
+
+
+
 </script>
 
 
