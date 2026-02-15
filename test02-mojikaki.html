@@ -2,82 +2,118 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>DeepZoom タブ付きベクター編集サンプル</title>
+<title>DeepZoom ベクターレイヤー拡張版</title>
 <script src="https://openseadragon.github.io/openseadragon/openseadragon.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  .osd_disp { width: 800px; height: 600px; position: relative; border:1px solid #ccc; margin-bottom:20px; }
+  .osd_disp { width: 800px; height: 600px; position: relative; border:1px solid #ccc; margin-bottom:10px; }
   canvas { position: absolute; top:0; left:0; pointer-events: auto; }
 </style>
 </head>
 <body>
-<h2>DeepZoom + ベクターレイヤー編集サンプル</h2>
+<h2>DeepZoom + ベクターレイヤー拡張サンプル</h2>
 
-<!-- タブ1 -->
 <div>
-  <h3>通常地図</h3>
   <div id="viewer_main" class="osd_disp"></div>
   <canvas id="overlay_main"></canvas>
   <button id="save_main">保存</button>
 </div>
 
 <script>
-// --- Supabase設定（置き換えてください） ---
+// ----------------- Supabase設定 -----------------
 const supabaseUrl = 'https://sbwfgkzmruesocvzvkur.supabase.co';
 const supabaseKey = 'sb_publishable_aaBZ938HOWD6-v3XTtypfA_7ZdoizBh';
 const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
-// --- 描画用データ ---
-let annotations = [];
+// ----------------- データ -----------------
+let annotations = []; // {type:'text'|'line'|'icon', ...}
 
-// --- OpenSeadragon初期化 ---
+// ----------------- OpenSeadragon 初期化 -----------------
 const viewer = OpenSeadragon({
     id: "viewer_main",
-    prefixUrl: "2434map_files/",  // XMLのタイルプレフィックス
+    prefixUrl: "2434map_files/",
     tileSources: "2434map.xml",
     showNavigator: true
 });
 
-// --- Canvasレイヤー ---
+// ----------------- Canvasレイヤー -----------------
 const overlay = document.getElementById('overlay_main');
 overlay.width = 800;
 overlay.height = 600;
 const ctx = overlay.getContext('2d');
 
-// --- クリックで文字を追加 ---
-overlay.addEventListener('click', (e) => {
-    const rect = overlay.getBoundingClientRect();
-    const x = (e.clientX - rect.left) / overlay.width;  // 0~1に正規化
-    const y = (e.clientY - rect.top) / overlay.height;
-    const text = prompt("文字を入力してください");
-    if(text){
-        annotations.push({type:"text", x, y, content:text, color:"red", fontSize:24});
-        drawAnnotations();
-    }
-});
-
-// --- 描画関数 ---
+// ----------------- 描画関数 -----------------
 function drawAnnotations(){
     ctx.clearRect(0,0,overlay.width, overlay.height);
     annotations.forEach(a=>{
-        if(a.type==="text"){
-            ctx.fillStyle = a.color;
-            ctx.font = `${a.fontSize}px sans-serif`;
-            ctx.fillText(a.content, a.x*overlay.width, a.y*overlay.height);
+        switch(a.type){
+            case "text":
+                ctx.fillStyle = a.color;
+                ctx.font = `${a.fontSize}px sans-serif`;
+                ctx.fillText(a.content, a.x*overlay.width, a.y*overlay.height);
+                break;
+            case "line":
+                ctx.strokeStyle = a.color;
+                ctx.lineWidth = a.width;
+                ctx.beginPath();
+                ctx.moveTo(a.x1*overlay.width, a.y1*overlay.height);
+                ctx.lineTo(a.x2*overlay.width, a.y2*overlay.height);
+                ctx.stroke();
+                break;
+            case "icon":
+                // ここでは小さな円をアイコンとして描く
+                ctx.fillStyle = a.color;
+                ctx.beginPath();
+                ctx.arc(a.x*overlay.width, a.y*overlay.height, a.size, 0, 2*Math.PI);
+                ctx.fill();
+                break;
         }
     });
 }
 
-// --- Supabaseに保存 ---
+// ----------------- ユーザー操作 -----------------
+let drawingLine = false;
+let lineStart = null;
+
+overlay.addEventListener('click', async (e)=>{
+    const rect = overlay.getBoundingClientRect();
+    const x = (e.clientX - rect.left)/overlay.width;
+    const y = (e.clientY - rect.top)/overlay.height;
+
+    const action = prompt("選択: text/line/icon");
+    if(!action) return;
+
+    if(action==="text"){
+        const content = prompt("文字を入力");
+        if(content) {
+            annotations.push({type:"text", x, y, content, color:"red", fontSize:24});
+        }
+    } else if(action==="line"){
+        if(!drawingLine){
+            lineStart = {x,y};
+            drawingLine = true;
+            alert("始点登録しました。次のクリックで終点を決定");
+        } else {
+            annotations.push({type:"line", x1:lineStart.x, y1:lineStart.y, x2:x, y2:y, color:"blue", width:3});
+            drawingLine = false;
+            lineStart = null;
+        }
+    } else if(action==="icon"){
+        annotations.push({type:"icon", x, y, color:"green", size:10});
+    }
+    drawAnnotations();
+});
+
+// ----------------- 保存 -----------------
 document.getElementById('save_main').addEventListener('click', async ()=>{
     const { data, error } = await supabase
-        .from('test01')  // 保存先テーブル名
+        .from('test01')
         .insert([{data: annotations}]);
     if(error) alert("保存エラー: "+error.message);
     else alert("保存完了！");
 });
 
-// --- ページロード時に読み込み ---
+// ----------------- 読み込み -----------------
 async function loadAnnotations(){
     const { data, error } = await supabase
         .from('test01')
