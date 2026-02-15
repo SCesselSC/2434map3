@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>DeepZoom編集サンプル</title>
+  <script src="https://openseadragon.github.io/openseadragon/openseadragon.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    #viewer { width: 800px; height: 600px; position: relative; }
+    #overlay { position: absolute; top:0; left:0; pointer-events: none; }
+  </style>
+</head>
+<body>
+  <h2>DeepZoomタイル編集サンプル</h2>
+  <div id="viewer"></div>
+  <canvas id="overlay"></canvas>
+  <button onclick="saveAnnotations()">保存</button>
+
+<script>
+const supabaseUrl = 'https://sbwfgkzmruesocvzvkur.supabase.co'  // ここを置き換え
+const supabaseKey = 'sb_publishable_aaBZ938HOWD6-v3XTtypfA_7ZdoizBh'                     // ここを置き換え
+const supabase = supabase.createClient(supabaseUrl, supabaseKey)
+
+// OpenSeadragonでタイル表示
+var viewer = OpenSeadragon({
+    id: "viewer",
+    prefixUrl: "https://openseadragon.github.io/openseadragon/images/",
+    tileSources: {
+        type: 'image',
+        url: 'https://scesselsc.github.io/2434map3/2434map_new_files/13/0_0.jpg', // 最初のタイル
+        buildPyramid: false
+    }
+});
+
+// Canvasレイヤー
+var canvas = document.getElementById('overlay');
+canvas.width = 800;
+canvas.height = 600;
+var ctx = canvas.getContext('2d');
+
+var annotations = []
+
+// クリックで点を描画
+viewer.addHandler('canvas-click', function(event){
+    var webPoint = event.position;
+    var viewportPoint = viewer.viewport.pointFromPixel(webPoint);
+    var imagePoint = viewer.viewport.viewportToImageCoordinates(viewportPoint);
+    var x = imagePoint.x / viewer.world.getItemAt(0).getContentSize().x;
+    var y = imagePoint.y / viewer.world.getItemAt(0).getContentSize().y;
+
+    ctx.fillStyle = 'red';
+    ctx.beginPath();
+    ctx.arc(webPoint.x, webPoint.y, 5, 0, Math.PI*2);
+    ctx.fill();
+
+    annotations.push({x:x, y:y, type:'dot', color:'red'});
+});
+
+// 保存関数
+async function saveAnnotations(){
+    const { data, error } = await supabase
+        .from('annotations')
+        .insert([{data: annotations}]);
+    if(error) alert('保存エラー:'+error.message);
+    else alert('保存完了!');
+}
+</script>
+</body>
+</html>
