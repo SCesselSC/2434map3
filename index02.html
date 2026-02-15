@@ -407,7 +407,7 @@ function attachZoomHandler(viewer){
     viewer.addHandler('zoom', function(){
         const zoom = viewer.viewport.getZoom();		// 現在の倍率
         const minZoom = viewer.viewport.getMinZoom();
-        const scale = zoom / minZoom;			/ 最小倍率を基準にスケーリング
+        const scale = zoom / minZoom;			// 最小倍率を基準にスケーリング
 
         viewer.container.querySelectorAll('.map-marker').forEach(el => {
             el.style.transform = `scale(${scale})`;
