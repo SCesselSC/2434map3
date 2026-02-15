@@ -344,13 +344,16 @@ function addMarker(viewer, imageX, imageY, text, icon, spriteX, spriteY){
            background-image:url(${icon});
            background-position:-${cellSize*(spriteX-1)}px -${cellSize*(spriteY-1)}px;
            background-size:176px 176px;
+	   margin:0;
          ">
     </div>
-    <br>${text}`;
+    <div style="margin:0; line-height:1; font-size:6px;">${text}</div>`;
 
+  // OpenSeadragon でズームに追従させる
   viewer.addOverlay({
     element: el,
-    location: viewportPoint
+     location: viewer.viewport.imageToViewportCoordinates(imageX, imageY),
+    placement: "CENTER"  // 中心に合わせる
   });
 }
 
