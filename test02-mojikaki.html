@@ -6,7 +6,7 @@
 <script src="https://openseadragon.github.io/openseadragon/openseadragon.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-  .osd_disp { width: 7166px; height: 7166px; position: relative; border:1px solid #ccc; margin-bottom:10px; }
+  .osd_disp { width: 1500px; height: 1000px; position: relative; border:1px solid #ccc; margin-bottom:10px; }
   canvas { position: absolute; top:0; left:0; pointer-events: auto; }
 </style>
 </head>
@@ -38,8 +38,8 @@ const viewer = OpenSeadragon({
 
 // ----------------- Canvasレイヤー -----------------
 const overlay = document.getElementById('overlay_main');
-overlay.width = 7166;
-overlay.height = 7166;
+overlay.width = 1500;
+overlay.height = 1000;
 overlay.style.left = viewer.container.offsetLeft + 'px';
 overlay.style.top  = viewer.container.offsetTop + 'px';
 const ctx = overlay.getContext('2d');
