@@ -81,7 +81,7 @@
 
 .map-marker{
  /* transform: translate(-50%, -100%);	一旦削除 */
-  transform-origin: center bottom; /* アイコンの中心を基準に拡大 */
+  transform-origin: center center; /* アイコンの中心を基準に拡大 */
   /* transform: scale(0.3);          /* 初期倍率に応じて小さくする */
   transition: transform 0.2s;
 
@@ -406,7 +406,7 @@ function loadMarkers(viewer, csvFile){
 function attachZoomHandler(viewer, zoomFactor){//各地図の倍率のための設定
     function updateScale(){
         const zoom = viewer.viewport.getZoom(true);	// 現在の倍率
-        const scale = zoom / zoomFactor;		// 最小倍率を基準にスケーリング
+        const scale = zoom * zoomFactor;		// 最小倍率を基準にスケーリング
 
 
         viewer.container.querySelectorAll('.map-marker').forEach(el => {
