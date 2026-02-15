@@ -80,10 +80,13 @@
 }
 
 .map-marker{
-  transform: translate(-50%, -100%);
+ /* transform: translate(-50%, -100%);	一旦削除 */
   text-align: center;
+  font-size: 6px; /* 文字サイズを調整 */
 }
-
+.map-marker img {
+    width: 24px; /* アイコンの大きさ */
+}
 .marker-icon{
   width: 32px;
 }
@@ -157,14 +160,14 @@
 	<div id="contentDiv_main" class="osd_disp"></div>
 	<script type="text/javascript">
 
-		var viewer_main = OpenSeadragon({
+		var viewer_2434map_main = OpenSeadragon({
 			showNavigator: true,
 			id:              "contentDiv_main",
 			prefixUrl:       "2434map_files/",
 			tileSources:     "2434map.xml"
 		});
-		viewer_main.addHandler('open', function(){
-		   loadMarkers(viewer_main, "2434map_marker.csv");
+		viewer_2434map_main.addHandler('open', function(){
+		   loadMarkers(viewer_2434map_main, "2434map_marker.csv");
 		});
 	</script>
 </div>
@@ -177,14 +180,14 @@
 <div id="all_tab01" class="cp_tabpanel">
 	<div id="contentDiv_all" class="osd_disp"></div>
 	<script type="text/javascript">
-		var viewer_main = OpenSeadragon({
+		var viewer_2434map_all = OpenSeadragon({
 			showNavigator: true,
 			id:              "contentDiv_all",
 			prefixUrl:       "2434map_all_files/",
 			tileSources:     "2434map_all.xml"
 		});
-		viewer_main.addHandler('open', function(){
-		   loadMarkers(viewer_main, "2434map_all_marker.csv");
+		viewer_2434map_all.addHandler('open', function(){
+		   loadMarkers(viewer_2434map_all, "2434map_all_marker.csv");
 		});
 	</script>
 </div>
@@ -221,14 +224,14 @@
 <div id="nether_tab01" class="cp_tabpanel">
 	<div id="contentDiv_nether" class="osd_disp"></div>
 	<script type="text/javascript">
-		var viewer_main = OpenSeadragon({
+		var viewer_2434map_nether = OpenSeadragon({
 			showNavigator: true,
 			id:              "contentDiv_nether",
 			prefixUrl:       "2434map_nether_files/",
 			tileSources:     "2434map_nether.xml"
 		});
-		viewer_main.addHandler('open', function(){
-		   loadMarkers(viewer_main, "2434map_nether_marker.csv");
+		viewer_2434map_nether.addHandler('open', function(){
+		   loadMarkers(viewer_2434map_nether, "2434map_nether_marker.csv");
 		});
 	</script>
 </div>
@@ -245,14 +248,14 @@
 <div id="newworld_tab01" class="cp_tabpanel">
 	<div id="contentDiv_new" class="osd_disp"></div>
 	<script type="text/javascript">
-		var viewer_main = OpenSeadragon({
+		var viewer_2434map_new = OpenSeadragon({
 			showNavigator: true,
 			id:              "contentDiv_new",
 			prefixUrl:       "2434map_new_files/",
 			tileSources:     "2434map_new.xml"
 		});
-		viewer_main.addHandler('open', function(){
-		   loadMarkers(viewer_main, "2434map_new_marker.csv");
+		viewer_2434map_new.addHandler('open', function(){
+		   loadMarkers(viewer_2434map_new, "2434map_new_marker.csv");
 		});
 	</script>
 </div>
@@ -264,14 +267,14 @@
 <div id="newworld_all_tab01" class="cp_tabpanel">
 	<div id="contentDiv_new_all" class="osd_disp"></div>
 	<script type="text/javascript">
-		var viewer_main = OpenSeadragon({
+		var viewer_2434map_new_all = OpenSeadragon({
 			showNavigator: true,
 			id:              "contentDiv_new_all",
 			prefixUrl:       "2434map_new_all_files/",
 			tileSources:     "2434map_new_all.xml"
 		});
-		viewer_main.addHandler('open', function(){
-		   loadMarkers(viewer_main, "2434map_new_all_marker.csv");
+		viewer_2434map_new_all.addHandler('open', function(){
+		   loadMarkers(viewer_2434map_new_all, "2434map_new_all_marker.csv");
 		});
 	</script>
 </div>
@@ -283,14 +286,14 @@
 <div id="newworld_nether_tab01" class="cp_tabpanel">
 	<div id="contentDiv_new_nether" class="osd_disp"></div>
 	<script type="text/javascript">
-		var viewer_main = OpenSeadragon({
+		var viewer_2434map_new_nether = OpenSeadragon({
 			showNavigator: true,
 			id:              "contentDiv_new_nether",
 			prefixUrl:       "2434map_new_nether_files/",
 			tileSources:     "2434map_new_nether.xml"
 		});
-		viewer_main.addHandler('open', function(){
-		   loadMarkers(viewer_main, "2434map_new_nether_marker.csv");
+		viewer_2434map_new_nether.addHandler('open', function(){
+		   loadMarkers(viewer_2434map_new_nether, "2434map_new_nether_marker.csv");
 		});
 	</script>
 </div>
@@ -307,14 +310,14 @@
 <div id="ark_tab01" class="cp_tabpanel">
 	<div id="contentDiv_ark" class="osd_disp"></div>
 	<script type="text/javascript">
-		var viewer_main = OpenSeadragon({
+		var viewer_omatsuri2023 = OpenSeadragon({
 			showNavigator: true,
 			id:              "contentDiv_omatsuri2023",
 			prefixUrl:       "omatsuri2023_files/",
 			tileSources:     "omatsuri2023.xml"
 		});
-		viewer_main.addHandler('open', function(){
-		   loadMarkers(viewer_main, "omatsuri2023_marker.csv");
+		viewer_omatsuri2023.addHandler('open', function(){
+		   loadMarkers(viewer_omatsuri2023, "omatsuri2023_marker.csv");
 		});
 	</script>
 </div>
@@ -322,7 +325,7 @@
 
 <script>
 // マーカー設置追加関数
-function addMarker(viewer, imageX, imageY, text, icon){
+function addMarker(viewer, imageX, imageY, text, icon, spriteX, spriteY){
 
   const viewportPoint =
     viewer.viewport.imageToViewportCoordinates(imageX, imageY);
@@ -330,8 +333,20 @@ function addMarker(viewer, imageX, imageY, text, icon){
   const el = document.createElement("div");
   el.className = "map-marker";
 
-  el.innerHTML =
-    `<img src="${icon}" width="24"><br>${text}`;
+  // 1セルのサイズ
+  const cellSize = 11; // 176/16
+
+  el.innerHTML = `
+    <div class="marker-icon-sprite"
+         style="
+           width:${cellSize}px;
+           height:${cellSize}px;
+           background-image:url(${icon});
+           background-position:-${cellSize*(spriteX-1)}px -${cellSize*(spriteY-1)}px;
+           background-size:176px 176px;
+         ">
+    </div>
+    <br>${text}`;
 
   viewer.addOverlay({
     element: el,
@@ -349,13 +364,15 @@ function loadMarkers(viewer, csvFile){
       const rows = text.split("\n").slice(1);
 
       rows.forEach(row => {
-        const [x,z,icon,label] = row.split(",");
+        const [x,z,label,icon,spriteX,spriteY] = row.split(",");
 
         addMarker(viewer,
           parseFloat(x),
           parseFloat(z),// Zを画像Y座標として扱う
           label,
           icon
+          parseInt(spriteX),
+          parseInt(spriteY)
         );
       });
     });
