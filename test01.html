@@ -14,12 +14,13 @@
   <h2>DeepZoomタイル編集サンプル</h2>
   <div id="viewer"></div>
   <canvas id="overlay"></canvas>
-  <button onclick="saveAnnotations()">保存</button>
+  <button id="saveBtn">保存</button>
 
 <script>
 const supabaseUrl = 'https://sbwfgkzmruesocvzvkur.supabase.co'  // ここを置き換え
 const supabaseKey = 'sb_publishable_aaBZ938HOWD6-v3XTtypfA_7ZdoizBh'                     // ここを置き換え
-const supabase = supabase.createClient(supabaseUrl, supabaseKey)
+const { createClient } = supabase
+const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey)
 
 // 描画データ
 let annotations = [];
@@ -44,7 +45,7 @@ var viewer = OpenSeadragon({
         { type: 'image', url: './2434map_new_files/10/3_0.jpg', x:0, y:0.25, width:0.25, height:0.25 },
         { type: 'image', url: './2434map_new_files/10/3_1.jpg', x:0.25, y:0, width:0.25, height:0.25 },
         { type: 'image', url: './2434map_new_files/10/3_2.jpg', x:0.5, y:0, width:0.25, height:0.25 },
-        { type: 'image', url: './2434map_new_files/10/3_3.jpg', x:0.75, y:0, width:0.25, height:0.25 },
+        { type: 'image', url: './2434map_new_files/10/3_3.jpg', x:0.75, y:0, width:0.25, height:0.25 }
         // 以下 1_1〜3_3 も同様に
     ]
 });
@@ -77,27 +78,25 @@ function drawAnnotations(){
 
 // 保存関数		//async function saveAnnotations(){
 document.getElementById('saveBtn').addEventListener('click', async ()=>{
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
         .from('test01')
         .insert([{data: annotations}]);			// Dataカラムに保存
     if(error) alert('保存エラー:'+error.message);
     else alert('保存完了!');
-}
+});
 
 //前回の編集を引き継ぎ ページロード時に loadAnnotations() を呼び出す
 async function loadAnnotations() {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
         .from('test01')
         .select('data');
     if(data) {
         data.forEach(item => {
-            item.Data.forEach(dot => {
-                ctx.fillStyle = dot.color;
-                ctx.beginPath();
-                ctx.arc(dot.x * canvas.width, dot.y * canvas.height, 5, 0, 2*Math.PI);
-                ctx.fill();
-            });
+            if(row.data){
+        	annotations.push(...row.data);
+      	    }
         });
+	drawAnnotations();
     }
 }
 
