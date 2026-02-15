@@ -416,7 +416,7 @@ function attachZoomHandler(viewer, zoomFactor){//各地図の倍率のための�
         const scale = zoom * zoomFactor;		// 最小倍率を基準にスケーリング
 
 
-        viewer.container.querySelectorAll('.map-marker').forEach(el => {
+        viewer.canvas.querySelectorAll('.map-marker').forEach(el => {
             el.style.transform = `scale(${scale})`;
         });
     }
