@@ -445,6 +445,30 @@ function attachZoomHandler(viewer, zoomFactor){//各地図の倍率のための�
     updateScale();
 }
 
+// 正しい初期ズーム
+document.querySelectorAll('input[name="cp_tab"]').forEach(tab => {
+  tab.addEventListener('change', function(){
+
+    setTimeout(() => {
+
+      [
+        viewer_2434map_main,
+        viewer_2434map_all,
+        viewer_2434map_nether,
+        viewer_2434map_new,
+        viewer_2434map_new_all,
+        viewer_2434map_new_nether,
+        viewer_omatsuri2023
+      ].forEach(v => {
+        if (!v) return;
+        v.forceResize();        // サイズ再取得
+        v.viewport.goHome(true); // 正しい初期ズームへ
+      });
+
+    }, 30);
+
+  });
+});
 
 
 
