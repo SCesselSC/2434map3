@@ -367,7 +367,7 @@ function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spr
   // 文字がある場合のみ表示
   let labelHTML = "";
   if(label && label.trim() !== ""){
-	if(coordFlag && coordFlag.toLowerCase() === "yes"){
+	if(zahyouFlag && (zahyouFlag.trim() === "はい" ||zahyouFlag.toLowerCase() === "yes"||zahyouFlag.toLowerCase() === "on")){
 
     labelHTML = `
       <div style="line-height:1.2; font-size:6px;">
@@ -405,7 +405,7 @@ function loadMarkers(viewer, csvFile){
     .then(res => res.text())
     .then(text => {
 
-      const rows = text.split("\n").slice(1);
+      const rows = text.replace(/\r/g, "").split("\n").slice(1);
 
       rows.forEach(row => {
         //if(cols.length < 6) return; // 列が足りなければスキップ
