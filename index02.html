@@ -405,14 +405,13 @@ function loadMarkers(viewer, csvFile){
     .then(res => res.text())
     .then(text => {
 
-      const rows = text.replace(/\r/g, "").split("\n").slice(1);
+      const rows = text.split("\n").slice(1);
 
       rows.forEach(row => {
-	// 文字列中のカンマや改行を正しく扱う
-	const cols = row.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-  	if(!cols || cols.length < 8) return;// 列が足りなければスキップ
+	// 文字列中のカンマや改行を正しく扱う(現在無効)
+  	//if(!cols || cols.length < 8) return;// 列が足りなければスキップ
 
-        const [x,z,label,zahyouFlag,icon,spriteX,spriteY,iconSize] = cols.map(c => c.replace(/(^"|"$)/g, ""));	//row.split(",");
+        const [x,z,label,zahyouFlag,icon,spriteX,spriteY,iconSize] = row.split(",");
 
 	// 数値化と空文字チェック
         const xi = parseFloat(x);
