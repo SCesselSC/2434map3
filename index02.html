@@ -410,6 +410,14 @@ function loadMarkers(viewer, csvFile){
 
         addMarker(viewer, xi, zi, label, icon, sX, sY, size);
       });
+
+      // ★ マーカー追加後に1フレーム待ってから正しいscale適用
+      requestAnimationFrame(() => {
+        if (viewer.updateMarkerScale) {
+          viewer.updateMarkerScale();
+        }
+      });
+
     });
 }
 
@@ -424,6 +432,9 @@ function attachZoomHandler(viewer, zoomFactor){//各地図の倍率のための�
             el.style.transform = `${initial} scale(${scale})`;
         });
     }
+
+    // viewerに関数を持たせておく
+    viewer.updateMarkerScale = updateScale;
 
     // 初期化＆ズーム時に呼び出す
     viewer.addHandler('viewport-change', updateScale);
