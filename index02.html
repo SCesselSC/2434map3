@@ -554,9 +554,9 @@ function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spr
 	if(zahyouFlag && (zahyouFlag.trim() === "はい" ||zahyouFlag.toLowerCase() === "yes"||zahyouFlag.toLowerCase() === "on")){
 
     labelHTML = `
-      <div style="line-height:1.2; font-size:${markerStyle.fontSize};font-weight:${markerStyle.fontWeight};">
+      <div style="line-height:1.2; font-size:${markerStyle.fontSize};">
         ${label}<br>
-        <span style="font-size:8px; opacity:0.7;font-weight:${markerStyle.fontWeight};">
+        <span style="font-size:8px; opacity:0.7;">
           (${csvX}/${csvZ})
         </span>
       </div>
