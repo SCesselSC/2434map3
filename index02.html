@@ -202,10 +202,10 @@ function csvToImageCoordinates(mapId, csvX, csvZ){
     color: white;                     /* 文字色を白に */
     font-weight: bold;                 /* 太字 */
     -webkit-text-stroke: 1px black;   /* 黒の縁取り（Chrome/Safari対応） */
-    text-shadow: 1px 1px 0 black,      /* 縁取りの補助（Edge/Firefoxなど対応） */
-                 -1px 1px 0 black,
-                 1px -1px 0 black,
-                 -1px -1px 0 black;
+    text-shadow: 0.5px 0.5px 0 black,      /* 縁取りの補助（Edge/Firefoxなど対応） */
+                 -0.5px 0.5px 0 black,
+                 0.5px -0.5px 0 black,
+                 -0.5px -0.5px 0 black;
 }
 
 /* 座標用の小さい文字も同様に白文字＋黒縁取り */
