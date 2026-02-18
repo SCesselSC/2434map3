@@ -11,6 +11,20 @@
 	<title>2434map</title>
 
 <script>
+// -地図ごとの設定 画像最大サイズ  座標  	x左端      	x右端   	z上端      	z下端  
+const mapConfigs = {
+    main:        { width:  9067, height:  6400, minX: -896-64,	maxX: 1152+64,	minZ: -448,	maxZ: 1088  },
+    all:         { width: 18892, height: 15247, minX: -40960,	maxX: 10112,	minZ: -30720,	maxZ: 10112 },
+    nether:      { width: 11086, height:  8905, minX: -4224,	maxX: 1024,	minZ: -3328,	maxZ: 1280 },
+
+    new:         { width:  7166, height:  7166, minX: -640-64,	maxX: 896+64,	minZ: -640-64,	maxZ: 896+64 },
+    new_all:     { width:  9452, height:  9450, minX: -10240,	maxX: 10112,	minZ: -10240,	maxZ: 10112},
+    new_nether:  { width:  9734, height:  9653, minX: -3968-128,maxX: 896+128,	minZ: -2432-128,maxZ: 2432+128 },
+
+    omatsuri2023:{ width:  9452, height:  9450, minX: -10240,	maxX: 10112,	minZ: -10240,	maxZ: 10112 }
+};
+
+
 //addHandler関数
 function attachZoomHandler(viewer, zoomFactor){//各地図の倍率のための設定
     
@@ -62,7 +76,10 @@ function loadMarkers(viewer, csvFile){
 	const size = parseFloat(iconSize) || 0;
 	if(isNaN(xi) || isNaN(zi)) return;
 
-        addMarker(viewer, xi, zi, label,zahyouFlag, icon, sX, sY, size);
+        // CSV座標 → 画像座標に変換
+        const coords = csvToImageCoordinates(viewer.mapId, xi, zi);
+
+        addMarker(viewer, coords.x, coords.y, label,zahyouFlag, icon, sX, sY, size);
       });
 
       // ★ マーカー追加後に1フレーム待ってから正しいscale適用
@@ -74,6 +91,16 @@ function loadMarkers(viewer, csvFile){
 
     });
 }//loadMarkers end
+
+// --- CSV座標 → 画像座標変換 ---
+function csvToImageCoordinates(mapId, csvX, csvZ){
+    const cfg = mapConfigs[mapId];
+    if(!cfg) return { x: csvX, y: csvZ };
+    const px = Math.floor((csvX - cfg.minX) / (cfg.maxX - cfg.minX) * cfg.width);
+    const py = Math.floor((csvZ - cfg.minZ) / (cfg.maxZ - cfg.minZ) * cfg.height);
+    return { x: imgX, y: imgY };
+}
+
 
 </script>
 
@@ -235,6 +262,10 @@ function loadMarkers(viewer, csvFile){
 			prefixUrl:       "2434map_files/",
 			tileSources:     "2434map.xml"
 		});
+
+		// viewer に mapId を追加
+		viewer_2434map_main.mapId = "main";
+
 		// 通常地図タブに乗せるアイコンの倍率をセット 拡大倍率 値が大きいほど、拡大スピードが速い
 		viewer_2434map_main.zoomFactor = 0.4;
 	
@@ -263,6 +294,10 @@ function loadMarkers(viewer, csvFile){
 			prefixUrl:       "2434map_all_files/",
 			tileSources:     "2434map_all.xml"
 		});
+
+		// viewer に mapId を追加
+		viewer_2434map_all.mapId = "all";
+
 		// 全体地図タブに乗せるアイコンの倍率をセット 拡大倍率 値が大きいほど、拡大スピードが速い
 		viewer_2434map_all.zoomFactor = 0.2;
 	
@@ -314,6 +349,10 @@ function loadMarkers(viewer, csvFile){
 			prefixUrl:       "2434map_nether_files/",
 			tileSources:     "2434map_nether.xml"
 		});
+
+		// viewer に mapId を追加
+		viewer_2434map_nether.mapId = "nether";
+
 		// ネザー地図タブに乗せるアイコンの倍率をセット 拡大倍率 値が大きいほど、拡大スピードが速い
 		viewer_2434map_nether.zoomFactor = 0.6;
 	
@@ -345,6 +384,10 @@ function loadMarkers(viewer, csvFile){
 			prefixUrl:       "2434map_new_files/",
 			tileSources:     "2434map_new.xml"
 		});
+
+		// viewer に mapId を追加
+		viewer_2434map_new.mapId = "new";
+
 		// 新鯖通常地図タブに乗せるアイコンの倍率をセット 拡大倍率 値が大きいほど、拡大スピードが速い
 		viewer_2434map_new.zoomFactor = 0.4;
 	
@@ -371,6 +414,10 @@ function loadMarkers(viewer, csvFile){
 			prefixUrl:       "2434map_new_all_files/",
 			tileSources:     "2434map_new_all.xml"
 		});
+
+		// viewer に mapId を追加
+		viewer_2434map_new_all.mapId = "new_all";
+
 		// 新鯖全体地図タブに乗せるアイコンの倍率をセット 拡大倍率 値が大きいほど、拡大スピードが速い
 		viewer_2434map_new_all.zoomFactor = 0.2;
 	
@@ -397,6 +444,10 @@ function loadMarkers(viewer, csvFile){
 			prefixUrl:       "2434map_new_nether_files/",
 			tileSources:     "2434map_new_nether.xml"
 		});
+
+		// viewer に mapId を追加
+		viewer_2434map_new_nether.mapId = "new_nether";
+
 		// 新鯖ネザー地図タブに乗せるアイコンの倍率をセット 拡大倍率 値が大きいほど、拡大スピードが速い
 		viewer_2434map_new_nether.zoomFactor = 0.6;
 	
@@ -452,7 +503,7 @@ function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spr
 // 文字サイズ設定
   const markerStyle = {
     scale: 1.2,             // 表示倍率
-    fontSize: "14px",       // 文字サイズ
+    fontSize: "10px",       // 文字サイズ
     fontWeight: "bold",     // 太字
     iconSize: iconSize || 24 // アイコンサイズ（デフォルト24px）
   };
@@ -481,7 +532,7 @@ function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spr
     labelHTML = `
       <div style="line-height:1.2; font-size:${markerStyle.fontSize};font-weight:${markerStyle.fontWeight};">
         ${label}<br>
-        <span style="font-size:5px; opacity:0.7;">
+        <span style="font-size:8px; opacity:0.7;font-weight:${markerStyle.fontWeight};">
           ${imageX} ${imageY}
         </span>
       </div>
