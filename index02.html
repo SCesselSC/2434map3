@@ -79,7 +79,7 @@ function loadMarkers(viewer, csvFile){
         // CSV座標 → 画像座標に変換
         const coords = csvToImageCoordinates(viewer.mapId, xi, zi);
 
-        addMarker(viewer, coords.x, coords.y, label,zahyouFlag, icon, sX, sY, size);
+        addMarker(viewer, coords.x, coords.y, label,zahyouFlag, icon, sX, sY, size, xi, zi);
       });
 
       // ★ マーカー追加後に1フレーム待ってから正しいscale適用
@@ -197,6 +197,29 @@ function csvToImageCoordinates(mapId, csvX, csvZ){
   margin-top: 2px;
   white-space: nowrap;
 }
+/* マーカーラベルの文字を白にして黒の縁取り */
+.map-marker div {
+    color: white;                     /* 文字色を白に */
+    font-weight: bold;                 /* 太字 */
+    -webkit-text-stroke: 1px black;   /* 黒の縁取り（Chrome/Safari対応） */
+    text-shadow: 1px 1px 0 black,      /* 縁取りの補助（Edge/Firefoxなど対応） */
+                 -1px 1px 0 black,
+                 1px -1px 0 black,
+                 -1px -1px 0 black;
+}
+
+/* 座標用の小さい文字も同様に白文字＋黒縁取り */
+.map-marker span {
+    color: white;
+    font-weight: bold;
+    -webkit-text-stroke: 0.5px black;
+    text-shadow: 0.5px 0.5px 0 black,
+                 -0.5px 0.5px 0 black,
+                 0.5px -0.5px 0 black,
+                 -0.5px -0.5px 0 black;
+    opacity: 0.7; /* 既存の半透明効果を保持 */
+}
+
 
 </style>
 </head>
@@ -488,17 +511,17 @@ function csvToImageCoordinates(mapId, csvX, csvZ){
 
 <script>
 // マーカー設置追加関数
-function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spriteY, iconSize){
+function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spriteY, iconSize, csvX, csvZ){
 
   const viewportPoint =  viewer.viewport.imageToViewportCoordinates(imageX, imageY);
 
   const el = document.createElement("div");
   el.className = "map-marker";
 
-  // 1セルのサイズ
-  const imageSize = 176;     // 元画像サイズ
+  // 元画像スプライト情報
+  const imageSize = 176;     // 元画像全体サイズ
   const gridCount = 4;       // 4×4分割
-  const cellSize = imageSize / gridCount;
+  const cellSize = imageSize / gridCount;// 1セルのサイズ(44px)
 
 // 文字サイズ設定
   const markerStyle = {
@@ -519,6 +542,7 @@ function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spr
            background-image:url(${icon});
            background-position:-${cellSize*(spriteX-1)}px -${cellSize*(spriteY-1)}px;
            background-size:${imageSize}px ${imageSize}px;
+	   background-repeat:no-repeat;
 	   margin:0;
          ">
     </div>`;
@@ -533,7 +557,7 @@ function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spr
       <div style="line-height:1.2; font-size:${markerStyle.fontSize};font-weight:${markerStyle.fontWeight};">
         ${label}<br>
         <span style="font-size:8px; opacity:0.7;font-weight:${markerStyle.fontWeight};">
-          ${imageX} ${imageY}
+          (${csvX}/${csvZ})
         </span>
       </div>
     `;
@@ -557,12 +581,12 @@ function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spr
 // ★ scale は open 後に計算する
   viewer.addHandler('open', function(){
 
-// ★ ここで直接スケール適用
-if (viewer.updateMarkerScale) {
-  setTimeout(() => {
-    viewer.updateMarkerScale();
-  }, 0);
-}
+   // ★ ここで直接スケール適用
+   if (viewer.updateMarkerScale) {
+     setTimeout(() => {
+       viewer.updateMarkerScale();
+     }, 0);
+   }
 
  // ★ 初期 scale をタブごとに設定
     const zoom = viewer.viewport.getZoom(true);
