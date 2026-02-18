@@ -21,7 +21,7 @@ function attachZoomHandler(viewer, zoomFactor){//各地図の倍率のための�
 
         viewer.element.querySelectorAll('.map-marker').forEach(el => {
             const initial = el.dataset.initialTransform || "";
-            el.style.transform = `${initial} scale(${scale})`;
+            el.style.transform = `${initial} scale(${scale / (parseFloat(initial.match(/scale\((.+)\)/)[1] || 1))})`;
         });
     }
 
@@ -447,6 +447,14 @@ function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spr
   const gridCount = 4;       // 4×4分割
   const cellSize = imageSize / gridCount;
 
+// 文字サイズ設定
+  const markerStyle = {
+    scale: 1.2,             // 表示倍率
+    fontSize: "14px",       // 文字サイズ
+    fontWeight: "bold",     // 太字
+    iconSize: iconSize || 24 // アイコンサイズ（デフォルト24px）
+  };
+
   // アイコン画像がある場合のみ表示
   let iconHTML = "";
   if(icon && iconSize > 0){
@@ -469,7 +477,7 @@ function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spr
 	if(zahyouFlag && (zahyouFlag.trim() === "はい" ||zahyouFlag.toLowerCase() === "yes"||zahyouFlag.toLowerCase() === "on")){
 
     labelHTML = `
-      <div style="line-height:1.2; font-size:6px;">
+      <div style="line-height:1.2; font-size:${markerStyle.fontSize};font-weight:${markerStyle.fontWeight};">
         ${label}<br>
         <span style="font-size:5px; opacity:0.7;">
           ${imageX} ${imageY}
@@ -478,7 +486,7 @@ function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spr
     `;
 
   } else {
-    labelHTML = `<div style="margin:0; line-height:1; font-size:6px;">${label}</div>`;
+    labelHTML = `<div style="margin:0; line-height:1; font-size:${markerStyle.fontSize};font-weight:${markerStyle.fontWeight};">${label}</div>`;
   }
 }
   // HTMLにまとめる
@@ -491,6 +499,10 @@ function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spr
      location: viewer.viewport.imageToViewportCoordinates(imageX, imageY),
     placement: "CENTER"  // 中心に合わせる
   });
+
+
+// ★ scale は open 後に計算する
+  viewer.addHandler('open', function(){
 
 // ★ ここで直接スケール適用
 if (viewer.updateMarkerScale) {
@@ -508,7 +520,7 @@ if (viewer.updateMarkerScale) {
 // 初期 transform を保持しておく
   const initialTransform = el.style.transform;
   el.dataset.initialTransform = initialTransform;
-
+ });
 
 }//addMarker end
 
