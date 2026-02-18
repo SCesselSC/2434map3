@@ -156,175 +156,6 @@
 <div class="cp_tabpanels">
 
 
-<script>
-// マーカー設置追加関数
-function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spriteY, iconSize){
-
-  const viewportPoint =  viewer.viewport.imageToViewportCoordinates(imageX, imageY);
-
-  const el = document.createElement("div");
-  el.className = "map-marker";
-
-  // 1セルのサイズ
-  const imageSize = 176;     // 元画像サイズ
-  const gridCount = 4;       // 4×4分割
-  const cellSize = imageSize / gridCount;
-
-  // アイコン画像がある場合のみ表示
-  let iconHTML = "";
-  if(icon && iconSize > 0){
-    iconHTML = `
-    <div class="marker-icon-sprite"
-         style="
-           width:${iconSize}px;
-           height:${iconSize}px;
-           background-image:url(${icon});
-           background-position:-${cellSize*(spriteX-1)}px -${cellSize*(spriteY-1)}px;
-           background-size:${imageSize}px ${imageSize}px;
-	   margin:0;
-         ">
-    </div>`;
-  }
-
-  // 文字がある場合のみ表示
-  let labelHTML = "";
-  if(label && label.trim() !== ""){
-	if(zahyouFlag && (zahyouFlag.trim() === "はい" ||zahyouFlag.toLowerCase() === "yes"||zahyouFlag.toLowerCase() === "on")){
-
-    labelHTML = `
-      <div style="line-height:1.2; font-size:6px;">
-        ${label}<br>
-        <span style="font-size:5px; opacity:0.7;">
-          ${imageX} ${imageY}
-        </span>
-      </div>
-    `;
-
-  } else {
-    labelHTML = `<div style="margin:0; line-height:1; font-size:6px;">${label}</div>`;
-  }
-}
-  // HTMLにまとめる
-  el.innerHTML = iconHTML + labelHTML;
-
-
-  // OpenSeadragon でズームに追従させる
-  viewer.addOverlay({
-    element: el,
-     location: viewer.viewport.imageToViewportCoordinates(imageX, imageY),
-    placement: "CENTER"  // 中心に合わせる
-  });
-
-// ★ ここで直接スケール適用
-if (viewer.updateMarkerScale) {
-  setTimeout(() => {
-    viewer.updateMarkerScale();
-  }, 0);
-}
-
- // ★ 初期 scale をタブごとに設定
-    const zoom = viewer.viewport.getZoom(true);
-    const scale = zoom * (viewer.zoomFactor || 0.4); // viewer.zoomFactor があれば使う 安全のためのデフォルト値0.4(目安)
-    el.style.transform = `scale(${scale})`;
-
-
-// 初期 transform を保持しておく
-  const initialTransform = el.style.transform;
-  el.dataset.initialTransform = initialTransform;
-
-
-}//addMarker end
-
-// ▼ CSV読み込み
-function loadMarkers(viewer, csvFile){
-
-  fetch(csvFile)
-    .then(res => res.text())
-    .then(text => {
-
-      const rows = text.split("\n").slice(1);
-
-      rows.forEach(row => {
-	// 文字列中のカンマや改行を正しく扱う(現在無効)
-  	//if(!cols || cols.length < 8) return;// 列が足りなければスキップ
-
-        const [x,z,label,zahyouFlag,icon,spriteX,spriteY,iconSize] = row.split(",");
-
-	// 数値化と空文字チェック
-        const xi = parseFloat(x);
-        const zi = parseFloat(z);		// Zを画像Y座標として扱う
-        const sX = parseInt(spriteX) || 1;
-        const sY = parseInt(spriteY) || 1;
-	const size = parseFloat(iconSize) || 0;
-	if(isNaN(xi) || isNaN(zi)) return;
-
-        addMarker(viewer, xi, zi, label,zahyouFlag, icon, sX, sY, size);
-      });
-
-      // ★ マーカー追加後に1フレーム待ってから正しいscale適用
-      requestAnimationFrame(() => {
-        if (viewer.updateMarkerScale) {
-          viewer.updateMarkerScale();
-        }
-      });
-
-    });
-}
-
-//addHandler関数
-function attachZoomHandler(viewer, zoomFactor){//各地図の倍率のための設定
-    
-    viewer.zoomFactor = zoomFactor;
-    function updateScale(){
-        const zoom = viewer.viewport.getZoom(true);	// 現在の倍率
-        const scale = zoom * viewer.zoomFactor;		// 最小倍率を基準にスケーリング
-
-        viewer.element.querySelectorAll('.map-marker').forEach(el => {
-            const initial = el.dataset.initialTransform || "";
-            el.style.transform = `${initial} scale(${scale})`;
-        });
-    }
-
-    // viewerに関数を持たせておく
-    viewer.updateMarkerScale = updateScale;
-
-    // 初期化＆ズーム時に呼び出す
-    viewer.addHandler('viewport-change', updateScale);
-    viewer.addHandler('open', updateScale);
-    viewer.addHandler('animation', updateScale); // ズームアニメーション対応
-
-    // 初期表示時も適用
-    updateScale();
-}
-
-// 正しい初期ズーム
-document.querySelectorAll('input[name="cp_tab"]').forEach(tab => {
-  tab.addEventListener('change', function(){
-
-    setTimeout(() => {
-
-      [
-        viewer_2434map_main,
-        viewer_2434map_all,
-        viewer_2434map_nether,
-        viewer_2434map_new,
-        viewer_2434map_new_all,
-        viewer_2434map_new_nether,
-        viewer_omatsuri2023
-      ].forEach(v => {
-        if (!v) return;
-        v.forceResize();        // サイズ再取得
-        v.viewport.goHome(true); // 正しい初期ズームへ
-      });
-
-    }, 30);
-
-  });
-});
-
-
-
-</script>
 
 
 <!--通常地図タブ-->
@@ -538,6 +369,175 @@ document.querySelectorAll('input[name="cp_tab"]').forEach(tab => {
 </div>
 
 
+<script>
+// マーカー設置追加関数
+function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spriteY, iconSize){
+
+  const viewportPoint =  viewer.viewport.imageToViewportCoordinates(imageX, imageY);
+
+  const el = document.createElement("div");
+  el.className = "map-marker";
+
+  // 1セルのサイズ
+  const imageSize = 176;     // 元画像サイズ
+  const gridCount = 4;       // 4×4分割
+  const cellSize = imageSize / gridCount;
+
+  // アイコン画像がある場合のみ表示
+  let iconHTML = "";
+  if(icon && iconSize > 0){
+    iconHTML = `
+    <div class="marker-icon-sprite"
+         style="
+           width:${iconSize}px;
+           height:${iconSize}px;
+           background-image:url(${icon});
+           background-position:-${cellSize*(spriteX-1)}px -${cellSize*(spriteY-1)}px;
+           background-size:${imageSize}px ${imageSize}px;
+	   margin:0;
+         ">
+    </div>`;
+  }
+
+  // 文字がある場合のみ表示
+  let labelHTML = "";
+  if(label && label.trim() !== ""){
+	if(zahyouFlag && (zahyouFlag.trim() === "はい" ||zahyouFlag.toLowerCase() === "yes"||zahyouFlag.toLowerCase() === "on")){
+
+    labelHTML = `
+      <div style="line-height:1.2; font-size:6px;">
+        ${label}<br>
+        <span style="font-size:5px; opacity:0.7;">
+          ${imageX} ${imageY}
+        </span>
+      </div>
+    `;
+
+  } else {
+    labelHTML = `<div style="margin:0; line-height:1; font-size:6px;">${label}</div>`;
+  }
+}
+  // HTMLにまとめる
+  el.innerHTML = iconHTML + labelHTML;
+
+
+  // OpenSeadragon でズームに追従させる
+  viewer.addOverlay({
+    element: el,
+     location: viewer.viewport.imageToViewportCoordinates(imageX, imageY),
+    placement: "CENTER"  // 中心に合わせる
+  });
+
+// ★ ここで直接スケール適用
+if (viewer.updateMarkerScale) {
+  setTimeout(() => {
+    viewer.updateMarkerScale();
+  }, 0);
+}
+
+ // ★ 初期 scale をタブごとに設定
+    const zoom = viewer.viewport.getZoom(true);
+    const scale = zoom * (viewer.zoomFactor || 0.4); // viewer.zoomFactor があれば使う 安全のためのデフォルト値0.4(目安)
+    el.style.transform = `scale(${scale})`;
+
+
+// 初期 transform を保持しておく
+  const initialTransform = el.style.transform;
+  el.dataset.initialTransform = initialTransform;
+
+
+}//addMarker end
+
+// ▼ CSV読み込み
+function loadMarkers(viewer, csvFile){
+
+  fetch(csvFile)
+    .then(res => res.text())
+    .then(text => {
+
+      const rows = text.split("\n").slice(1);
+
+      rows.forEach(row => {
+	// 文字列中のカンマや改行を正しく扱う(現在無効)
+  	//if(!cols || cols.length < 8) return;// 列が足りなければスキップ
+
+        const [x,z,label,zahyouFlag,icon,spriteX,spriteY,iconSize] = row.split(",");
+
+	// 数値化と空文字チェック
+        const xi = parseFloat(x);
+        const zi = parseFloat(z);		// Zを画像Y座標として扱う
+        const sX = parseInt(spriteX) || 1;
+        const sY = parseInt(spriteY) || 1;
+	const size = parseFloat(iconSize) || 0;
+	if(isNaN(xi) || isNaN(zi)) return;
+
+        addMarker(viewer, xi, zi, label,zahyouFlag, icon, sX, sY, size);
+      });
+
+      // ★ マーカー追加後に1フレーム待ってから正しいscale適用
+      requestAnimationFrame(() => {
+        if (viewer.updateMarkerScale) {
+          viewer.updateMarkerScale();
+        }
+      });
+
+    });
+}
+
+//addHandler関数
+function attachZoomHandler(viewer, zoomFactor){//各地図の倍率のための設定
+    
+    viewer.zoomFactor = zoomFactor;
+    function updateScale(){
+        const zoom = viewer.viewport.getZoom(true);	// 現在の倍率
+        const scale = zoom * viewer.zoomFactor;		// 最小倍率を基準にスケーリング
+
+        viewer.element.querySelectorAll('.map-marker').forEach(el => {
+            const initial = el.dataset.initialTransform || "";
+            el.style.transform = `${initial} scale(${scale})`;
+        });
+    }
+
+    // viewerに関数を持たせておく
+    viewer.updateMarkerScale = updateScale;
+
+    // 初期化＆ズーム時に呼び出す
+    viewer.addHandler('viewport-change', updateScale);
+    viewer.addHandler('open', updateScale);
+    viewer.addHandler('animation', updateScale); // ズームアニメーション対応
+
+    // 初期表示時も適用
+    updateScale();
+}
+
+// 正しい初期ズーム
+document.querySelectorAll('input[name="cp_tab"]').forEach(tab => {
+  tab.addEventListener('change', function(){
+
+    setTimeout(() => {
+
+      [
+        viewer_2434map_main,
+        viewer_2434map_all,
+        viewer_2434map_nether,
+        viewer_2434map_new,
+        viewer_2434map_new_all,
+        viewer_2434map_new_nether,
+        viewer_omatsuri2023
+      ].forEach(v => {
+        if (!v) return;
+        v.forceResize();        // サイズ再取得
+        v.viewport.goHome(true); // 正しい初期ズームへ
+      });
+
+    }, 30);
+
+  });
+});
+
+
+
+</script>
 
 
 
