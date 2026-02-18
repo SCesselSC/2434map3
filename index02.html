@@ -21,7 +21,9 @@ function attachZoomHandler(viewer, zoomFactor){//各地図の倍率のための�
 
         viewer.element.querySelectorAll('.map-marker').forEach(el => {
             const initial = el.dataset.initialTransform || "";
-            el.style.transform = `${initial} scale(${scale / (parseFloat(initial.match(/scale\((.+)\)/)[1] || 1))})`;
+	    const match = initial.match(/scale\((.+)\)/);
+	    const initialScale = match ? parseFloat(match[1]) : 1; // match がなければ 1 を使う
+            el.style.transform = `${initial} scale(${scale / initialScale})`;
         });
     }
 
