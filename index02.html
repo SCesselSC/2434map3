@@ -10,6 +10,33 @@
 	<script src="script/openseadragon.js"></script>
 	<title>2434map</title>
 
+<script>
+//addHandler関数
+function attachZoomHandler(viewer, zoomFactor){//各地図の倍率のための設定
+    
+    viewer.zoomFactor = zoomFactor;
+    function updateScale(){
+        const zoom = viewer.viewport.getZoom(true);	// 現在の倍率
+        const scale = zoom * viewer.zoomFactor;		// 最小倍率を基準にスケーリング
+
+        viewer.element.querySelectorAll('.map-marker').forEach(el => {
+            const initial = el.dataset.initialTransform || "";
+            el.style.transform = `${initial} scale(${scale})`;
+        });
+    }
+
+    // viewerに関数を持たせておく
+    viewer.updateMarkerScale = updateScale;
+
+    // 初期化＆ズーム時に呼び出す
+    viewer.addHandler('viewport-change', updateScale);
+    viewer.addHandler('open', updateScale);
+    viewer.addHandler('animation', updateScale); // ズームアニメーション対応
+
+    // 初期表示時も適用
+    updateScale();
+}//addHandler end
+</script>
 
 <style type="text/css">
 
@@ -484,31 +511,7 @@ function loadMarkers(viewer, csvFile){
     });
 }
 
-//addHandler関数
-function attachZoomHandler(viewer, zoomFactor){//各地図の倍率のための設定
-    
-    viewer.zoomFactor = zoomFactor;
-    function updateScale(){
-        const zoom = viewer.viewport.getZoom(true);	// 現在の倍率
-        const scale = zoom * viewer.zoomFactor;		// 最小倍率を基準にスケーリング
 
-        viewer.element.querySelectorAll('.map-marker').forEach(el => {
-            const initial = el.dataset.initialTransform || "";
-            el.style.transform = `${initial} scale(${scale})`;
-        });
-    }
-
-    // viewerに関数を持たせておく
-    viewer.updateMarkerScale = updateScale;
-
-    // 初期化＆ズーム時に呼び出す
-    viewer.addHandler('viewport-change', updateScale);
-    viewer.addHandler('open', updateScale);
-    viewer.addHandler('animation', updateScale); // ズームアニメーション対応
-
-    // 初期表示時も適用
-    updateScale();
-}
 
 // 正しい初期ズーム
 document.querySelectorAll('input[name="cp_tab"]').forEach(tab => {
