@@ -85,7 +85,7 @@ function loadMarkers(viewer, csvFile){
         // CSV座標 → 画像座標に変換
         const coords = csvToImageCoordinates(viewer.mapId, xi, zi);
 
-        addMarker(viewer, coords.x, coords.y, label,zahyouFlag, icon, sX, sY, size, xi, zi);
+        addMarker(viewer, coords.x, coords.y, label,zahyouFlag, icon, sX, sY, finalSize, xi, zi);
       });
 
       // ★ マーカー追加後に1フレーム待ってから正しいscale適用
