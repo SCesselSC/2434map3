@@ -98,7 +98,7 @@ function csvToImageCoordinates(mapId, csvX, csvZ){
     if(!cfg) return { x: csvX, y: csvZ };
     const px = Math.floor((csvX - cfg.minX) / (cfg.maxX - cfg.minX) * cfg.width);
     const py = Math.floor((csvZ - cfg.minZ) / (cfg.maxZ - cfg.minZ) * cfg.height);
-    return { x: imgX, y: imgY };
+    return { x: px, y: py };
 }
 
 
