@@ -319,7 +319,7 @@
 
 <!--お祭り会場2023タブ-->
 <div id="ark_tab01" class="cp_tabpanel">
-	<div id="contentDiv_ark" class="osd_disp"></div>
+	<div id="contentDiv_omatsuri2023" class="osd_disp"></div>
 	<script type="text/javascript">
 		var viewer_omatsuri2023 = OpenSeadragon({
 			showNavigator: true,
@@ -396,7 +396,8 @@ function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spr
   const initialTransform = el.style.transform;
   el.dataset.initialTransform = initialTransform;
 
-}
+ }
+}//addMarker end
 
 // ▼ CSV読み込み
 function loadMarkers(viewer, csvFile){
