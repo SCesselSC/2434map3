@@ -170,9 +170,15 @@
 			prefixUrl:       "2434map_files/",
 			tileSources:     "2434map.xml"
 		});
+		// 通常地図タブに乗せるアイコンの倍率をセット 拡大倍率 値が大きいほど、拡大スピードが速い
+		viewer_2434map_main.zoomFactor = 0.4;
+	
+		// 拡大縮小ハンドラーを登録
+		attachZoomHandler(viewer_2434map_main, viewer_2434map_main.zoomFactor);
+
 		viewer_2434map_main.addHandler('open', function(){
 		   loadMarkers(viewer_2434map_main, "2434map_marker.csv");
-		   attachZoomHandler(viewer_2434map_main,0.4);		//拡大倍率 値が大きいほど、拡大スピードが速い
+		   //attachZoomHandler(viewer_2434map_main,0.4);	
 		});
 	</script>
 </div>
@@ -192,9 +198,15 @@
 			prefixUrl:       "2434map_all_files/",
 			tileSources:     "2434map_all.xml"
 		});
+		// 全体地図タブに乗せるアイコンの倍率をセット 拡大倍率 値が大きいほど、拡大スピードが速い
+		viewer_2434map_all.zoomFactor = 0.2;
+	
+		// 拡大縮小ハンドラーを登録
+		attachZoomHandler(viewer_2434map_all, viewer_2434map_all.zoomFactor);
+
 		viewer_2434map_all.addHandler('open', function(){
 		   loadMarkers(viewer_2434map_all, "2434map_all_marker.csv");
-		   attachZoomHandler(viewer_2434map_all, 0.2);
+		   //attachZoomHandler(viewer_2434map_all, 0.2);
 		});
 	</script>
 </div>
@@ -237,9 +249,15 @@
 			prefixUrl:       "2434map_nether_files/",
 			tileSources:     "2434map_nether.xml"
 		});
+		// ネザー地図タブに乗せるアイコンの倍率をセット 拡大倍率 値が大きいほど、拡大スピードが速い
+		viewer_2434map_nether.zoomFactor = 0.6;
+	
+		// 拡大縮小ハンドラーを登録
+		attachZoomHandler(viewer_2434map_nether, viewer_2434map_nether.zoomFactor);
+
 		viewer_2434map_nether.addHandler('open', function(){
 		   loadMarkers(viewer_2434map_nether, "2434map_nether_marker.csv");
-		   attachZoomHandler(viewer_2434map_nether, 0.6);
+		   //attachZoomHandler(viewer_2434map_nether, 0.6);
 		});
 	</script>
 </div>
@@ -262,9 +280,15 @@
 			prefixUrl:       "2434map_new_files/",
 			tileSources:     "2434map_new.xml"
 		});
+		// 新鯖通常地図タブに乗せるアイコンの倍率をセット 拡大倍率 値が大きいほど、拡大スピードが速い
+		viewer_2434map_new.zoomFactor = 0.4;
+	
+		// 拡大縮小ハンドラーを登録
+		attachZoomHandler(viewer_2434map_new, viewer_2434map_new.zoomFactor);
+
 		viewer_2434map_new.addHandler('open', function(){
 		   loadMarkers(viewer_2434map_new, "2434map_new_marker.csv");
-		   attachZoomHandler(viewer_2434map_new, 0.4);
+		   //attachZoomHandler(viewer_2434map_new, 0.4);
 		});
 	</script>
 </div>
@@ -282,9 +306,15 @@
 			prefixUrl:       "2434map_new_all_files/",
 			tileSources:     "2434map_new_all.xml"
 		});
+		// 新鯖全体地図タブに乗せるアイコンの倍率をセット 拡大倍率 値が大きいほど、拡大スピードが速い
+		viewer_2434map_new_all.zoomFactor = 0.2;
+	
+		// 拡大縮小ハンドラーを登録
+		attachZoomHandler(viewer_2434map_new_all, viewer_2434map_new_all.zoomFactor);
+
 		viewer_2434map_new_all.addHandler('open', function(){
 		   loadMarkers(viewer_2434map_new_all, "2434map_new_all_marker.csv");
-		   attachZoomHandler(viewer_2434map_new_all, 0.2);
+		   //attachZoomHandler(viewer_2434map_new_all, 0.2);
 		});
 	</script>
 </div>
@@ -302,9 +332,15 @@
 			prefixUrl:       "2434map_new_nether_files/",
 			tileSources:     "2434map_new_nether.xml"
 		});
+		// 新鯖ネザー地図タブに乗せるアイコンの倍率をセット 拡大倍率 値が大きいほど、拡大スピードが速い
+		viewer_2434map_new_nether.zoomFactor = 0.6;
+	
+		// 拡大縮小ハンドラーを登録
+		attachZoomHandler(viewer_2434map_new_nether, viewer_2434map_new_nether.zoomFactor);
+
 		viewer_2434map_new_nether.addHandler('open', function(){
 		   loadMarkers(viewer_2434map_new_nether, "2434map_new_nether_marker.csv");
-		   attachZoomHandler(viewer_2434map_new_nether, 0.6);
+		   //attachZoomHandler(viewer_2434map_new_nether, 0.6);
 		});
 	</script>
 </div>
@@ -400,6 +436,12 @@ if (viewer.updateMarkerScale) {
   }, 0);
 }
 
+ // ★ 初期 scale をタブごとに設定
+    const zoom = viewer.viewport.getZoom(true);
+    const scale = zoom * (viewer.zoomFactor || 0.4); // viewer.zoomFactor があれば使う 安全のためのデフォルト値0.4(目安)
+    el.style.transform = `scale(${scale})`;
+
+
 // 初期 transform を保持しておく
   const initialTransform = el.style.transform;
   el.dataset.initialTransform = initialTransform;
@@ -445,9 +487,11 @@ function loadMarkers(viewer, csvFile){
 
 //addHandler関数
 function attachZoomHandler(viewer, zoomFactor){//各地図の倍率のための設定
+    
+    viewer.zoomFactor = zoomFactor;
     function updateScale(){
         const zoom = viewer.viewport.getZoom(true);	// 現在の倍率
-        const scale = zoom * zoomFactor;		// 最小倍率を基準にスケーリング
+        const scale = zoom * viewer.zoomFactor;		// 最小倍率を基準にスケーリング
 
         viewer.element.querySelectorAll('.map-marker').forEach(el => {
             const initial = el.dataset.initialTransform || "";
