@@ -180,13 +180,14 @@ function csvToImageCoordinates(mapId, csvX, csvZ){
 
 .map-marker{
  /* transform: translate(-50%, -100%);	一旦削除 */
-  transform-origin: center center; /* アイコンの中心を基準に拡大 */
+  /*transform-origin: center center; /* アイコンの中心を基準に拡大 */
   /* transform: scale(0.3);          /* 初期倍率に応じて小さくする */
   /* transition: transform 0.2s; マーカー 0.2秒遅延アニメーション 不要 */
 
   display: flex;
   flex-direction: column;
   align-items: center;
+  transform-origin: 0 0;
 
   text-align: center;
   font-size: 6px; /* 文字サイズを調整 */
