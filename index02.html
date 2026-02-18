@@ -392,6 +392,14 @@ function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spr
      location: viewer.viewport.imageToViewportCoordinates(imageX, imageY),
     placement: "CENTER"  // 中心に合わせる
   });
+
+// ★ ここで直接スケール適用
+if (viewer.updateMarkerScale) {
+  setTimeout(() => {
+    viewer.updateMarkerScale();
+  }, 0);
+}
+
 // 初期 transform を保持しておく
   const initialTransform = el.style.transform;
   el.dataset.initialTransform = initialTransform;
