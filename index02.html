@@ -604,25 +604,30 @@ function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spr
 
 
 // ★ scale は open 後に計算する
-  viewer.addHandler('open', function(){
+//  viewer.addHandler('open', function(){
 
    // ★ ここで直接スケール適用
-   if (viewer.updateMarkerScale) {
-     setTimeout(() => {
-       viewer.updateMarkerScale();
-     }, 0);
-   }
+//   if (viewer.updateMarkerScale) {
+//     setTimeout(() => {
+//       viewer.updateMarkerScale();
+//     }, 0);
+//   }
 
  // ★ 初期 scale をタブごとに設定
-    const zoom = viewer.viewport.getZoom(true);
-    const scale = zoom * (viewer.zoomFactor || 0.4); // viewer.zoomFactor があれば使う 安全のためのデフォルト値0.4(目安)
-    el.style.transform = `scale(${scale})`;
+//    const zoom = viewer.viewport.getZoom(true);
+//    const scale = zoom * (viewer.zoomFactor || 0.4); // viewer.zoomFactor があれば使う 安全のためのデフォルト値0.4(目安)
+//    el.style.transform = `scale(${scale})`;
 
 
 // 初期 transform を保持しておく
-  const initialTransform = el.style.transform;
-  el.dataset.initialTransform = initialTransform;
- });
+//  const initialTransform = el.style.transform;
+//  el.dataset.initialTransform = initialTransform;
+// });
+
+
+el.style.transform = "scale(1)";
+el.dataset.initialTransform = "scale(1)";
+
 
 }//addMarker end
 
