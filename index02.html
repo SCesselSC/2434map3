@@ -36,6 +36,43 @@ function attachZoomHandler(viewer, zoomFactor){//各地図の倍率のための�
     // 初期表示時も適用
     updateScale();
 }//addHandler end
+
+// ▼ CSV読み込み
+function loadMarkers(viewer, csvFile){
+
+  fetch(csvFile)
+    .then(res => res.text())
+    .then(text => {
+
+      const rows = text.split("\n").slice(1);
+
+      rows.forEach(row => {
+	// 文字列中のカンマや改行を正しく扱う(現在無効)
+  	//if(!cols || cols.length < 8) return;// 列が足りなければスキップ
+
+        const [x,z,label,zahyouFlag,icon,spriteX,spriteY,iconSize] = row.split(",");
+
+	// 数値化と空文字チェック
+        const xi = parseFloat(x);
+        const zi = parseFloat(z);		// Zを画像Y座標として扱う
+        const sX = parseInt(spriteX) || 1;
+        const sY = parseInt(spriteY) || 1;
+	const size = parseFloat(iconSize) || 0;
+	if(isNaN(xi) || isNaN(zi)) return;
+
+        addMarker(viewer, xi, zi, label,zahyouFlag, icon, sX, sY, size);
+      });
+
+      // ★ マーカー追加後に1フレーム待ってから正しいscale適用
+      requestAnimationFrame(() => {
+        if (viewer.updateMarkerScale) {
+          viewer.updateMarkerScale();
+        }
+      });
+
+    });
+}//loadMarkers end
+
 </script>
 
 <style type="text/css">
@@ -475,41 +512,6 @@ if (viewer.updateMarkerScale) {
 
 }//addMarker end
 
-// ▼ CSV読み込み
-function loadMarkers(viewer, csvFile){
-
-  fetch(csvFile)
-    .then(res => res.text())
-    .then(text => {
-
-      const rows = text.split("\n").slice(1);
-
-      rows.forEach(row => {
-	// 文字列中のカンマや改行を正しく扱う(現在無効)
-  	//if(!cols || cols.length < 8) return;// 列が足りなければスキップ
-
-        const [x,z,label,zahyouFlag,icon,spriteX,spriteY,iconSize] = row.split(",");
-
-	// 数値化と空文字チェック
-        const xi = parseFloat(x);
-        const zi = parseFloat(z);		// Zを画像Y座標として扱う
-        const sX = parseInt(spriteX) || 1;
-        const sY = parseInt(spriteY) || 1;
-	const size = parseFloat(iconSize) || 0;
-	if(isNaN(xi) || isNaN(zi)) return;
-
-        addMarker(viewer, xi, zi, label,zahyouFlag, icon, sX, sY, size);
-      });
-
-      // ★ マーカー追加後に1フレーム待ってから正しいscale適用
-      requestAnimationFrame(() => {
-        if (viewer.updateMarkerScale) {
-          viewer.updateMarkerScale();
-        }
-      });
-
-    });
-}
 
 
 
