@@ -6,5 +6,6 @@
 <br><br>
 背景画像の上に.csvでアイコンを乗せて表示<br>
 .csvはUTF-8で書く<br>
-背景画像に直接書き込んで更新したら.csvの該当部分は削除
-背景画像 最新2022/08頃
+背景画像に直接書き込んで更新したら.csvの該当部分は削除<br>
+背景画像 最新2022/08頃<br><br>
+csv例<br>0,0,くらもち,yes,ttps://cdn.wikiwiki.jp/to/w/nijisanji/::icon/20:8?rev=deb1b6693a2c8e2ebd85377aec2d9429,4,2,22
