@@ -5,6 +5,21 @@ https://github.com/SCesselSC/2434map3
 表示先
 https://scesselsc.github.io/2434map3/
 
+
+背景の地図タイル画像の上に.csvで書いた文字、アイコンを表示中(2026/02/20)
+CSVはUTF-8で書かないと文字化け
+
+csv例
+X,Z,NAME,座標表示,ライバーICONスプレット画像	,左から何列目,上から何行目,ICONSize
+525,102,井戸,,,,,0				//文字だけの場合(座標表示off)
+0,0,くらもち,yes,ttps://cdn.wikiwiki.jp/to/w/nijisanji/::icon/20:8?rev=deb1b6693a2c8e2ebd85377aec2d9429,4,2,22		//画像と文字、座標入り
+1040,-520,,no,https://cdn.wikiwiki.jp/to/w/nijisanji/::icon/25:9?rev=deb1b6693a2c8e2ebd85377aec2d9429,3,3,24		//画像のみ
+
+座標表示はYes,yes,YES,on,はい　で表示それ以外は非表示
+ライバーICONスプレット画像は非公式wikiで使ってるものから
+
+地図タイルに直接描画更新したらcsvに書いた座標情報は削除
+
 地図画像タイル構成
 
 0_0 1_0 2_0 3_0 …
