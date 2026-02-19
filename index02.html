@@ -15,7 +15,7 @@
 const mapConfigs = {
     main:        { width:  9067, height:  6400, minX: -896-64,	maxX: 1152+64,	minZ: -448,	maxZ: 1088  },
     all:         { width: 18892, height: 15247, minX: -40960,	maxX: 10112,	minZ: -30720,	maxZ: 10112 },
-    nether:      { width: 11086, height:  8905, minX: -4224,	maxX: 1024,	minZ: -3328,	maxZ: 1280 },
+    nether:      { width: 11086, height:  8905, minX: -4224,	maxX: 1280,	minZ: -3328,	maxZ: 1280 },
 
     new:         { width:  7166, height:  7166, minX: -640-64,	maxX: 896+64,	minZ: -640-64,	maxZ: 896+64 },
     new_all:     { width:  9452, height:  9450, minX: -10240,	maxX: 10112,	minZ: -10240,	maxZ: 10112},
@@ -604,29 +604,29 @@ function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spr
 
 
 // ★ scale は open 後に計算する
-//  viewer.addHandler('open', function(){
+  viewer.addHandler('open', function(){
 
    // ★ ここで直接スケール適用
-//   if (viewer.updateMarkerScale) {
-//     setTimeout(() => {
-//       viewer.updateMarkerScale();
-//     }, 0);
-//   }
+   if (viewer.updateMarkerScale) {
+     setTimeout(() => {
+       viewer.updateMarkerScale();
+     }, 0);
+   }
 
  // ★ 初期 scale をタブごとに設定
-//    const zoom = viewer.viewport.getZoom(true);
-//    const scale = zoom * (viewer.zoomFactor || 0.4); // viewer.zoomFactor があれば使う 安全のためのデフォルト値0.4(目安)
-//    el.style.transform = `scale(${scale})`;
+    const zoom = viewer.viewport.getZoom(true);
+    const scale = zoom * (viewer.zoomFactor || 0.4); // viewer.zoomFactor があれば使う 安全のためのデフォルト値0.4(目安)
+    el.style.transform = `scale(${scale})`;
 
 
 // 初期 transform を保持しておく
-//  const initialTransform = el.style.transform;
-//  el.dataset.initialTransform = initialTransform;
-// });
+  const initialTransform = el.style.transform;
+  el.dataset.initialTransform = initialTransform;
+ });
 
 
-el.style.transform = "scale(1)";
-el.dataset.initialTransform = "scale(1)";
+//el.style.transform = "scale(1)";
+//el.dataset.initialTransform = "scale(1)";
 
 
 }//addMarker end
