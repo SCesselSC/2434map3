@@ -41,14 +41,15 @@ function attachZoomHandler(viewer, zoomFactor){//各地図の倍率のための�
     
     viewer.zoomFactor = zoomFactor;
     function updateScale(){
-        const zoom = viewer.viewport.getZoom(true);	// 現在の倍率
-        const scale = zoom * viewer.zoomFactor;		// 最小倍率を基準にスケーリング
+        const zoom = viewer.viewport.getZoom(true);		// 現在の倍率
+        const basescale = zoom * viewer.zoomFactor;		// 最小倍率を基準にスケーリング
+	const mobileScale = window.innerWidth < 768 ? 0.2 : 1;	// スマホ用スケール設定 サイズ0.2倍
 
         viewer.element.querySelectorAll('.map-marker').forEach(el => {
             const initial = el.dataset.initialTransform || "";
 	    const match = initial.match(/scale\((.+)\)/);
 	    const initialScale = match ? parseFloat(match[1]) : 1; // match がなければ 1 を使う
-            el.style.transform = `${initial} scale(${scale / initialScale})`;
+            el.style.transform = `${initial} scale(${(baseScale * mobileScale) / initialScale})`;
         });
     }
 
@@ -153,8 +154,8 @@ function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spr
  // ★ 初期 scale をタブごとに設定
     const zoom = viewer.viewport.getZoom(true);
     const scale = zoom * (viewer.zoomFactor || 0.4); 		// viewer.zoomFactor があれば使う 安全のためのデフォルト値0.4(目安)
-    const mobileScale = window.innerWidth < 768 ? 0.2 : 1;	// スマホ用スケール設定 サイズ0.2倍
-    el.style.transform = `scale(${scale * mobileScale})`;
+
+    el.style.transform = `scale(${scale})`;
     el.style.transformOrigin = "center bottom";
 
 
