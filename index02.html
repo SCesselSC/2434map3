@@ -231,6 +231,41 @@ function csvToImageCoordinates(mapId, csvX, csvZ){
     opacity: 0.7; /* 既存の半透明効果を保持 */
 }
 
+/* =========================
+   スマホ用UI（Googleマップ風）
+========================= */
+
+.mobile-only{
+  display: none;
+}
+
+.map-switch button{
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+/* スマホのみ切替 */
+@media (max-width: 768px){
+
+  /* スマホUI表示 */
+  .mobile-only{
+    display: flex;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 9999;
+    gap: 6px;
+  }
+
+  /* PCタブUIは消す（PCには影響なし） */
+  .cp_tab{
+    display: none;
+  }
+}
 
 </style>
 </head>
@@ -238,6 +273,21 @@ function csvToImageCoordinates(mapId, csvX, csvZ){
 
 <body>
 <a name="wrap"></a>
+
+<!-- スマホ用マップ切替UI（PCでは非表示） -->
+<div class="map-switch mobile-only">
+  <button onclick="switchMap('main')">通常地図</button>
+  <button onclick="switchMap('all')">全体地図</button>
+  <button onclick="switchMap('nether')">ネザー地図</button>
+  <button onclick="switchMap('land')">にじさんじランド</button>
+  <button onclick="switchMap('new')">新鯖通常地図</button>
+  <button onclick="switchMap('new_all')">新鯖全体地図</button>
+  <button onclick="switchMap('new_nether')">新鯖ネザー地図</button>
+  <button onclick="switchMap('sakura')">桜ンボ村</button>
+  <button onclick="switchMap('new_2026')">新鯖通常拡張テスト</button>
+</div>
+
+
 <div class="cp_tab">
 	
 	<input type="radio" name="cp_tab" id="tab1_1" aria-controls="normal_tab01" checked>
@@ -695,6 +745,57 @@ document.querySelectorAll('input[name="cp_tab"]').forEach(tab => {
   });
 });
 
+
+
+
+const isMobile = window.innerWidth < 768;
+
+/* =========================
+   Googleマップ風切替
+========================= */
+function switchMap(mapId){
+
+  const viewers = {
+    main: viewer_2434map_main,
+    all: viewer_2434map_all,
+    nether: viewer_2434map_nether,
+    new: viewer_2434map_new,
+    new_all: viewer_2434map_new_all,
+    new_nether: viewer_2434map_new_nether,
+    new_2026: viewer_2434map_new_2026
+  };
+
+  Object.keys(viewers).forEach(key => {
+    const v = viewers[key];
+    if(!v) return;
+
+    const el = v.element;
+
+    if(key === mapId){
+      el.style.display = "block";
+
+      // 初期位置リセット（Googleマップっぽい動き）
+      v.viewport.goHome(true);
+
+      // マーカー再スケール
+      if(v.updateMarkerScale){
+        setTimeout(() => v.updateMarkerScale(), 50);
+      }
+
+    } else {
+      el.style.display = "none";
+    }
+  });
+}
+
+/* =========================
+   スマホ初期表示
+========================= */
+window.addEventListener("load", () => {
+  if(isMobile){
+    switchMap("main");
+  }
+});
 
 
 </script>

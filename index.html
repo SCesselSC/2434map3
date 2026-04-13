@@ -21,6 +21,7 @@ const mapConfigs = {
     new_all:     { width:  9452, height:  9450, minX: -10240,	maxX: 10112,	minZ: -10240,	maxZ: 10112},
     new_nether:  { width:  9734, height:  9653, minX: -3968-128,maxX: 896+128,	minZ: -2432-128,maxZ: 2432+128 },
 
+    new_2026:    { width: 14336, height: 13312, minX: -2048-64,	maxX: 1408+64,	minZ: -2304-64,	maxZ: 896+64 },
     omatsuri2023:{ width:  9452, height:  9450, minX: -10240,	maxX: 10112,	minZ: -10240,	maxZ: 10112 }
 };
 
@@ -264,9 +265,14 @@ function csvToImageCoordinates(mapId, csvX, csvZ){
 
 	<input type="radio" name="cp_tab" id="tab1_8" aria-controls="sakura_tab01">
 	<label for="tab1_8">桜ンボ村</label>
-		
+	
+	<input type="radio" name="cp_tab" id="tab1_9" aria-controls="newworld_2026_tab01">
+	<label for="tab1_9">新鯖通常拡張テスト</label>
+
+<!--	
 	<input type="radio" name="cp_tab" id="tab1_9" aria-controls="ark_tab01">
 	<label for="tab1_9">夏祭り会場2023</label>
+-->
 <!--
 	<input type="radio" name="cp_tab" id="tab1_10" aria-controls="member_tab01">
 	<label for="tab1_10">ライバー参考</label>
@@ -508,7 +514,7 @@ function csvToImageCoordinates(mapId, csvX, csvZ){
 </div>
 
 
-<!--お祭り会場2023タブ-->
+<!--お祭り会場2023タブ
 <div id="ark_tab01" class="cp_tabpanel">
 	<div id="contentDiv_omatsuri2023" class="osd_disp"></div>
 	<script type="text/javascript">
@@ -523,6 +529,35 @@ function csvToImageCoordinates(mapId, csvX, csvZ){
 		});
 	</script>
 </div>
+-->
+<!--新鯖通常拡張テストタブ-->
+<div id="newworld_2026_tab01" class="cp_tabpanel">
+	<div id="contentDiv_new_2026" class="osd_disp"></div>
+	<script type="text/javascript">
+		var viewer_2434map_new_2026 = OpenSeadragon({
+			showNavigator: true,
+			id:              "contentDiv_new_2026",
+			prefixUrl:       "2434map_new_files_2026/",
+			tileSources:     "2434map_new_2026.xml"
+		});
+
+		// viewer に mapId を追加
+		viewer_2434map_new_2026.baseIconSize = 44;	//アイコン初期サイズ
+		viewer_2434map_new_2026.mapId = "new_2026";
+
+		// 新鯖通常拡張テスト地図タブに乗せるアイコンの倍率をセット 拡大倍率 値が大きいほど、拡大スピードが速い
+		viewer_2434map_new_2026.zoomFactor = 0.4;
+	
+		// 拡大縮小ハンドラーを登録
+		attachZoomHandler(viewer_2434map_new_2026, viewer_2434map_new_2026.zoomFactor);
+
+		viewer_2434map_new_2026.addHandler('open', function(){
+		   loadMarkers(viewer_2434map_new_2026, "2434map_new_marker.csv");
+		   //attachZoomHandler(viewer_2434map_new, 0.4);
+		});
+	</script>
+</div>
+
 
 
 <script>
@@ -647,6 +682,7 @@ document.querySelectorAll('input[name="cp_tab"]').forEach(tab => {
         viewer_2434map_new,
         viewer_2434map_new_all,
         viewer_2434map_new_nether,
+	viewer_2434map_new_2026,
         viewer_omatsuri2023
       ].forEach(v => {
         if (!v) return;
