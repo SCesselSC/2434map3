@@ -96,15 +96,13 @@ function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spr
     const posY = (cellSize * (spriteY - 1)) * scaleRatio;
 
     iconHTML = `
-    <div //class="marker-icon-sprite"
+    <div
          style="
            width:${iconSize}px;
            height:${iconSize}px;
            background-image:url(${icon});
-           //background-position:-${cellSize*(spriteX-1)}px -${cellSize*(spriteY-1)}px;
 	background-position:-${posX}px -${posY}px;
 	background-size:${bgSize}px ${bgSize}px;
-        //   background-size:${imageSize}px ${imageSize}px;
 	   background-repeat:no-repeat;
 	   margin:0;
          ">
