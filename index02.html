@@ -163,7 +163,7 @@ function csvToImageCoordinates(mapId, csvX, csvZ){
 
 /*openseadragonの地図をクリック拡大すると上部タブが消えるための対応*/
 .osd_disp{
-	height: 96%;
+	height: 80vh;
 }
 
 /*タブ部分*/
@@ -336,6 +336,7 @@ function csvToImageCoordinates(mapId, csvX, csvZ){
 	<input type="radio" name="cp_tab" id="tab1_12" aria-controls="ex_tab01">
 	<label for="tab1_12">試験運用</label>
 -->
+</div>
 <div class="cp_tabpanels">
 
 
@@ -609,7 +610,7 @@ function csvToImageCoordinates(mapId, csvX, csvZ){
 	</script>
 </div>
 
-
+</div><!--cp_tabpanelsタブの中身（表示エリア）をまとめる箱閉じ-->
 
 <script>
 // マーカー設置追加関数
@@ -737,7 +738,7 @@ document.querySelectorAll('input[name="cp_tab"]').forEach(tab => {
         viewer_omatsuri2023
       ].forEach(v => {
         if (!v) return;
-        //v.forceResize();        // サイズ再取得
+        v.forceResize();        // サイズ再取得
         v.viewport.goHome(true); // 正しい初期ズームへ
       });
 
@@ -777,6 +778,7 @@ function switchMap(mapId){
       el.style.display = "block";
 
       // 初期位置リセット（Googleマップっぽい動き）
+	v.forceResize();
       v.viewport.goHome(true);
 
       // マーカー再スケール
