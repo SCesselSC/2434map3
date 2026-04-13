@@ -245,6 +245,21 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 
+window.addEventListener("resize", () => {
+  [
+    viewer_2434map_main,
+    viewer_2434map_all,
+    viewer_2434map_nether,
+    viewer_2434map_new,
+    viewer_2434map_new_all,
+    viewer_2434map_new_nether,
+    viewer_2434map_new_2026
+  ].forEach(v => {
+    if (!v) return;
+    v.viewport && v.viewport.update();
+  });
+});
+
 
 const isMobile = window.innerWidth < 768;
 
@@ -265,7 +280,7 @@ function switchMap(mapId){
 
   Object.keys(viewers).forEach(key => {
     const v = viewers[key];
-    if (!v || typeof v.forceResize !== "function") return;
+    if (!v) return;
 
     const el = v.element;
 
@@ -274,12 +289,20 @@ function switchMap(mapId){
 
       // 初期位置リセット（Googleマップっぽい動き）
 	//v.forceResize();
-      v.viewport.goHome(true);
 
-      // マーカー再スケール
-      if(v.updateMarkerScale){
-        setTimeout(() => v.updateMarkerScale(), 50);
-      }
+      setTimeout(() => {
+       v.viewport.goHome(true);
+
+
+        // ★重要：サイズ再計算
+        v.viewport.update();
+        v.forceRedraw && v.forceRedraw();
+
+        // マーカー再スケール
+        if(v.updateMarkerScale){
+         v.updateMarkerScale();
+        }      
+      }, 50);
 
     } else {
       el.style.display = "none";
@@ -358,6 +381,24 @@ window.addEventListener("load", () => {
     position: fixed;
     z-index: 999;
 }
+
+.cp_tabpanel {
+  display: none;
+}
+
+/* チェックされたタブだけ表示 */
+#tab1_1:checked ~ .cp_tabpanels #normal_tab01,
+#tab1_2:checked ~ .cp_tabpanels #all_tab01,
+#tab1_3:checked ~ .cp_tabpanels #nether_tab01,
+#tab1_4:checked ~ .cp_tabpanels #land_tab01,
+#tab1_5:checked ~ .cp_tabpanels #newworld_tab01,
+#tab1_6:checked ~ .cp_tabpanels #newworld_all_tab01,
+#tab1_7:checked ~ .cp_tabpanels #newworld_nether_tab01,
+#tab1_8:checked ~ .cp_tabpanels #sakura_tab01,
+#tab1_9:checked ~ .cp_tabpanels #newworld_2026_tab01 {
+  display: block;
+}
+
 
 #a1 {
 	position: absolute;
@@ -522,7 +563,7 @@ window.addEventListener("load", () => {
 	<input type="radio" name="cp_tab" id="tab1_12" aria-controls="ex_tab01">
 	<label for="tab1_12">試験運用</label>
 -->
-
+</div>
 <div class="cp_tabpanels">
 
 
@@ -830,7 +871,7 @@ window.addEventListener("load", () => {
 </div>
 -->
 
-</div>
+
 </div><!--cp_tabpanelsタブの中身（表示エリア）をまとめる箱閉じ-->
 
 
