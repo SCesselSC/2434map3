@@ -95,6 +95,7 @@ function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spr
     const posX = (cellSize * (spriteX - 1)) * scaleRatio;
     const posY = (cellSize * (spriteY - 1)) * scaleRatio;
 
+
     iconHTML = `
     <div
          style="
@@ -151,8 +152,10 @@ function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spr
 
  // ★ 初期 scale をタブごとに設定
     const zoom = viewer.viewport.getZoom(true);
-    const scale = zoom * (viewer.zoomFactor || 0.4); // viewer.zoomFactor があれば使う 安全のためのデフォルト値0.4(目安)
-    el.style.transform = `scale(${scale})`;
+    const scale = zoom * (viewer.zoomFactor || 0.4); 		// viewer.zoomFactor があれば使う 安全のためのデフォルト値0.4(目安)
+    const mobileScale = window.innerWidth < 768 ? 0.2 : 1;	// スマホ用スケール設定 サイズ0.2倍
+    el.style.transform = `scale(${scale * mobileScale})`;
+    el.style.transformOrigin = "center bottom";
 
 
 // 初期 transform を保持しておく
@@ -379,7 +382,7 @@ window.addEventListener("load", () => {
 
 .map-marker{
  /* transform: translate(-50%, -100%);	一旦削除 */
-  transform-origin: center center; /* アイコンの中心を基準に拡大 */
+//  transform-origin: center center; /* アイコンの中心を基準に拡大 */
   /* transform: scale(0.3);          /* 初期倍率に応じて小さくする */
   /* transition: transform 0.2s; マーカー 0.2秒遅延アニメーション 不要 */
 
@@ -519,8 +522,8 @@ window.addEventListener("load", () => {
   }
 
   .map-marker{
-    transform: scale(0.2);/* アイコンサイズを縮小 */
-    transform-origin: center bottom; /* 位置修正 */
+//    transform: scale(0.2);/* アイコンサイズを縮小 */
+//    transform-origin: center bottom; /* 位置修正 */
   }
 
 }
