@@ -770,7 +770,7 @@ function switchMap(mapId){
 
   Object.keys(viewers).forEach(key => {
     const v = viewers[key];
-    if(!v) return;
+    if (!v || typeof v.forceResize !== "function") return;
 
     const el = v.element;
 
