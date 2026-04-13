@@ -333,6 +333,11 @@ function switchMap(mapId){
   });
 }
 
+// ハンバーガーボタン開閉だけ
+function toggleMapMenu(){
+  const menu = document.querySelector(".map-menu");
+  menu.classList.toggle("open");
+}
 /* =========================
    初期表示
 ========================= */
@@ -507,9 +512,26 @@ window.addEventListener("load", () => {
   padding: 6px 10px;
   font-size: 12px;
 }
+
+/* スマホ用ハンバーガーボタン */
+.map-toggle{
+  display: none; /* PCでは非表示 */
+  font-size: 18px;
+  padding: 6px 10px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+/* メニュー本体 */
+.map-menu{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
 /* ===  PC用 ===*/
 @media (min-width: 769px){
-  .map-switch-ui button{
+  .map-switch button{
     padding: 6px 12px;
     font-size: 13px;
   }
@@ -522,6 +544,30 @@ window.addEventListener("load", () => {
     font-size: 10px;
     font-weight: bold;
   }
+
+  .map-toggle{
+    display: block; /* スマホだけ表示 */
+  }
+
+  .map-menu{
+    display: none; /* 初期は閉じる */
+    flex-direction: column;
+    background: white;
+    border: 1px solid #ccc;
+    padding: 6px;
+    margin-top: 6px;
+    border-radius: 6px;
+  }
+
+  .map-menu.open{
+    display: flex;
+  }
+
+  .map-menu button{
+    font-size: 12px;
+    padding: 6px;
+  }
+
 }
 
 </style>
@@ -533,6 +579,7 @@ window.addEventListener("load", () => {
 
 <!-- マップ切替UI（PCでも非表示） -->
 <div class="map-switch">
+ <button class="map-toggle" onclick="toggleMapMenu()">☰</button>
   <button onclick="switchMap('main')">通常地図</button>
   <button onclick="switchMap('all')">全体地図</button>
   <button onclick="switchMap('nether')">ネザー地図</button>
@@ -542,6 +589,7 @@ window.addEventListener("load", () => {
   <button onclick="switchMap('new_nether')">新鯖ネザー地図</button>
   <button onclick="switchMap('sakura')">桜ンボ村</button>
   <button onclick="switchMap('new_2026')">新鯖通常拡張テスト</button>
+ </div>
 </div>
 
 
