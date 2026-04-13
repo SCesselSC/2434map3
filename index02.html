@@ -241,8 +241,9 @@ window.addEventListener("DOMContentLoaded", () => {
       ].forEach(v => {
         if (!v) return;
         // タブ表示時に必ずやる処理
-        //v.forceResize();        // サイズ再取得
+
         v.element.style.display = "block";
+        v.forceResize();        	// PC版サイズ再取得
         v.resize?.();   		// OpenSeadragonの再計算
         v.forceRedraw?.();
         v.viewport.update();
