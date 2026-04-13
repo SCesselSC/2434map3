@@ -338,6 +338,12 @@ function toggleMapMenu(){
   const menu = document.querySelector(".map-menu");
   menu.classList.toggle("open");
 }
+// ボタン押したら自動で閉じる
+document.querySelectorAll(".map-menu button").forEach(btn => {
+  btn.addEventListener("click", () => {
+    document.querySelector(".map-menu").classList.remove("open");
+  });
+});
 /* =========================
    初期表示
 ========================= */
@@ -417,19 +423,7 @@ window.addEventListener("load", () => {
   display: block;
 }
 
-/* チェックされたタブだけ表示 			不要
-#tab1_1:checked ~ .cp_tabpanels #normal_tab01,
-#tab1_2:checked ~ .cp_tabpanels #all_tab01,
-#tab1_3:checked ~ .cp_tabpanels #nether_tab01,
-#tab1_4:checked ~ .cp_tabpanels #land_tab01,
-#tab1_5:checked ~ .cp_tabpanels #newworld_tab01,
-#tab1_6:checked ~ .cp_tabpanels #newworld_all_tab01,
-#tab1_7:checked ~ .cp_tabpanels #newworld_nether_tab01,
-#tab1_8:checked ~ .cp_tabpanels #sakura_tab01,
-#tab1_9:checked ~ .cp_tabpanels #newworld_2026_tab01 {
-  display: block;
-}
-*/
+
 
 #a1 {
 	position: absolute;
@@ -492,7 +486,7 @@ window.addEventListener("load", () => {
 
 
 :root{
-  --map-ui-height: 60px;	/* PC用タブボタンサイズ */
+  --map-ui-height: 50px;	/* PC用タブボタンサイズ */
 }
 /* =========================
    UI（Googleマップ風）
@@ -537,8 +531,8 @@ window.addEventListener("load", () => {
 /* ===  PC用 ===*/
 @media (min-width: 769px){
   .map-switch button{
-    padding: 6px 12px;
-    font-size: 13px;
+    padding: 6px 12px;/* ボタン内上下6px 左右12px*/
+    font-size: 16px;
   }
   .osd_disp{
     margin-top: var(--map-ui-height);/* PCでの地図開始位置をタブボタンサイズ連動 */
@@ -554,7 +548,7 @@ window.addEventListener("load", () => {
   }
 
   .map-toggle{
-    font-size: 26px;   /* ハンバーガーボタンサイズ */
+    font-size: 30px;   /* ハンバーガーボタンサイズ */
     display: block; /* スマホだけ表示 */
   }
 
