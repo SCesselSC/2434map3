@@ -396,9 +396,7 @@ window.addEventListener("load", () => {
 	width: 100%;height: 80vh;
 }
 
-.map-switch {
-  flex-wrap: wrap;
-}
+
 
 /*タブ部分*/
 .navi {
@@ -491,35 +489,38 @@ window.addEventListener("load", () => {
    UI（Googleマップ風）
 ========================= */
 
-.mobile-only{
-  display: flex; /* ← 常に表示 */
+/* 共通 */
+.map-switch{
+  display: flex;/* ← 常に表示 */
+  flex-wrap: wrap;
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 9999;
+  display: flex;
+  gap: 6px;
 }
-
 .map-switch button{
   background: white;
   border: 1px solid #ccc;
   border-radius: 6px;
   padding: 6px 10px;
   font-size: 12px;
-  font-weight: bold;
+}
+/* ===  PC用 ===*/
+@media (min-width: 769px){
+  .map-switch-ui button{
+    padding: 6px 12px;
+    font-size: 13px;
+  }
 }
 
-/* スマホのみ切替 */
+/* スマホ用UI */
 @media (max-width: 768px){
-
-  /* スマホUI表示 */
-  .mobile-only{
-    display: flex;
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    z-index: 9999;
-    gap: 6px;
-  }
-
-  /* PCタブUIは消す（PCには影響なし） */
-  .cp_tab{
-    display: none;
+  .map-switch button{
+    padding: 4px 6px;
+    font-size: 10px;
+    font-weight: bold;
   }
 }
 
@@ -531,7 +532,7 @@ window.addEventListener("load", () => {
 <a name="wrap"></a>
 
 <!-- マップ切替UI（PCでも非表示） -->
-<div class="map-switch mobile-only">
+<div class="map-switch">
   <button onclick="switchMap('main')">通常地図</button>
   <button onclick="switchMap('all')">全体地図</button>
   <button onclick="switchMap('nether')">ネザー地図</button>
