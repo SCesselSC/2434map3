@@ -231,8 +231,12 @@ window.addEventListener("DOMContentLoaded", () => {
 	viewer_2434map_new_2026
       ].forEach(v => {
         if (!v) return;
+        // タブ表示時に必ずやる処理
         //v.forceResize();        // サイズ再取得
+        v.forceRedraw?.();
+        v.viewport.update();
         v.viewport.goHome(true); // 正しい初期ズームへ
+        v.updateMarkerScale?.();
       });
 
     }, 30);
@@ -279,7 +283,7 @@ function switchMap(mapId){
   Object.entries(viewers).forEach(([key, v]) => {
     if (!v) return;
     const isActive = (key === mapId);
-    v.element.style.display = isActive ? "visible" : "none";
+    v.element.style.visibility = isActive ? "visible" : "hidden";
 
     if(isActive){
       requestAnimationFrame(() => {
@@ -359,7 +363,7 @@ window.addEventListener("load", () => {
 
 /*openseadragonの地図をクリック拡大すると上部タブが消えるための対応*/
 .osd_disp{
-	height: 80vh;
+	width: 100%;height: 80vh;
 }
 
 /*タブ部分*/
