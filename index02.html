@@ -216,7 +216,25 @@ function loadMarkers(viewer, csvFile){
 
 // 正しい初期ズーム
 window.addEventListener("DOMContentLoaded", () => {
- if (!isMobile) return; // ← PCは従来のタブだけ使う
+
+  // ★ PCでも初期表示を強制する
+  const firstPanel = document.getElementById("normal_tab01");
+  if (firstPanel) {
+    firstPanel.style.display = "block";
+  }
+
+  // ★ PCでもOpenSeadragonを正しく初期化
+  setTimeout(() => {
+    if (typeof viewer_2434map_main !== "undefined") {
+      viewer_2434map_main.forceResize?.();
+      viewer_2434map_main.viewport.update();
+      viewer_2434map_main.viewport.goHome(true);
+      viewer_2434map_main.updateMarkerScale?.();
+    }
+  }, 50);
+
+ // スマホ用
+ if (!isMobile) return; 
  document.querySelectorAll('input[name="cp_tab"]').forEach(tab => {
   tab.addEventListener('change', function(){
 
@@ -339,6 +357,28 @@ window.addEventListener("load", () => {
   if(isMobile){
     switchMap("main");
   }
+
+// PCでも初期化する
+  [
+    viewer_2434map_main,
+    viewer_2434map_all,
+    viewer_2434map_nether,
+    viewer_2434map_new,
+    viewer_2434map_new_all,
+    viewer_2434map_new_nether,
+    viewer_2434map_new_2026
+  ].forEach(v => {
+    if (!v) return;
+
+    requestAnimationFrame(() => {
+      v.forceResize?.();
+      v.viewport.update();
+      v.viewport.goHome(true);
+      v.updateMarkerScale?.();
+    });
+  });
+
+
 });
 
 </script>
