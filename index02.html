@@ -217,7 +217,8 @@ function loadMarkers(viewer, csvFile){
 
 
 // 正しい初期ズーム
-document.querySelectorAll('input[name="cp_tab"]').forEach(tab => {
+window.addEventListener("DOMContentLoaded", () => {
+ document.querySelectorAll('input[name="cp_tab"]').forEach(tab => {
   tab.addEventListener('change', function(){
 
     setTimeout(() => {
@@ -239,8 +240,9 @@ document.querySelectorAll('input[name="cp_tab"]').forEach(tab => {
     }, 30);
 
   });
-});
+ });
 
+});
 
 
 
