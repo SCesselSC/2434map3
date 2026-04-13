@@ -42,7 +42,7 @@ function attachZoomHandler(viewer, zoomFactor){//各地図の倍率のための�
     viewer.zoomFactor = zoomFactor;
     function updateScale(){
         const zoom = viewer.viewport.getZoom(true);		// 現在の倍率
-        const basescale = zoom * viewer.zoomFactor;		// 最小倍率を基準にスケーリング
+        const baseScale = zoom * viewer.zoomFactor;		// 最小倍率を基準にスケーリング
 	const mobileScale = window.innerWidth < 768 ? 0.2 : 1;	// スマホ用スケール設定 サイズ0.2倍
 
         viewer.element.querySelectorAll('.map-marker').forEach(el => {
