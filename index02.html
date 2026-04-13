@@ -213,28 +213,10 @@ function loadMarkers(viewer, csvFile){
     });
 }//loadMarkers end
 
+/*
+// 正しい初期ズーム	ラジオボタン専用処理なので削除
+window.addEventListener("DOMContentLoaded", () => { 
 
-// 正しい初期ズーム
-window.addEventListener("DOMContentLoaded", () => {
-
-  // ★ PCでも初期表示を強制する
-  const firstPanel = document.getElementById("normal_tab01");
-  if (firstPanel) {
-    firstPanel.style.display = "block";
-  }
-
-  // ★ PCでもOpenSeadragonを正しく初期化
-  setTimeout(() => {
-    if (typeof viewer_2434map_main !== "undefined") {
-      viewer_2434map_main.forceResize?.();
-      viewer_2434map_main.viewport.update();
-      viewer_2434map_main.viewport.goHome(true);
-      viewer_2434map_main.updateMarkerScale?.();
-    }
-  }, 50);
-
- // スマホ用
- if (!isMobile) return; 
  document.querySelectorAll('input[name="cp_tab"]').forEach(tab => {
   tab.addEventListener('change', function(){
 
@@ -275,6 +257,7 @@ window.addEventListener("DOMContentLoaded", () => {
  });
 
 });
+*/
 
 
 window.addEventListener("resize", () => {
@@ -351,34 +334,10 @@ function switchMap(mapId){
 }
 
 /* =========================
-   スマホ初期表示
+   初期表示
 ========================= */
 window.addEventListener("load", () => {
-  if(isMobile){
     switchMap("main");
-  }
-
-// PCでも初期化する
-  [
-    viewer_2434map_main,
-    viewer_2434map_all,
-    viewer_2434map_nether,
-    viewer_2434map_new,
-    viewer_2434map_new_all,
-    viewer_2434map_new_nether,
-    viewer_2434map_new_2026
-  ].forEach(v => {
-    if (!v) return;
-
-    requestAnimationFrame(() => {
-      v.forceResize?.();
-      v.viewport.update();
-      v.viewport.goHome(true);
-      v.updateMarkerScale?.();
-    });
-  });
-
-
 });
 
 </script>
@@ -437,6 +396,10 @@ window.addEventListener("load", () => {
 	width: 100%;height: 80vh;
 }
 
+.map-switch {
+  flex-wrap: wrap;
+}
+
 /*タブ部分*/
 .navi {
     height: 20px;
@@ -451,7 +414,7 @@ window.addEventListener("load", () => {
   display: block;
 }
 
-/* チェックされたタブだけ表示 */
+/* チェックされたタブだけ表示 			不要
 #tab1_1:checked ~ .cp_tabpanels #normal_tab01,
 #tab1_2:checked ~ .cp_tabpanels #all_tab01,
 #tab1_3:checked ~ .cp_tabpanels #nether_tab01,
@@ -463,7 +426,7 @@ window.addEventListener("load", () => {
 #tab1_9:checked ~ .cp_tabpanels #newworld_2026_tab01 {
   display: block;
 }
-
+*/
 
 #a1 {
 	position: absolute;
@@ -525,11 +488,11 @@ window.addEventListener("load", () => {
 }
 
 /* =========================
-   スマホ用UI（Googleマップ風）
+   UI（Googleマップ風）
 ========================= */
 
 .mobile-only{
-  display: none;
+  display: flex; /* ← 常に表示 */
 }
 
 .map-switch button{
@@ -567,7 +530,7 @@ window.addEventListener("load", () => {
 <body>
 <a name="wrap"></a>
 
-<!-- スマホ用マップ切替UI（PCでは非表示） -->
+<!-- マップ切替UI（PCでも非表示） -->
 <div class="map-switch mobile-only">
   <button onclick="switchMap('main')">通常地図</button>
   <button onclick="switchMap('all')">全体地図</button>
@@ -581,6 +544,8 @@ window.addEventListener("load", () => {
 </div>
 
 
+
+<!--
 <div class="cp_tab">
 	
 	<input type="radio" name="cp_tab" id="tab1_1" aria-controls="normal_tab01" checked>
@@ -627,8 +592,9 @@ window.addEventListener("load", () => {
 <!--
 	<input type="radio" name="cp_tab" id="tab1_12" aria-controls="ex_tab01">
 	<label for="tab1_12">試験運用</label>
--->
+
 </div>
+-->
 <div class="cp_tabpanels">
 
 
