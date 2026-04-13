@@ -213,52 +213,6 @@ function loadMarkers(viewer, csvFile){
     });
 }//loadMarkers end
 
-/*
-// 正しい初期ズーム	ラジオボタン専用処理なので削除
-window.addEventListener("DOMContentLoaded", () => { 
-
- document.querySelectorAll('input[name="cp_tab"]').forEach(tab => {
-  tab.addEventListener('change', function(){
-
-  // ★ まずタブ表示切替
-  const targetId = this.getAttribute("aria-controls");
-  const targetPanel = document.getElementById(targetId);
-
-  document.querySelectorAll(".cp_tabpanel").forEach(p => p.classList.remove("active"));
-  targetPanel.classList.add("active");
-
-  // ★ その後にOpenSeadragon処理
-    setTimeout(() => {
-
-      [
-        viewer_2434map_main,
-        viewer_2434map_all,
-        viewer_2434map_nether,
-        viewer_2434map_new,
-        viewer_2434map_new_all,
-        viewer_2434map_new_nether,
-	viewer_2434map_new_2026
-      ].forEach(v => {
-        if (!v) return;
-        // タブ表示時に必ずやる処理
-
-        v.element.style.display = "block";
-        v.forceResize();        	// PC版サイズ再取得
-        v.resize?.();   		// OpenSeadragonの再計算
-        v.forceRedraw?.();
-        v.viewport.update();
-        v.viewport.goHome(true); // 正しい初期ズームへ
-        v.updateMarkerScale?.();
-      });
-
-    }, 30);
-
-  });
- });
-
-});
-*/
-
 
 window.addEventListener("resize", () => {
   [
@@ -379,13 +333,6 @@ window.addEventListener("load", () => {
 	height: 12000px;
 }
 
-
-
-/*
-.site-header{
-    position: fixed;
-}
-*/
 
 
 /*中央拠点*/
@@ -598,56 +545,6 @@ window.addEventListener("load", () => {
 
 
 
-<!--
-<div class="cp_tab">
-	
-	<input type="radio" name="cp_tab" id="tab1_1" aria-controls="normal_tab01" checked>
-	<label for="tab1_1">通常地図</label>
-
-	<input type="radio" name="cp_tab" id="tab1_2" aria-controls="all_tab01">
-	<label for="tab1_2">全体地図</label>
-
-	<input type="radio" name="cp_tab" id="tab1_3" aria-controls="nether_tab01">
-	<label for="tab1_3">ネザー地図</label>
-
-	<input type="radio" name="cp_tab" id="tab1_4" aria-controls="land_tab01">
-	<label for="tab1_4">にじさんじランド</label>
-
-	<input type="radio" name="cp_tab" id="tab1_5" aria-controls="newworld_tab01">
-	<label for="tab1_5">新鯖通常地図</label>
-
-
-	<input type="radio" name="cp_tab" id="tab1_6" aria-controls="newworld_all_tab01">
-	<label for="tab1_6">新鯖全体地図</label>
-
-
-	<input type="radio" name="cp_tab" id="tab1_7" aria-controls="newworld_nether_tab01">
-	<label for="tab1_7">新鯖ネザー</label>
-
-	<input type="radio" name="cp_tab" id="tab1_8" aria-controls="sakura_tab01">
-	<label for="tab1_8">桜ンボ村</label>
-	
-	<input type="radio" name="cp_tab" id="tab1_9" aria-controls="newworld_2026_tab01">
-	<label for="tab1_9">新鯖通常拡張テスト</label>
-
-<!--	
-	<input type="radio" name="cp_tab" id="tab1_9" aria-controls="ark_tab01">
-	<label for="tab1_9">夏祭り会場2023</label>
--->
-<!--
-	<input type="radio" name="cp_tab" id="tab1_10" aria-controls="member_tab01">
-	<label for="tab1_10">ライバー参考</label>
--->
-<!--
-	<input type="radio" name="cp_tab" id="tab1_11" aria-controls="etc_tab01">
-	<label for="tab1_11">他(連絡先等)</label>
--->
-<!--
-	<input type="radio" name="cp_tab" id="tab1_12" aria-controls="ex_tab01">
-	<label for="tab1_12">試験運用</label>
-
-</div>
--->
 <div class="cp_tabpanels">
 
 
