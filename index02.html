@@ -219,6 +219,14 @@ window.addEventListener("DOMContentLoaded", () => {
  document.querySelectorAll('input[name="cp_tab"]').forEach(tab => {
   tab.addEventListener('change', function(){
 
+  // ★ まずタブ表示切替
+  const targetId = this.getAttribute("aria-controls");
+  const targetPanel = document.getElementById(targetId);
+
+  document.querySelectorAll(".cp_tabpanel").forEach(p => p.classList.remove("active"));
+  targetPanel.classList.add("active");
+
+  // ★ その後にOpenSeadragon処理
     setTimeout(() => {
 
       [
@@ -233,6 +241,8 @@ window.addEventListener("DOMContentLoaded", () => {
         if (!v) return;
         // タブ表示時に必ずやる処理
         //v.forceResize();        // サイズ再取得
+        v.element.style.visibility = "visible";
+        v.resize?.();   		// OpenSeadragonの再計算
         v.forceRedraw?.();
         v.viewport.update();
         v.viewport.goHome(true); // 正しい初期ズームへ
@@ -375,6 +385,9 @@ window.addEventListener("load", () => {
 
 .cp_tabpanel {
   display: none;
+}
+.cp_tabpanel.active {
+  display: block;
 }
 
 /* チェックされたタブだけ表示 */
