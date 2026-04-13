@@ -216,6 +216,7 @@ function loadMarkers(viewer, csvFile){
 
 // 正しい初期ズーム
 window.addEventListener("DOMContentLoaded", () => {
+ if (!isMobile) return; // ← PCは従来のタブだけ使う
  document.querySelectorAll('input[name="cp_tab"]').forEach(tab => {
   tab.addEventListener('change', function(){
 
@@ -241,7 +242,7 @@ window.addEventListener("DOMContentLoaded", () => {
         if (!v) return;
         // タブ表示時に必ずやる処理
         //v.forceResize();        // サイズ再取得
-        v.element.style.visibility = "visible";
+        v.element.style.display = "block";
         v.resize?.();   		// OpenSeadragonの再計算
         v.forceRedraw?.();
         v.viewport.update();
@@ -293,7 +294,7 @@ function switchMap(mapId){
   Object.entries(viewers).forEach(([key, v]) => {
     if (!v) return;
     const isActive = (key === mapId);
-    v.element.style.visibility = isActive ? "visible" : "hidden";
+    v.element.style.display = isActive ? "block" : "none";
 
     if(isActive){
       requestAnimationFrame(() => {
