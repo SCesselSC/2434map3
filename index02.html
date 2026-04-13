@@ -279,10 +279,12 @@ function switchMap(mapId){
   Object.entries(viewers).forEach(([key, v]) => {
     if (!v) return;
     const isActive = (key === mapId);
-    v.element.style.visibility = isActive ? "visible" : "hidden";
+    v.element.style.display = isActive ? "visible" : "none";
 
     if(isActive){
       requestAnimationFrame(() => {
+       v.forceRedraw?.();
+       v.viewport.update();
        v.viewport.goHome(true);
 
        requestAnimationFrame(() => {
