@@ -22,8 +22,8 @@ const mapConfigs = {
     new_all:     { width:  9452, height:  9450, minX: -10240,	maxX: 10112,	minZ: -10240,	maxZ: 10112},
     new_nether:  { width:  9734, height:  9653, minX: -3968-128,maxX: 896+128,	minZ: -2432-128,maxZ: 2432+128 },
 
-    new_2026:    { width: 14336, height: 13312, minX: -2048-64,	maxX: 1408+64,	minZ: -2304-64,	maxZ: 896+64 },
-    omatsuri2023:{ width:  9452, height:  9450, minX: -10240,	maxX: 10112,	minZ: -10240,	maxZ: 10112 }
+    new_2026:    { width: 14336, height: 13312, minX: -2048-64,	maxX: 1408+64,	minZ: -2304-64,	maxZ: 896+64 }//,
+    //omatsuri2023:{ width:  9452, height:  9450, minX: -10240,	maxX: 10112,	minZ: -10240,	maxZ: 10112 }
 };
 
 
@@ -734,8 +734,7 @@ document.querySelectorAll('input[name="cp_tab"]').forEach(tab => {
         viewer_2434map_new,
         viewer_2434map_new_all,
         viewer_2434map_new_nether,
-	viewer_2434map_new_2026,
-        viewer_omatsuri2023
+	viewer_2434map_new_2026
       ].forEach(v => {
         if (!v) return;
         //v.forceResize();        // サイズ再取得
@@ -764,8 +763,7 @@ function switchMap(mapId){
     new: viewer_2434map_new,
     new_all: viewer_2434map_new_all,
     new_nether: viewer_2434map_new_nether,
-    new_2026: viewer_2434map_new_2026,
-    omatsuri2023: null
+    new_2026: viewer_2434map_new_2026
   };
 
   Object.keys(viewers).forEach(key => {
