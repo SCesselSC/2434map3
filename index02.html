@@ -738,7 +738,7 @@ document.querySelectorAll('input[name="cp_tab"]').forEach(tab => {
         viewer_omatsuri2023
       ].forEach(v => {
         if (!v) return;
-        v.forceResize();        // サイズ再取得
+        //v.forceResize();        // サイズ再取得
         v.viewport.goHome(true); // 正しい初期ズームへ
       });
 
@@ -778,7 +778,7 @@ function switchMap(mapId){
       el.style.display = "block";
 
       // 初期位置リセット（Googleマップっぽい動き）
-	v.forceResize();
+	//v.forceResize();
       v.viewport.goHome(true);
 
       // マーカー再スケール
