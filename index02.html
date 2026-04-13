@@ -278,34 +278,21 @@ function switchMap(mapId){
     new_2026: viewer_2434map_new_2026
   };
 
-  Object.keys(viewers).forEach(key => {
-    const v = viewers[key];
+  Object.entries(viewers).forEach(([key, v]) => {
     if (!v) return;
+    const isActive = (key === mapId);
+    v.element.style.visibility = isActive ? "visible" : "hidden";
 
-    const el = v.element;
-
-    if(key === mapId){
-      el.style.display = "block";
-
-      // 初期位置リセット（Googleマップっぽい動き）
-	//v.forceResize();
-
-      setTimeout(() => {
+    if(isActive){
+      requestAnimationFrame(() => {
        v.viewport.goHome(true);
 
-
-        // ★重要：サイズ再計算
+       requestAnimationFrame(() => {
+        // サイズ再計算
         v.viewport.update();
-        v.forceRedraw && v.forceRedraw();
-
-        // マーカー再スケール
-        if(v.updateMarkerScale){
-         v.updateMarkerScale();
-        }      
-      }, 50);
-
-    } else {
-      el.style.display = "none";
+        v.updateMarkerScale?.();
+       });
+      });
     }
   });
 }
