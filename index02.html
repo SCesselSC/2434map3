@@ -291,6 +291,25 @@ function switchMap(mapId){
     new_2026: viewer_2434map_new_2026
   };
 
+  // 全タブパネル取得
+  const panels = {
+    main: document.getElementById("normal_tab01"),
+    all: document.getElementById("all_tab01"),
+    nether: document.getElementById("nether_tab01"),
+    land: document.getElementById("land_tab01"),
+    new: document.getElementById("newworld_tab01"),
+    new_all: document.getElementById("newworld_all_tab01"),
+    new_nether: document.getElementById("newworld_nether_tab01"),
+    sakura: document.getElementById("sakura_tab01"),
+    new_2026: document.getElementById("newworld_2026_tab01")
+  };
+
+  Object.entries(panels).forEach(([key, panel]) => {
+    if (!panel) return;
+    panel.style.display = (key === mapId) ? "block" : "none";
+  });
+
+  // OpenSeadragonだけ後処理
   Object.entries(viewers).forEach(([key, v]) => {
     if (!v) return;
     const isActive = (key === mapId);
