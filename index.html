@@ -257,9 +257,11 @@ function switchMap(mapId, btn){
     main: viewer_2434map_main,
     all: viewer_2434map_all,
     nether: viewer_2434map_nether,
+    land: viewer_2434map_land,
     new: viewer_2434map_new,
     new_all: viewer_2434map_new_all,
     new_nether: viewer_2434map_new_nether,
+    sakura: viewer_2434map_sakura,
     new_2026: viewer_2434map_new_2026
   };
 
@@ -276,10 +278,11 @@ function switchMap(mapId, btn){
     new_2026: document.getElementById("newworld_2026_tab01")
   };
 
+// 不要かも
   Object.entries(panels).forEach(([key, panel]) => {
     if (!panel) return;
     panel.style.display = (key === mapId) ? "block" : "none";
-  });
+  });// 不要かもここまで
 
   // OpenSeadragonだけ後処理
   Object.entries(viewers).forEach(([key, v]) => {
@@ -292,12 +295,14 @@ function switchMap(mapId, btn){
        v.forceRedraw?.();
        v.viewport.update();
        v.viewport.goHome(true);
+        v.updateMarkerScale?.();
 
-       requestAnimationFrame(() => {
+/*       requestAnimationFrame(() => {
         // サイズ再計算
         v.viewport.update();
         v.updateMarkerScale?.();
        });
+*/
       });
     }
   });
@@ -717,8 +722,32 @@ window.addEventListener("load", () => {
 
 <!--にじさんじランドタブ-->
 <div id="land_tab01" class="cp_tabpanel">
+<!--
 	<p id="PageTopBtn"><a href="#wrap">▲</a></p>
 	<img src="img/2434map_land.png">
+-->
+  <div id="contentDiv_land" class="osd_disp"></div>
+
+  <script>
+   var viewer_2434map_land = OpenSeadragon({
+    id: "contentDiv_land",
+    prefixUrl: "images/",
+    tileSources: {
+        type: "image",
+        url: "img/2434map_land.png"
+    },
+    showNavigator: true
+   });
+
+   viewer_2434map_land.baseIconSize = 30;
+   viewer_2434map_land.mapId = "land";
+   viewer_2434map_land.zoomFactor = 0.4;
+
+   attachZoomHandler(viewer_2434map_land, viewer_2434map_land.zoomFactor);
+
+   viewer_2434map_land.addHandler('open', function(){  // landはマーカー無いので空
+   });
+  </script>
 </div>
 
 
@@ -815,8 +844,29 @@ window.addEventListener("load", () => {
 
 <!--桜ンボ村タブ-->
 <div id="sakura_tab01" class="cp_tabpanel">
+<!--
 	<p id="PageTopBtn"><a href="#wrap">▲</a></p>
 	<img src="img/2434map_nbo.png">
+-->
+ <div id="contentDiv_sakura" class="osd_disp"></div>
+
+ <script>
+  var viewer_2434map_sakura = OpenSeadragon({
+    id: "contentDiv_sakura",
+    prefixUrl: "images/",
+    tileSources: {
+        type: "image",
+        url: "img/2434map_nbo.png"
+    },
+    showNavigator: true
+  });
+  viewer_2434map_sakura.baseIconSize = 30;
+  viewer_2434map_sakura.mapId = "sakura";
+  viewer_2434map_sakura.zoomFactor = 0.4;
+
+  attachZoomHandler(viewer_2434map_sakura, viewer_2434map_sakura.zoomFactor);
+
+ </script>
 </div>
 
 
