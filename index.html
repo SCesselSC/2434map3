@@ -506,15 +506,15 @@ window.addEventListener("load", () => {
   }
 
   .map-toggle{
-    font-size: 30px;   /* ハンバーガーボタンサイズ */
-    display: block; /* スマホだけ表示 */
-    margin-right: 10px; /* 既存UIを右に押し出す */
+    font-size: 30px;   		/* ハンバーガーボタンサイズ */
+    display: block; 		/* スマホだけ表示 */
+    margin-right: 10px; 	/* 既存UIを右に押し出す */
   }
 
   .map-menu{
     position: absolute;
-    top: 100%;   /* ← ボタンの真下に出す */
-    left: 0;     /* ← ☰の左端に揃える */
+    top: 100%;   		/* ボタンの真下に出す */
+    left: 0;     		/* ☰の左端に揃える */
 
     display: none; /* 初期は閉じる */
     flex-direction: column;
@@ -523,6 +523,7 @@ window.addEventListener("load", () => {
     padding: 6px;
     margin-top: 6px;
     border-radius: 6px;
+    min-width: 140px;	/* タグボタン文字列枠確保 */
   }
 
   .map-menu.open{
@@ -560,7 +561,7 @@ window.addEventListener("load", () => {
   <button onclick="switchMap('new_all')">新鯖全体地図</button>
   <button onclick="switchMap('new_nether')">新鯖ネザー地図</button>
   <button onclick="switchMap('sakura')">桜ンボ村</button>
-  <button onclick="switchMap('new_2026')">新鯖通常拡張テスト</button>
+  <button onclick="switchMap('new_2026')">新鯖通常拡張工事中</button>
  </div>
 </div>
 
@@ -811,7 +812,7 @@ window.addEventListener("load", () => {
 	</script>
 </div>
 -->
-<!--新鯖通常拡張テストタブ-->
+<!--新鯖通常拡張工事中タブ-->
 <div id="newworld_2026_tab01" class="cp_tabpanel">
 	<div id="contentDiv_new_2026" class="osd_disp"></div>
 	<script type="text/javascript">
@@ -826,7 +827,7 @@ window.addEventListener("load", () => {
 		viewer_2434map_new_2026.baseIconSize = 44;	//アイコン初期サイズ
 		viewer_2434map_new_2026.mapId = "new_2026";
 
-		// 新鯖通常拡張テスト地図タブに乗せるアイコンの倍率をセット 拡大倍率 値が大きいほど、拡大スピードが速い
+		// 新鯖通常拡張工事中地図タブに乗せるアイコンの倍率をセット 拡大倍率 値が大きいほど、拡大スピードが速い
 		viewer_2434map_new_2026.zoomFactor = 0.4;
 	
 		// 拡大縮小ハンドラーを登録
