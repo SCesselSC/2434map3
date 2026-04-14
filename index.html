@@ -239,7 +239,19 @@ const isMobile = window.innerWidth < 768;
 /* =========================
    Googleマップ風切替
 ========================= */
+let activeTabButton = null;
 function switchMap(mapId){
+
+  // 既存のボタン選択解除
+  if(activeTabButton){
+    activeTabButton.classList.remove("active-tab");
+  }
+
+  // 今押したボタンを保存＆強調
+  if(btn){
+    btn.classList.add("active-tab");
+    activeTabButton = btn;
+  }
 
   const viewers = {
     main: viewer_2434map_main,
@@ -479,6 +491,14 @@ window.addEventListener("load", () => {
   flex-wrap: wrap;
   gap: 6px;
 }
+/* 選択中タブ色変え */
+.map-menu button.active-tab{
+  background: #4a90e2;
+  color: white;
+  border: 1px solid #2f6fb2;
+  box-shadow: 0 0 6px rgba(74,144,226,0.5);
+  transform: translateY(1px);
+}
 /* ===  PC用 ===*/
 @media (min-width: 769px){
   .map-switch button{
@@ -523,7 +543,7 @@ window.addEventListener("load", () => {
     padding: 6px;
     margin-top: 6px;
     border-radius: 6px;
-    min-width: 134px;	/* タグボタン文字列枠確保 */
+    min-width: 132px;	/* タグボタン文字列枠確保 */
   }
 
   .map-menu.open{
@@ -557,15 +577,15 @@ window.addEventListener("load", () => {
 <div class="map-switch">
  <button class="map-toggle" onclick="toggleMapMenu()">☰</button>
  <div class="map-menu">
-  <button onclick="switchMap('main')">通常地図</button>
-  <button onclick="switchMap('all')">全体地図</button>
-  <button onclick="switchMap('nether')">ネザー地図</button>
-  <button onclick="switchMap('land')">にじさんじランド</button>
-  <button onclick="switchMap('new')">新鯖通常地図</button>
-  <button onclick="switchMap('new_all')">新鯖全体地図</button>
-  <button onclick="switchMap('new_nether')">新鯖ネザー地図</button>
-  <button onclick="switchMap('sakura')">桜ンボ村</button>
-  <button onclick="switchMap('new_2026')">新鯖通常拡張工事中</button>
+  <button onclick="switchMap('main', this)">通常地図</button>
+  <button onclick="switchMap('all', this)">全体地図</button>
+  <button onclick="switchMap('nether', this)">ネザー地図</button>
+  <button onclick="switchMap('land', this)">にじさんじランド</button>
+  <button onclick="switchMap('new', this)">新鯖通常地図</button>
+  <button onclick="switchMap('new_all', this)">新鯖全体地図</button>
+  <button onclick="switchMap('new_nether', this)">新鯖ネザー地図</button>
+  <button onclick="switchMap('sakura', this)">桜ンボ村</button>
+  <button onclick="switchMap('new_2026', this)">新鯖通常拡張工事中</button>
  </div>
 </div>
 
