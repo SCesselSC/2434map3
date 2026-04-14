@@ -41,14 +41,15 @@ function attachZoomHandler(viewer, zoomFactor){//各地図の倍率のための�
     
     viewer.zoomFactor = zoomFactor;
     function updateScale(){
-        const zoom = viewer.viewport.getZoom(true);	// 現在の倍率
-        const scale = zoom * viewer.zoomFactor;		// 最小倍率を基準にスケーリング
+        const zoom = viewer.viewport.getZoom(true);		// 現在の倍率
+        const baseScale = zoom * viewer.zoomFactor;		// 最小倍率を基準にスケーリング
+	const mobileScale = window.innerWidth < 768 ? 0.2 : 1;	// スマホ用スケール設定 サイズ0.2倍
 
         viewer.element.querySelectorAll('.map-marker').forEach(el => {
             const initial = el.dataset.initialTransform || "";
 	    const match = initial.match(/scale\((.+)\)/);
 	    const initialScale = match ? parseFloat(match[1]) : 1; // match がなければ 1 を使う
-            el.style.transform = `${initial} scale(${scale / initialScale})`;
+            el.style.transform = `${initial} scale(${(baseScale * mobileScale) / initialScale})`;
         });
     }
 
@@ -94,6 +95,7 @@ function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spr
     const bgSize = imageSize * scaleRatio;
     const posX = (cellSize * (spriteX - 1)) * scaleRatio;
     const posY = (cellSize * (spriteY - 1)) * scaleRatio;
+
 
     iconHTML = `
     <div
@@ -151,8 +153,10 @@ function addMarker(viewer, imageX, imageY, label, zahyouFlag, icon, spriteX, spr
 
  // ★ 初期 scale をタブごとに設定
     const zoom = viewer.viewport.getZoom(true);
-    const scale = zoom * (viewer.zoomFactor || 0.4); // viewer.zoomFactor があれば使う 安全のためのデフォルト値0.4(目安)
+    const scale = zoom * (viewer.zoomFactor || 0.4); 		// viewer.zoomFactor があれば使う 安全のためのデフォルト値0.4(目安)
+
     el.style.transform = `scale(${scale})`;
+    el.style.transformOrigin = "center bottom";
 
 
 // 初期 transform を保持しておく
@@ -379,7 +383,7 @@ window.addEventListener("load", () => {
 
 .map-marker{
  /* transform: translate(-50%, -100%);	一旦削除 */
-  transform-origin: center center; /* アイコンの中心を基準に拡大 */
+//  transform-origin: center center; /* アイコンの中心を基準に拡大 */
   /* transform: scale(0.3);          /* 初期倍率に応じて小さくする */
   /* transition: transform 0.2s; マーカー 0.2秒遅延アニメーション 不要 */
 
@@ -516,6 +520,11 @@ window.addEventListener("load", () => {
   .map-menu button{
     font-size: 12px;
     padding: 6px;
+  }
+
+  .map-marker{
+//    transform: scale(0.2);/* アイコンサイズを縮小 */
+//    transform-origin: center bottom; /* 位置修正 */
   }
 
 }

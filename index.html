@@ -492,6 +492,13 @@ window.addEventListener("load", () => {
 
 /* スマホ用UI */
 @media (max-width: 768px){
+  .map-switch{
+    left: 10px;		/* スマホ用は左寄せに変更 */
+    right: auto;
+    display: flex;
+    align-items: center;
+  }
+
   .map-switch button{
     padding: 4px 6px;
     font-size: 10px;
@@ -501,9 +508,14 @@ window.addEventListener("load", () => {
   .map-toggle{
     font-size: 30px;   /* ハンバーガーボタンサイズ */
     display: block; /* スマホだけ表示 */
+    margin-right: 10px; /* 既存UIを右に押し出す */
   }
 
   .map-menu{
+    position: absolute;
+    top: 100%;   /* ← ボタンの真下に出す */
+    left: 0;     /* ← ☰の左端に揃える */
+
     display: none; /* 初期は閉じる */
     flex-direction: column;
     background: white;
