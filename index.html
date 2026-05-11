@@ -20,11 +20,11 @@ const mapConfigs = {
     all:         { width: 18892, height: 15247, minX: -40960,	maxX: 10112,	minZ: -30720,	maxZ: 10112 },
     nether:      { width: 11086, height:  8905, minX: -4224,	maxX: 1280,	minZ: -3328,	maxZ: 1280 },
 
-    new:         { width:  7166, height:  7166, minX: -640-64,	maxX: 896+64,	minZ: -640-64,	maxZ: 896+64 },
+    new:         { width: 14336, height: 13312, minX: -2048-64,	maxX: 1408+64,	minZ: -2304-64,	maxZ: 896+64 },
     new_all:     { width:  9452, height:  9450, minX: -10240,	maxX: 10112,	minZ: -10240,	maxZ: 10112},
     new_nether:  { width:  9734, height:  9653, minX: -3968-128,maxX: 896+128,	minZ: -2432-128,maxZ: 2432+128 },
 
-    new_2026:    { width: 14336, height: 13312, minX: -2048-64,	maxX: 1408+64,	minZ: -2304-64,	maxZ: 896+64 }//,
+   // new_2026:    { width: 14336, height: 13312, minX: -2048-64,	maxX: 1408+64,	minZ: -2304-64,	maxZ: 896+64 }//,
     //omatsuri2023:{ width:  9452, height:  9450, minX: -10240,	maxX: 10112,	minZ: -10240,	maxZ: 10112 }
 };
 
@@ -227,8 +227,7 @@ window.addEventListener("resize", () => {
     viewer_2434map_nether,
     viewer_2434map_new,
     viewer_2434map_new_all,
-    viewer_2434map_new_nether,
-    viewer_2434map_new_2026
+    viewer_2434map_new_nether
   ].forEach(v => {
     if (!v) return;
     v.viewport && v.viewport.update();
@@ -263,8 +262,7 @@ function switchMap(mapId, btn){
     new: viewer_2434map_new,
     new_all: viewer_2434map_new_all,
     new_nether: viewer_2434map_new_nether,
-    sakura: viewer_2434map_sakura,
-    new_2026: viewer_2434map_new_2026
+    sakura: viewer_2434map_sakura
   };
 
   // 全タブパネル取得
@@ -276,8 +274,8 @@ function switchMap(mapId, btn){
     new: document.getElementById("newworld_tab01"),
     new_all: document.getElementById("newworld_all_tab01"),
     new_nether: document.getElementById("newworld_nether_tab01"),
-    sakura: document.getElementById("sakura_tab01"),
-    new_2026: document.getElementById("newworld_2026_tab01")
+    sakura: document.getElementById("sakura_tab01")//,
+    //new_2026: document.getElementById("newworld_2026_tab01")
   };
 
 // 不要かも
@@ -595,7 +593,7 @@ window.addEventListener("load", () => {
   <button onclick="switchMap('new_all', this)">新鯖全体地図</button>
   <button onclick="switchMap('new_nether', this)">新鯖ネザー地図</button>
   <button onclick="switchMap('sakura', this)">桜ンボ村</button>
-  <button onclick="switchMap('new_2026', this)">新鯖通常拡張工事中</button>
+ <!--  <button onclick="switchMap('new_2026', this)">新鯖通常拡張工事中</button>） -->
  </div>
 </div>
 
@@ -763,8 +761,8 @@ window.addEventListener("load", () => {
 		var viewer_2434map_new = OpenSeadragon({
 			showNavigator: true,
 			id:              "contentDiv_new",
-			prefixUrl:       "2434map_new_files/",
-			tileSources:     "2434map_new.xml"
+			prefixUrl:       "2434map_new_files_2026//",
+			tileSources:     "2434map_new_2026.xml"
 		});
 
 		// viewer に mapId を追加
@@ -891,7 +889,7 @@ window.addEventListener("load", () => {
 	</script>
 </div>
 -->
-<!--新鯖通常拡張工事中タブ-->
+<!--新鯖通常拡張工事中タブ
 <div id="newworld_2026_tab01" class="cp_tabpanel">
 	<div id="contentDiv_new_2026" class="osd_disp"></div>
 	<script type="text/javascript">
@@ -919,7 +917,7 @@ window.addEventListener("load", () => {
 	</script>
 </div>
 
-
+-->
 
 
 <!--ライバー参考タブ
