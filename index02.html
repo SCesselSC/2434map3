@@ -8,6 +8,8 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link rel="stylesheet" type="text/css" href="test.css" >
 	<link rel="icon" type="image/png" href="./img/favicon.png">
+	<link rel="apple-touch-icon" sizes="180x180" href="./img/niji38iconA.png">
+	<link rel="manifest" href="./manifest.json">
 	<script src="script/openseadragon.js"></script>
 	<title>2434map</title>
 
@@ -18,11 +20,11 @@ const mapConfigs = {
     all:         { width: 18892, height: 15247, minX: -40960,	maxX: 10112,	minZ: -30720,	maxZ: 10112 },
     nether:      { width: 11086, height:  8905, minX: -4224,	maxX: 1280,	minZ: -3328,	maxZ: 1280 },
 
-    new:         { width:  7166, height:  7166, minX: -640-64,	maxX: 896+64,	minZ: -640-64,	maxZ: 896+64 },
+    new:         { width: 14336, height: 13312, minX: -2048-64,	maxX: 1408+64,	minZ: -2304-64,	maxZ: 896+64 },
     new_all:     { width:  9452, height:  9450, minX: -10240,	maxX: 10112,	minZ: -10240,	maxZ: 10112},
     new_nether:  { width:  9734, height:  9653, minX: -3968-128,maxX: 896+128,	minZ: -2432-128,maxZ: 2432+128 },
 
-    new_2026:    { width: 14336, height: 13312, minX: -2048-64,	maxX: 1408+64,	minZ: -2304-64,	maxZ: 896+64 }//,
+   // new_2026:    { width: 14336, height: 13312, minX: -2048-64,	maxX: 1408+64,	minZ: -2304-64,	maxZ: 896+64 }//,
     //omatsuri2023:{ width:  9452, height:  9450, minX: -10240,	maxX: 10112,	minZ: -10240,	maxZ: 10112 }
 };
 
@@ -225,8 +227,7 @@ window.addEventListener("resize", () => {
     viewer_2434map_nether,
     viewer_2434map_new,
     viewer_2434map_new_all,
-    viewer_2434map_new_nether,
-    viewer_2434map_new_2026
+    viewer_2434map_new_nether
   ].forEach(v => {
     if (!v) return;
     v.viewport && v.viewport.update();
@@ -239,16 +240,29 @@ const isMobile = window.innerWidth < 768;
 /* =========================
    Googleマップ風切替
 ========================= */
-function switchMap(mapId){
+let activeTabButton = null;
+function switchMap(mapId, btn){
+
+  // 既存のボタン選択解除
+  if(activeTabButton){
+    activeTabButton.classList.remove("active-tab");
+  }
+
+  // 今押したボタンを保存＆強調
+  if(btn){
+    btn.classList.add("active-tab");
+    activeTabButton = btn;
+  }
 
   const viewers = {
     main: viewer_2434map_main,
     all: viewer_2434map_all,
     nether: viewer_2434map_nether,
+    land: viewer_2434map_land,
     new: viewer_2434map_new,
     new_all: viewer_2434map_new_all,
     new_nether: viewer_2434map_new_nether,
-    new_2026: viewer_2434map_new_2026
+    sakura: viewer_2434map_sakura
   };
 
   // 全タブパネル取得
@@ -260,14 +274,15 @@ function switchMap(mapId){
     new: document.getElementById("newworld_tab01"),
     new_all: document.getElementById("newworld_all_tab01"),
     new_nether: document.getElementById("newworld_nether_tab01"),
-    sakura: document.getElementById("sakura_tab01"),
-    new_2026: document.getElementById("newworld_2026_tab01")
+    sakura: document.getElementById("sakura_tab01")//,
+    //new_2026: document.getElementById("newworld_2026_tab01")
   };
 
+// 不要かも
   Object.entries(panels).forEach(([key, panel]) => {
     if (!panel) return;
     panel.style.display = (key === mapId) ? "block" : "none";
-  });
+  });// 不要かもここまで
 
   // OpenSeadragonだけ後処理
   Object.entries(viewers).forEach(([key, v]) => {
@@ -280,12 +295,14 @@ function switchMap(mapId){
        v.forceRedraw?.();
        v.viewport.update();
        v.viewport.goHome(true);
+        v.updateMarkerScale?.();
 
-       requestAnimationFrame(() => {
+/*       requestAnimationFrame(() => {
         // サイズ再計算
         v.viewport.update();
         v.updateMarkerScale?.();
        });
+*/
       });
     }
   });
@@ -479,6 +496,14 @@ window.addEventListener("load", () => {
   flex-wrap: wrap;
   gap: 6px;
 }
+/* 選択中タブ色変え */
+.map-menu button.active-tab{
+  background: #4a90e2;
+  color: white;
+  border: 1px solid #2f6fb2;
+  box-shadow: 0 0 6px rgba(74,144,226,0.5);
+  transform: translateY(1px);
+}
 /* ===  PC用 ===*/
 @media (min-width: 769px){
   .map-switch button{
@@ -492,6 +517,13 @@ window.addEventListener("load", () => {
 
 /* スマホ用UI */
 @media (max-width: 768px){
+  .map-switch{
+    left: 10px;		/* スマホ用は左寄せに変更 */
+    right: auto;
+    display: flex;
+    align-items: center;
+  }
+
   .map-switch button{
     padding: 4px 6px;
     font-size: 10px;
@@ -499,18 +531,27 @@ window.addEventListener("load", () => {
   }
 
   .map-toggle{
-    font-size: 30px;   /* ハンバーガーボタンサイズ */
-    display: block; /* スマホだけ表示 */
+    font-size: 40px;   		/* ハンバーガーボタンサイズ */
+    display: block; 		/* スマホだけ表示 */
+    margin-right: 10px; 	/* 既存UIを右に押し出す */
+  }
+  .map-switch .map-toggle{
+    font-size: 30px;			/* スマホ用バーガーボタンサイズ設定箇所 */
   }
 
   .map-menu{
+    position: absolute;
+    top: 100%;   		/* ボタンの真下に出す */
+    left: 0;     		/* ☰の左端に揃える */
+
     display: none; /* 初期は閉じる */
     flex-direction: column;
     background: white;
     border: 1px solid #ccc;
-    padding: 6px;
+    padding: 4px;	/* 内側余白 */
     margin-top: 6px;
     border-radius: 6px;
+    min-width: 131px;	/* タグボタン文字列枠確保 */
   }
 
   .map-menu.open{
@@ -520,7 +561,11 @@ window.addEventListener("load", () => {
   .map-menu button{
     font-size: 12px;
     padding: 6px;
+
   }
+.openseadragon-controls{
+  right: 40px;
+}
 
   .map-marker{
 //    transform: scale(0.2);/* アイコンサイズを縮小 */
@@ -540,15 +585,15 @@ window.addEventListener("load", () => {
 <div class="map-switch">
  <button class="map-toggle" onclick="toggleMapMenu()">☰</button>
  <div class="map-menu">
-  <button onclick="switchMap('main')">通常地図</button>
-  <button onclick="switchMap('all')">全体地図</button>
-  <button onclick="switchMap('nether')">ネザー地図</button>
-  <button onclick="switchMap('land')">にじさんじランド</button>
-  <button onclick="switchMap('new')">新鯖通常地図</button>
-  <button onclick="switchMap('new_all')">新鯖全体地図</button>
-  <button onclick="switchMap('new_nether')">新鯖ネザー地図</button>
-  <button onclick="switchMap('sakura')">桜ンボ村</button>
-  <button onclick="switchMap('new_2026')">新鯖通常拡張テスト</button>
+  <button onclick="switchMap('main', this)">通常地図</button>
+  <button onclick="switchMap('all', this)">全体地図</button>
+  <button onclick="switchMap('nether', this)">ネザー地図</button>
+  <button onclick="switchMap('land', this)">にじさんじランド</button>
+  <button onclick="switchMap('new', this)">新鯖通常地図</button>
+  <button onclick="switchMap('new_all', this)">新鯖全体地図</button>
+  <button onclick="switchMap('new_nether', this)">新鯖ネザー地図</button>
+  <button onclick="switchMap('sakura', this)">桜ンボ村</button>
+ <!--  <button onclick="switchMap('new_2026', this)">新鯖通常拡張工事中</button>） -->
  </div>
 </div>
 
@@ -680,8 +725,32 @@ window.addEventListener("load", () => {
 
 <!--にじさんじランドタブ-->
 <div id="land_tab01" class="cp_tabpanel">
+<!--
 	<p id="PageTopBtn"><a href="#wrap">▲</a></p>
 	<img src="img/2434map_land.png">
+-->
+  <div id="contentDiv_land" class="osd_disp"></div>
+
+  <script>
+   var viewer_2434map_land = OpenSeadragon({
+    id: "contentDiv_land",
+    prefixUrl: "images/",
+    tileSources: {
+        type: "image",
+        url: "img/2434map_land.png"
+    },
+    showNavigator: true
+   });
+
+   viewer_2434map_land.baseIconSize = 30;
+   viewer_2434map_land.mapId = "land";
+   viewer_2434map_land.zoomFactor = 0.4;
+
+   attachZoomHandler(viewer_2434map_land, viewer_2434map_land.zoomFactor);
+
+   viewer_2434map_land.addHandler('open', function(){  // landはマーカー無いので空
+   });
+  </script>
 </div>
 
 
@@ -692,8 +761,8 @@ window.addEventListener("load", () => {
 		var viewer_2434map_new = OpenSeadragon({
 			showNavigator: true,
 			id:              "contentDiv_new",
-			prefixUrl:       "2434map_new_files/",
-			tileSources:     "2434map_new.xml"
+			prefixUrl:       "2434map_new_files_2026//",
+			tileSources:     "2434map_new_2026.xml"
 		});
 
 		// viewer に mapId を追加
@@ -778,8 +847,29 @@ window.addEventListener("load", () => {
 
 <!--桜ンボ村タブ-->
 <div id="sakura_tab01" class="cp_tabpanel">
+<!--
 	<p id="PageTopBtn"><a href="#wrap">▲</a></p>
 	<img src="img/2434map_nbo.png">
+-->
+ <div id="contentDiv_sakura" class="osd_disp"></div>
+
+ <script>
+  var viewer_2434map_sakura = OpenSeadragon({
+    id: "contentDiv_sakura",
+    prefixUrl: "images/",
+    tileSources: {
+        type: "image",
+        url: "img/2434map_nbo.png"
+    },
+    showNavigator: true
+  });
+  viewer_2434map_sakura.baseIconSize = 30;
+  viewer_2434map_sakura.mapId = "sakura";
+  viewer_2434map_sakura.zoomFactor = 0.4;
+
+  attachZoomHandler(viewer_2434map_sakura, viewer_2434map_sakura.zoomFactor);
+
+ </script>
 </div>
 
 
@@ -799,7 +889,7 @@ window.addEventListener("load", () => {
 	</script>
 </div>
 -->
-<!--新鯖通常拡張テストタブ-->
+<!--新鯖通常拡張工事中タブ
 <div id="newworld_2026_tab01" class="cp_tabpanel">
 	<div id="contentDiv_new_2026" class="osd_disp"></div>
 	<script type="text/javascript">
@@ -814,7 +904,7 @@ window.addEventListener("load", () => {
 		viewer_2434map_new_2026.baseIconSize = 44;	//アイコン初期サイズ
 		viewer_2434map_new_2026.mapId = "new_2026";
 
-		// 新鯖通常拡張テスト地図タブに乗せるアイコンの倍率をセット 拡大倍率 値が大きいほど、拡大スピードが速い
+		// 新鯖通常拡張工事中地図タブに乗せるアイコンの倍率をセット 拡大倍率 値が大きいほど、拡大スピードが速い
 		viewer_2434map_new_2026.zoomFactor = 0.4;
 	
 		// 拡大縮小ハンドラーを登録
@@ -827,7 +917,7 @@ window.addEventListener("load", () => {
 	</script>
 </div>
 
-
+-->
 
 
 <!--ライバー参考タブ
