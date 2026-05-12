@@ -795,7 +795,8 @@ window.addEventListener("load", () => {
 			const level = Math.min(14, Math.max(9,Math.round(z * 2)));
 
 			// fullpageボタン取得
-			const fullPageBtn = buttons.find(btn => btn.tooltip && btn.tooltip.toLowerCase().includes("full"));
+		//	const fullPageBtn = buttons.find(btn => btn.tooltip && btn.tooltip.toLowerCase().includes("full"));
+		const fullPageBtn = buttons[3];
 			if (!fullPageBtn) return;
 
 			// 画像差し替え
