@@ -779,6 +779,31 @@ window.addEventListener("load", () => {
 		   loadMarkers(viewer_2434map_new, "2434map_new_marker.csv");
 		   //attachZoomHandler(viewer_2434map_new, 0.4);
 		});
+
+
+		//ズーム段階をuiに表示
+		viewer_2434map_new.addHandler('zoom', function(){
+	
+	
+		// 現在ズーム取得
+		const z = viewer_2434map_new.viewport.getZoom();
+
+ 		// 例：9〜14段階に丸める
+		const level = Math.min(14, Math.max(9,Math.round(z * 2)));
+
+		// fullpageボタン取得
+		const buttons = viewer_2434map_new.buttonGroup.buttons;
+		const fullPageBtn = buttons.find(btn => btn.tooltip && btn.tooltip.toLowerCase().includes("full"));
+		if (!fullPageBtn) return;
+
+		// 画像差し替え
+		fullPageBtn.imgRest.src =`../img/fullpage_lv${level}.png`;
+		fullPageBtn.imgHover.src =`../img/fullpage_lv${level}.png`;
+	//	fullPageBtn.imgGroup.src =`../img/fullpage_lv${level}_grouphover.png`;
+	//	fullPageBtn.imgDown.src =`../img/fullpage_lv${level}_pressed.png`;
+
+		});//ズーム段階uiに表示end
+
 	</script>
 </div>
 
