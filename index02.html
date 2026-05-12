@@ -799,9 +799,16 @@ window.addEventListener("load", () => {
 		const fullPageBtn = buttons[3];
 			if (!fullPageBtn) return;
 
+
+		const btn = viewer_2434map_new.buttonGroup?.buttons?.[3]; if (!btn) return;
+		const img = btn.element?.querySelector('img'); if (!img) return;
+		img.src = `../img/fullpage_lv${level}.png`;
+
+
+
 			// 画像差し替え
-			fullPageBtn.imgRest.src =`../img/fullpage_lv${level}.png`;
-			fullPageBtn.imgHover.src =`../img/fullpage_lv${level}.png`;
+		//	fullPageBtn.imgRest.src =`../img/fullpage_lv${level}.png`;
+		//	fullPageBtn.imgHover.src =`../img/fullpage_lv${level}.png`;
 		//	fullPageBtn.imgGroup.src =`../img/fullpage_lv${level}_grouphover.png`;
 		//	fullPageBtn.imgDown.src =`../img/fullpage_lv${level}_pressed.png`;
 
