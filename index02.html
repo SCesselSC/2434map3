@@ -769,6 +769,8 @@ window.addEventListener("load", () => {
 		viewer_2434map_new.baseIconSize = 44;	//アイコン初期サイズ
 		viewer_2434map_new.mapId = "new";
 
+		let uiReady = false;//ui zoom表示準備 初期化完了フラグ
+
 		// 新鯖通常地図タブに乗せるアイコンの倍率をセット 拡大倍率 値が大きいほど、拡大スピードが速い
 		viewer_2434map_new.zoomFactor = 0.4;
 	
@@ -776,6 +778,7 @@ window.addEventListener("load", () => {
 		attachZoomHandler(viewer_2434map_new, viewer_2434map_new.zoomFactor);
 
 		viewer_2434map_new.addHandler('open', function(){
+			uiReady = true;	//ui初期化完了フラグon
 		   loadMarkers(viewer_2434map_new, "2434map_new_marker.csv");
 		   //attachZoomHandler(viewer_2434map_new, 0.4);
 
@@ -783,7 +786,8 @@ window.addEventListener("load", () => {
 
 		   //ズーム段階をuiに表示
 		   viewer_2434map_new.addHandler('zoom', function(){
-	
+			if (!uiReady) return;
+			const buttons = viewer_2434map_new.buttonGroup?.buttons;if (!buttons) return;
 			// 現在ズーム取得
 			const z = viewer_2434map_new.viewport.getZoom();
 
@@ -791,7 +795,6 @@ window.addEventListener("load", () => {
 			const level = Math.min(14, Math.max(9,Math.round(z * 2)));
 
 			// fullpageボタン取得
-			const buttons = viewer_2434map_new.buttonGroup.buttons;if (!buttons) return;
 			const fullPageBtn = buttons.find(btn => btn.tooltip && btn.tooltip.toLowerCase().includes("full"));
 			if (!fullPageBtn) return;
 
