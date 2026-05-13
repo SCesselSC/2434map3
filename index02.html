@@ -804,7 +804,12 @@ let hideTimer_new = null;
 			const z = viewer_2434map_new.viewport.getZoom();
 
 	 		// 例：9〜14段階に丸める
-			const level = Math.min(14, Math.max(9,Math.round(z * 2)));
+			const level = 9;
+if (z >= 0.95) level = 10;
+if (z >= 1.3)  level = 11;
+if (z >= 1.6)  level = 12;
+if (z >= 2.5)  level = 13;
+if (z >= 4.5)  level = 14;
 			console.log("zoom:", z, "level:", level);//ログだし
 
 			const ui = document.getElementById("zoomLevelUI_new");
