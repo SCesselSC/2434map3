@@ -802,11 +802,14 @@ let hideTimer_new = null;
 		viewer_2434map_new.addHandler('zoom', function(){
 			// 現在ズーム取得
 			const z = viewer_2434map_new.viewport.getZoom(true);
-	// map設定取得
-const cfg = mapConfigs[viewer_2434map_new.mapId];
+const maxZoom = viewer_2434map_new.viewport.getMaxZoom();
+	
+const cfg = mapConfigs[viewer_2434map_new.mapId];	// map設定取得
+
+const ratio = z / maxZoom;				// 最大zoom比率
 const maxLevel = Math.ceil(Math.log2(cfg.width));
 // logベース
-let level = Math.round(Math.log2(z) + maxLevel);
+let level = Math.round(Math.log2(ratio) + maxLevel);
 
 // 範囲制限
 level = Math.max(0, Math.min(maxLevel, level));
