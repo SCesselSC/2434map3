@@ -777,7 +777,7 @@ window.addEventListener("load", () => {
 <!--新規開拓ワールドタブ-->
 <div id="newworld_tab01" class="cp_tabpanel">
 	<div id="contentDiv_new" class="osd_disp"></div>
-	<div id="zoomLevelUI_new" class="zoom-ui">Lv: 9</div>
+	<div id="zoomLevelUI_new" class="zoom-ui"></div>
 	<script type="text/javascript">
 		var viewer_2434map_new = OpenSeadragon({
 			showNavigator: true,
@@ -803,52 +803,26 @@ let hideTimer_new = null;
 			// 現在ズーム取得
 			const z = viewer_2434map_new.viewport.getZoom(true);
 
+			// 実際に描画された画像アイテムタイル取得
+			const item = viewer_2434map_new.world.getItemAt(0);
 
-const maxZoom = viewer_2434map_new.viewport.getMaxZoom();	
-const cfg = mapConfigs[viewer_2434map_new.mapId];	// map設定取得
+			// Zoom level取得
+			let level = lastDrawn.length > 0 ? lastDrawn[0].level : 0;
 
-//const ratio = z / maxZoom;				// 最大zoom比率
-//const maxLevel = 14;		//Math.ceil(Math.log2(cfg.width));
-// 逆方向にスケール
-//let level = Math.round(ratio* maxLevel);//Math.log2(ratio)
-
-
-
-    // 実際に描画された画像アイテムタイル取得
-    const item = viewer_2434map_new.world.getItemAt(0);
-
-    // DeepZoom最大level
-    const maxLevel = item.source.maxLevel;
-    // 最大level
-  //  const maxLevel = Math.ceil(Math.log2( Math.max(item.source.dimensions.x,item.source.dimensions.y)));
-
-    // Home倍率（初期fit時）
-    const homeZoom = viewer_2434map_new.viewport.getHomeZoom();
-    // 現在倍率が初期倍率の何倍か
-    const scale = z / homeZoom;
-    // 画像倍率level
- //   const imageZoom = item.viewportToImageZoom(z);
-    // DeepZoom level計算
-    let level = Math.floor(Math.log2(scale));
-
-    // 実際に描画されたタイル取得
-    const lastDrawn =item.lastDrawn || [];
-    if(lastDrawn.length > 0){level = lastDrawn[0].level;}// 最初のタイルlevel取得
-    console.log("描画タイル level:",level,"item:",item);
+			// Zoom最大level制限
+			const maxLevel = item.source?.maxLevel ?? level;
+			level = Math.max(0, Math.min(maxLevel, level));
 
 
+			// 実際に描画されたタイル取得
+			const lastDrawn =item.lastDrawn || [];
+			if(lastDrawn.length > 0){level = lastDrawn[0].level;}// 最後のタイルlevel取得
+		console.log("描画タイル level:",level,"lastDrawn:",lastDrawn);//ログだし
 
-    // 範囲制限
-    level = Math.max(0, Math.min(maxLevel, level));
-
-   // console.log("LEVEL:", Math.round(level));
-//let level;if (z < 1.59) level = 10;else if (z < 2.747) level = 11;else if (z < 4.747) level = 12;else if (z < 9.845) level = 13;else level = 14;
-			console.log("viewportzoom:",z,"homeZoom:", homeZoom,"scale:", scale, "level:", level);//ログだし
 
 			const ui = document.getElementById("zoomLevelUI_new");
     			if (!ui) return;
 
- //   ui.textContent = "Lv: " + level;
 			ui.innerHTML = `<img src="./img/zoom_lv${level}.png">`;
    			ui.classList.add("show");
 
