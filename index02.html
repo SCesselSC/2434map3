@@ -795,6 +795,9 @@ window.addEventListener("load", () => {
 			const level = Math.min(14, Math.max(9,Math.round(z * 2)));
 
 console.log("zoom:", z, "level:", level);//ログだし
+console.log("zoom event fired");
+console.log("uiReady:", uiReady);
+console.log("zoom fired", uiReady);
 
 			// fullpageボタン取得
 		//	const fullPageBtn = buttons.find(btn => btn.tooltip && btn.tooltip.toLowerCase().includes("full"));
