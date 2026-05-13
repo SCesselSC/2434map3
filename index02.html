@@ -786,6 +786,10 @@ window.addEventListener("load", () => {
 
 		   //ズーム段階をuiに表示
 		   viewer_2434map_new.addHandler('zoom', function(){
+console.log("zoom:", z, "level:", level);//ログだし
+console.log("zoom event fired");
+console.log("uiReady:", uiReady);
+console.log("zoom fired", uiReady);
 			if (!uiReady) return;
 			const buttons = viewer_2434map_new.buttonGroup?.buttons;if (!buttons) return;
 			// 現在ズーム取得
