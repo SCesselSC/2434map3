@@ -321,6 +321,38 @@ window.addEventListener("DOMContentLoaded", () => {
   });
  });
 });
+
+
+// ズームサイズ確認アイコンUI表示
+function ViewZoomLevelUI(viewer, uiId){
+
+    let hideTimer = null;
+
+    viewer.addHandler('animation', function(){
+
+        const item = viewer.world.getItemAt(0);
+        if(!item) return;
+
+        const lastDrawn = item.lastDrawn || [];
+
+	let level = lastDrawn.length > 0 ? lastDrawn[0].level : 0;
+
+        const maxLevel = item.source?.maxLevel ?? level;
+        level = Math.max(0, Math.min(maxLevel, level));
+console.log("描画タイル level:",level);//ログだし
+        const ui = document.getElementById(uiId);
+        if(!ui) return;
+
+        ui.innerHTML = `<img src="./img/zoom_lv${level}.png">`;
+        ui.classList.add("show");
+
+        clearTimeout(hideTimer);
+
+        hideTimer = setTimeout(() => {
+            ui.classList.remove("show");
+        }, 2000);
+    });
+}
 /* =========================
    初期表示
 ========================= */
@@ -504,6 +536,25 @@ window.addEventListener("load", () => {
   box-shadow: 0 0 6px rgba(74,144,226,0.5);
   transform: translateY(1px);
 }
+
+/* ズームサイズ確認アイコン */
+.zoom-ui {
+    position: fixed;
+    top: 0px;
+    left: 140px;
+    padding: 6px 10px;
+
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.5s;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.zoom-ui.show {
+    opacity: 1;
+}
+
 /* ===  PC用 ===*/
 @media (min-width: 769px){
   .map-switch button{
@@ -568,11 +619,14 @@ window.addEventListener("load", () => {
 }
 
   .map-marker{
-//    transform: scale(0.2);/* アイコンサイズを縮小 */
-//    transform-origin: center bottom; /* 位置修正 */
+/*    transform: scale(0.2);/* アイコンサイズを縮小 */
+/*    transform-origin: center bottom; /* 位置修正 */
   }
 
-}
+.zoom-ui {padding: 0;}
+}/* @media 768px end*/
+
+
 
 </style>
 </head>
@@ -607,6 +661,7 @@ window.addEventListener("load", () => {
 <!--通常地図タブ-->
 <div id="normal_tab01" class="cp_tabpanel">
 	<div id="contentDiv_main" class="osd_disp"></div>
+	<div id="zoomLevelUI_main" class="zoom-ui"></div>
 	<script type="text/javascript">
 
 		var viewer_2434map_main = OpenSeadragon({
@@ -626,6 +681,9 @@ window.addEventListener("load", () => {
 		// 拡大縮小ハンドラーを登録
 		attachZoomHandler(viewer_2434map_main, viewer_2434map_main.zoomFactor);
 
+		//ズームサイズ確認アイコンUI表示
+		ViewZoomLevelUI(viewer_2434map_main, "zoomLevelUI_main");
+
 		viewer_2434map_main.addHandler('open', function(){
 		   loadMarkers(viewer_2434map_main, "2434map_marker.csv");
 		   //attachZoomHandler(viewer_2434map_main,0.4);	
@@ -641,6 +699,7 @@ window.addEventListener("load", () => {
 <!--全体地図タブ-->
 <div id="all_tab01" class="cp_tabpanel">
 	<div id="contentDiv_all" class="osd_disp"></div>
+	<div id="zoomLevelUI_all" class="zoom-ui"></div>
 	<script type="text/javascript">
 		var viewer_2434map_all = OpenSeadragon({
 			showNavigator: true,
@@ -658,6 +717,9 @@ window.addEventListener("load", () => {
 	
 		// 拡大縮小ハンドラーを登録
 		attachZoomHandler(viewer_2434map_all, viewer_2434map_all.zoomFactor);
+
+		//ズームサイズ確認アイコンUI表示
+		ViewZoomLevelUI(viewer_2434map_all, "zoomLevelUI_all");
 
 		viewer_2434map_all.addHandler('open', function(){
 		   loadMarkers(viewer_2434map_all, "2434map_all_marker.csv");
@@ -697,6 +759,7 @@ window.addEventListener("load", () => {
 <!--ネザー地図タブ-->
 <div id="nether_tab01" class="cp_tabpanel">
 	<div id="contentDiv_nether" class="osd_disp"></div>
+	<div id="zoomLevelUI_nether" class="zoom-ui"></div>
 	<script type="text/javascript">
 		var viewer_2434map_nether = OpenSeadragon({
 			showNavigator: true,
@@ -714,6 +777,9 @@ window.addEventListener("load", () => {
 	
 		// 拡大縮小ハンドラーを登録
 		attachZoomHandler(viewer_2434map_nether, viewer_2434map_nether.zoomFactor);
+
+		//ズームサイズ確認アイコンUI表示
+		ViewZoomLevelUI(viewer_2434map_nether, "zoomLevelUI_nether");
 
 		viewer_2434map_nether.addHandler('open', function(){
 		   loadMarkers(viewer_2434map_nether, "2434map_nether_marker.csv");
@@ -757,6 +823,7 @@ window.addEventListener("load", () => {
 <!--新規開拓ワールドタブ-->
 <div id="newworld_tab01" class="cp_tabpanel">
 	<div id="contentDiv_new" class="osd_disp"></div>
+	<div id="zoomLevelUI_new" class="zoom-ui"></div>
 	<script type="text/javascript">
 		var viewer_2434map_new = OpenSeadragon({
 			showNavigator: true,
@@ -775,10 +842,18 @@ window.addEventListener("load", () => {
 		// 拡大縮小ハンドラーを登録
 		attachZoomHandler(viewer_2434map_new, viewer_2434map_new.zoomFactor);
 
+		//ズームサイズ確認アイコンUI表示
+		ViewZoomLevelUI(viewer_2434map_new, "zoomLevelUI_new");
+
 		viewer_2434map_new.addHandler('open', function(){
+			uiReady = true;	//ui初期化完了フラグon
 		   loadMarkers(viewer_2434map_new, "2434map_new_marker.csv");
 		   //attachZoomHandler(viewer_2434map_new, 0.4);
+
+
+		
 		});
+
 	</script>
 </div>
 
@@ -788,6 +863,7 @@ window.addEventListener("load", () => {
 <!--新規開拓ワールド全体タブ-->
 <div id="newworld_all_tab01" class="cp_tabpanel">
 	<div id="contentDiv_new_all" class="osd_disp"></div>
+	<div id="zoomLevelUI_new_all" class="zoom-ui"></div>
 	<script type="text/javascript">
 		var viewer_2434map_new_all = OpenSeadragon({
 			showNavigator: true,
@@ -806,6 +882,9 @@ window.addEventListener("load", () => {
 		// 拡大縮小ハンドラーを登録
 		attachZoomHandler(viewer_2434map_new_all, viewer_2434map_new_all.zoomFactor);
 
+		//ズームサイズ確認アイコンUI表示
+		ViewZoomLevelUI(viewer_2434map_new_all, "zoomLevelUI_new_all");
+
 		viewer_2434map_new_all.addHandler('open', function(){
 		   loadMarkers(viewer_2434map_new_all, "2434map_new_all_marker.csv");
 		   //attachZoomHandler(viewer_2434map_new_all, 0.2);
@@ -819,6 +898,7 @@ window.addEventListener("load", () => {
 <!--新規開拓ワールドネザータブ-->
 <div id="newworld_nether_tab01" class="cp_tabpanel">
 	<div id="contentDiv_new_nether" class="osd_disp"></div>
+	<div id="zoomLevelUI_new_nether" class="zoom-ui"></div>
 	<script type="text/javascript">
 		var viewer_2434map_new_nether = OpenSeadragon({
 			showNavigator: true,
@@ -836,6 +916,9 @@ window.addEventListener("load", () => {
 	
 		// 拡大縮小ハンドラーを登録
 		attachZoomHandler(viewer_2434map_new_nether, viewer_2434map_new_nether.zoomFactor);
+
+		//ズームサイズ確認アイコンUI表示
+		ViewZoomLevelUI(viewer_2434map_new_nether, "zoomLevelUI_new_nether");
 
 		viewer_2434map_new_nether.addHandler('open', function(){
 		   loadMarkers(viewer_2434map_new_nether, "2434map_new_nether_marker.csv");
