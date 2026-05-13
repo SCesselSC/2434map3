@@ -804,7 +804,7 @@ let hideTimer_new = null;
 			const z = viewer_2434map_new.viewport.getZoom(true);
 	// map設定取得
 const cfg = mapConfigs[viewer_2434map_new.mapId];
-const maxLevel = 14;
+const maxLevel = Math.ceil(Math.log2(cfg.width));
 // logベース
 let level = Math.round(Math.log2(z) + maxLevel);
 
