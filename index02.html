@@ -823,8 +823,7 @@ const cfg = mapConfigs[viewer_2434map_new.mapId];	// map設定取得
   //  const maxLevel = Math.ceil(Math.log2( Math.max(item.source.dimensions.x,item.source.dimensions.y)));
 
     // Home倍率（初期fit時）
-    const homeZoom =
-        viewer_2434map_new.viewport.getHomeZoom();
+    const homeZoom = viewer_2434map_new.viewport.getHomeZoom();
     // 現在倍率が初期倍率の何倍か
     const scale = z / homeZoom;
 
@@ -838,7 +837,7 @@ const cfg = mapConfigs[viewer_2434map_new.mapId];	// map設定取得
 
    // console.log("LEVEL:", Math.round(level));
 //let level;if (z < 1.59) level = 10;else if (z < 2.747) level = 11;else if (z < 4.747) level = 12;else if (z < 9.845) level = 13;else level = 14;
-			console.log("viewportzoom:",z,"imageZoom:", imageZoom, "level:", level);//ログだし
+			console.log("viewportzoom:",z,"homeZoom:", homeZoom,"scale:", scale, "level:", level);//ログだし
 
 			const ui = document.getElementById("zoomLevelUI_new");
     			if (!ui) return;
