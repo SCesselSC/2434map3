@@ -799,21 +799,31 @@ window.addEventListener("load", () => {
 
 let hideTimer_new = null;
 		//ズーム段階をuiに表示
-		viewer_2434map_new.addHandler('zoom', function(){
+		viewer_2434map_new.addHandler('update-viewport', function(){
 			// 現在ズーム取得
 			const z = viewer_2434map_new.viewport.getZoom(true);
-const maxZoom = viewer_2434map_new.viewport.getMaxZoom();
+//const maxZoom = viewer_2434map_new.viewport.getMaxZoom();
 	
-const cfg = mapConfigs[viewer_2434map_new.mapId];	// map設定取得
+//const cfg = mapConfigs[viewer_2434map_new.mapId];	// map設定取得
 
-const ratio = z / maxZoom;				// 最大zoom比率
-const maxLevel = Math.ceil(Math.log2(cfg.width));
-// logベース
-let level = Math.round(Math.log2(ratio) + maxLevel);
+//const ratio = z / maxZoom;				// 最大zoom比率
+//const maxLevel = Math.ceil(Math.log2(cfg.width));
+//// logベース
+//let level = Math.round(Math.log2(ratio) + maxLevel);
 
 // 範囲制限
-level = Math.max(0, Math.min(maxLevel, level));
+//evel = Math.max(0, Math.min(maxLevel, level));
 
+
+ // 実際に描画されたタイル取得
+    const drawn = viewer_2434map_new.drawer.lastDrawn;
+
+    if (!drawn || !drawn.length) return;
+
+    // 実際のタイルlevel
+    const level = drawn[0].level;
+
+    console.log("REAL LEVEL:", level);
 //let level;if (z < 1.59) level = 10;else if (z < 2.747) level = 11;else if (z < 4.747) level = 12;else if (z < 9.845) level = 13;else level = 14;
 			console.log("zoom:", z, "level:", level);//ログだし
 
