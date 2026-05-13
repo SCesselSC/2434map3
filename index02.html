@@ -536,6 +536,27 @@ window.addEventListener("load", () => {
   box-shadow: 0 0 6px rgba(74,144,226,0.5);
   transform: translateY(1px);
 }
+
+//ズームサイズ確認アイコン
+.zoom-ui {
+    position: fixed;
+    top: 0px;
+    left: 130px;
+    padding: 6px 10px;
+ //   background: rgba(0,0,0,0.6);
+ //   color: white;
+ //   border-radius: 6px;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.5s;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.zoom-ui.show {
+    opacity: 1;
+}
+
 /* ===  PC用 ===*/
 @media (min-width: 769px){
   .map-switch button{
@@ -607,25 +628,7 @@ window.addEventListener("load", () => {
 .zoom-ui {padding: 0;}
 }//@media 768px
 
-//ズームサイズ確認アイコン
-.zoom-ui {
-    position: fixed;
-    top: 0px;
-    left: 130px;
-    padding: 6px 10px;
- //   background: rgba(0,0,0,0.6);
- //   color: white;
- //   border-radius: 6px;
-    font-size: 14px;
-    opacity: 0;
-    transition: opacity 0.5s;
-    pointer-events: none;
-    z-index: 9999;
-}
 
-.zoom-ui.show {
-    opacity: 1;
-}
 
 </style>
 </head>
