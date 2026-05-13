@@ -802,14 +802,13 @@ let hideTimer_new = null;
 		viewer_2434map_new.addHandler('zoom', function(){
 			// 現在ズーム取得
 			const z = viewer_2434map_new.viewport.getZoom();
-	const min = viewer_2434map_new.viewport.getMinZoom();
-	const max = viewer_2434map_new.viewport.getMaxZoom();
-	// 0〜1に正規化
-	let t = (z - min) / (max - min);
-	t = Math.max(0, Math.min(1, t));
+	let level;
 
-	// 0〜14に変換
-	const level = Math.round(t * 14);
+if (z < 1.59) level = 10;
+else if (z < 2.747) level = 11;
+else if (z < 4.747) level = 12;
+else if (z < 9.845) level = 13;
+else level = 14;
 			console.log("zoom:", z, "level:", level);//ログだし
 
 			const ui = document.getElementById("zoomLevelUI_new");
