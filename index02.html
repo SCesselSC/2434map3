@@ -799,7 +799,7 @@ window.addEventListener("load", () => {
 
 let hideTimer_new = null;
 		//ズーム段階をuiに表示
-		viewer_2434map_new.addHandler('update-viewport', function(){
+		viewer_2434map_new.addHandler('zoom', function(){
 			// 現在ズーム取得
 			const z = viewer_2434map_new.viewport.getZoom(true);
 //const maxZoom = viewer_2434map_new.viewport.getMaxZoom();
@@ -815,15 +815,13 @@ let hideTimer_new = null;
 //evel = Math.max(0, Math.min(maxLevel, level));
 
 
- // 実際に描画されたタイル取得
-    const drawn = viewer_2434map_new.drawer.lastDrawn;
+    // 実際に描画されたタイル取得
+    const item = viewer.world.getItemAt(0);
 
-    if (!drawn || !drawn.length) return;
+    // 画像倍率level
+    const level = item.viewportToImageZoom(viewer.viewport.getZoom(true));
 
-    // 実際のタイルlevel
-    const level = drawn[0].level;
-
-    console.log("REAL LEVEL:", level);
+    console.log("LEVEL:", Math.round(level));
 //let level;if (z < 1.59) level = 10;else if (z < 2.747) level = 11;else if (z < 4.747) level = 12;else if (z < 9.845) level = 13;else level = 14;
 			console.log("zoom:", z, "level:", level);//ログだし
 
