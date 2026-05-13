@@ -801,13 +801,15 @@ let hideTimer_new = null;
 		//ズーム段階をuiに表示
 		viewer_2434map_new.addHandler('zoom', function(){
 			// 現在ズーム取得
-			const z = viewer_2434map_new.viewport.getZoom();
-	
+			const z = viewer_2434map_new.viewport.getZoom(true);
+	// map設定取得
+const cfg = mapConfigs[viewer_2434map_new.mapId];
+const maxLevel = 14;
 // logベース
-let level = Math.round(Math.log2(z) * 2 + 10);
+let level = Math.round(Math.log2(z) + maxLevel);
 
 // 範囲制限
-level = Math.max(10, Math.min(14+1, level));
+level = Math.max(0, Math.min(maxLevel, level));
 
 //let level;if (z < 1.59) level = 10;else if (z < 2.747) level = 11;else if (z < 4.747) level = 12;else if (z < 9.845) level = 13;else level = 14;
 			console.log("zoom:", z, "level:", level);//ログだし
