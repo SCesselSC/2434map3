@@ -817,12 +817,22 @@ const cfg = mapConfigs[viewer_2434map_new.mapId];	// map設定取得
     // 実際に描画された画像アイテムタイル取得
     const item = viewer_2434map_new.world.getItemAt(0);
 
-    // 画像倍率level
-    const imageZoom = item.viewportToImageZoom(z);
-    // DeepZoom level
-    let level = Math.floor(Math.log2(imageZoom));
+    // DeepZoom最大level
+    const maxLevel = item.source.maxLevel;
     // 最大level
-    const maxLevel = Math.ceil(Math.log2( Math.max(item.source.dimensions.x,item.source.dimensions.y)));
+  //  const maxLevel = Math.ceil(Math.log2( Math.max(item.source.dimensions.x,item.source.dimensions.y)));
+
+    // Home倍率（初期fit時）
+    const homeZoom =
+        viewer_2434map_new.viewport.getHomeZoom();
+    // 現在倍率が初期倍率の何倍か
+    const scale = z / homeZoom;
+
+    // 画像倍率level
+ //   const imageZoom = item.viewportToImageZoom(z);
+    // DeepZoom level計算
+    let level = Math.floor(Math.log2(scale));
+
     // 範囲制限
     level = Math.max(0, Math.min(maxLevel, level));
 
