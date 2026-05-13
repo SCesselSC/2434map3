@@ -794,6 +794,8 @@ window.addEventListener("load", () => {
 	 		// 例：9〜14段階に丸める
 			const level = Math.min(14, Math.max(9,Math.round(z * 2)));
 
+console.log("zoom:", z, "level:", level);//ログだし
+
 			// fullpageボタン取得
 		//	const fullPageBtn = buttons.find(btn => btn.tooltip && btn.tooltip.toLowerCase().includes("full"));
 		const fullPageBtn = buttons[3];
