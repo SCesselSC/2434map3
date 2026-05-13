@@ -321,6 +321,38 @@ window.addEventListener("DOMContentLoaded", () => {
   });
  });
 });
+
+
+// ズームサイズ確認アイコンUI表示
+function ViewZoomLevelUI(viewer, uiId){
+
+    let hideTimer = null;
+
+    viewer.addHandler('animation', function(){
+
+        const item = viewer.world.getItemAt(0);
+        if(!item) return;
+
+        const lastDrawn = item.lastDrawn || [];
+
+	let level = lastDrawn.length > 0 ? lastDrawn[0].level : 0;
+
+        const maxLevel = item.source?.maxLevel ?? level;
+        level = Math.max(0, Math.min(maxLevel, level));
+console.log("描画タイル level:",level);//ログだし
+        const ui = document.getElementById(uiId);
+        if(!ui) return;
+
+        ui.innerHTML = `<img src="./img/zoom_lv${level}.png">`;
+        ui.classList.add("show");
+
+        clearTimeout(hideTimer);
+
+        hideTimer = setTimeout(() => {
+            ui.classList.remove("show");
+        }, 2000);
+    });
+}
 /* =========================
    初期表示
 ========================= */
@@ -796,41 +828,8 @@ window.addEventListener("load", () => {
 		// 拡大縮小ハンドラーを登録
 		attachZoomHandler(viewer_2434map_new, viewer_2434map_new.zoomFactor);
 
-
-let hideTimer_new = null;
-		//ズーム段階をuiに表示
-		viewer_2434map_new.addHandler('animation', function(){
-			// 現在ズーム取得
-			const z = viewer_2434map_new.viewport.getZoom(true);
-
-			// 実際に描画された画像アイテムタイル取得
-			const item = viewer_2434map_new.world.getItemAt(0);
-
-			// Zoom level取得
-			const lastDrawn =item.lastDrawn || [];
-			let level = lastDrawn.length > 0 ? lastDrawn[0].level : 0;
-
-			// Zoom最大level制限
-			const maxLevel = item.source?.maxLevel ?? level;
-			level = Math.max(0, Math.min(maxLevel, level));
-
-		console.log("描画タイル level:",level,"lastDrawn:",lastDrawn);//ログだし
-
-			const ui = document.getElementById("zoomLevelUI_new");
-    			if (!ui) return;
-
-			ui.innerHTML = `<img src="./img/zoom_lv${level}.png">`;
-   			ui.classList.add("show");
-
-    			clearTimeout(hideTimer_new);
-
-    			hideTimer_new = setTimeout(() => {
-        			ui.classList.remove("show");
-    			}, 2000);
-
-
-		   });//ズーム段階uiに表示end
-
+		//ズームサイズ確認アイコンUI表示
+		ViewZoomLevelUI(viewer_2434map_new, "zoomLevelUI_new");
 
 		viewer_2434map_new.addHandler('open', function(){
 			uiReady = true;	//ui初期化完了フラグon
@@ -868,6 +867,9 @@ let hideTimer_new = null;
 		// 拡大縮小ハンドラーを登録
 		attachZoomHandler(viewer_2434map_new_all, viewer_2434map_new_all.zoomFactor);
 
+		//ズームサイズ確認アイコンUI表示
+		ViewZoomLevelUI(viewer_2434map_new_all, "zoomLevelUI_new_all");
+
 		viewer_2434map_new_all.addHandler('open', function(){
 		   loadMarkers(viewer_2434map_new_all, "2434map_new_all_marker.csv");
 		   //attachZoomHandler(viewer_2434map_new_all, 0.2);
@@ -898,6 +900,9 @@ let hideTimer_new = null;
 	
 		// 拡大縮小ハンドラーを登録
 		attachZoomHandler(viewer_2434map_new_nether, viewer_2434map_new_nether.zoomFactor);
+
+		//ズームサイズ確認アイコンUI表示
+		ViewZoomLevelUI(viewer_2434map_new_nether, "zoomLevelUI_new_nether");
 
 		viewer_2434map_new_nether.addHandler('open', function(){
 		   loadMarkers(viewer_2434map_new_nether, "2434map_new_nether_marker.csv");
