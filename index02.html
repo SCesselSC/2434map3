@@ -807,7 +807,7 @@ let hideTimer_new = null;
 let level = Math.round(Math.log2(z) * 2 + 10);
 
 // 範囲制限
-level = Math.max(10, Math.min(14, level));
+level = Math.max(10, Math.min(14+1, level));
 
 //let level;if (z < 1.59) level = 10;else if (z < 2.747) level = 11;else if (z < 4.747) level = 12;else if (z < 9.845) level = 13;else level = 14;
 			console.log("zoom:", z, "level:", level);//ログだし
