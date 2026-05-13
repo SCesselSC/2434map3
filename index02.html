@@ -574,6 +574,26 @@ window.addEventListener("load", () => {
 
 }
 
+
+.zoom-ui {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 6px 10px;
+    background: rgba(0,0,0,0.6);
+    color: white;
+    border-radius: 6px;
+    font-size: 14px;
+    opacity: 0;
+    transition: opacity 0.5s;
+    pointer-events: none;
+    z-index: 9999;
+}
+
+.zoom-ui.show {
+    opacity: 1;
+}
+
 </style>
 </head>
 
@@ -757,6 +777,7 @@ window.addEventListener("load", () => {
 <!--新規開拓ワールドタブ-->
 <div id="newworld_tab01" class="cp_tabpanel">
 	<div id="contentDiv_new" class="osd_disp"></div>
+	<div id="zoomLevelUI_new" class="zoom-ui">Lv: 9</div>
 	<script type="text/javascript">
 		var viewer_2434map_new = OpenSeadragon({
 			showNavigator: true,
@@ -769,13 +790,39 @@ window.addEventListener("load", () => {
 		viewer_2434map_new.baseIconSize = 44;	//アイコン初期サイズ
 		viewer_2434map_new.mapId = "new";
 
-		let uiReady = false;//ui zoom表示準備 初期化完了フラグ
-
 		// 新鯖通常地図タブに乗せるアイコンの倍率をセット 拡大倍率 値が大きいほど、拡大スピードが速い
 		viewer_2434map_new.zoomFactor = 0.4;
 	
 		// 拡大縮小ハンドラーを登録
 		attachZoomHandler(viewer_2434map_new, viewer_2434map_new.zoomFactor);
+
+
+let hideTimer_new = null;
+		//ズーム段階をuiに表示
+		viewer_2434map_new.addHandler('zoom', function(){
+			// 現在ズーム取得
+			const z = viewer_2434map_new.viewport.getZoom();
+
+	 		// 例：9〜14段階に丸める
+			const level = Math.min(14, Math.max(9,Math.round(z * 2)));
+			console.log("zoom:", z, "level:", level);//ログだし
+
+			const ui = document.getElementById("zoomLevelUI_new");
+    			if (!ui) return;
+
+ //   ui.textContent = "Lv: " + level;
+			ui.innerHTML = `<img src="../img/zoomlevel_${level}.png">`;
+   			ui.classList.add("show");
+
+    			clearTimeout(hideTimer_new);
+
+    			hideTimer_new = setTimeout(() => {
+        			ui.classList.remove("show");
+    			}, 2000);
+
+
+		   });//ズーム段階uiに表示end
+
 
 		viewer_2434map_new.addHandler('open', function(){
 			uiReady = true;	//ui初期化完了フラグon
@@ -783,45 +830,7 @@ window.addEventListener("load", () => {
 		   //attachZoomHandler(viewer_2434map_new, 0.4);
 
 
-
-		   //ズーム段階をuiに表示
-		   viewer_2434map_new.addHandler('zoom', function(){
-console.log("zoom event fired");
-console.log("uiReady:", uiReady);
-console.log("zoom fired", uiReady);
-			if (!uiReady) return;
-			const buttons = viewer_2434map_new.buttonGroup?.buttons;if (!buttons) return;
-			// 現在ズーム取得
-			const z = viewer_2434map_new.viewport.getZoom();
-
-	 		// 例：9〜14段階に丸める
-			const level = Math.min(14, Math.max(9,Math.round(z * 2)));
-
-console.log("zoom:", z, "level:", level);//ログだし
-console.log("zoom event fired");
-console.log("uiReady:", uiReady);
-console.log("zoom fired", uiReady);
-
-			// fullpageボタン取得
-		//	const fullPageBtn = buttons.find(btn => btn.tooltip && btn.tooltip.toLowerCase().includes("full"));
-		const fullPageBtn = buttons[3];
-			if (!fullPageBtn) return;
-
-
-		const btn = viewer_2434map_new.buttonGroup?.buttons?.[3]; if (!btn) return;
-		const img = btn.element?.querySelector('img'); if (!img) return;
-		img.src = `../img/fullpage_lv${level}.png`;
-
-
-
-			// 画像差し替え
-		//	fullPageBtn.imgRest.src =`../img/fullpage_lv${level}.png`;
-		//	fullPageBtn.imgHover.src =`../img/fullpage_lv${level}.png`;
-		//	fullPageBtn.imgGroup.src =`../img/fullpage_lv${level}_grouphover.png`;
-		//	fullPageBtn.imgDown.src =`../img/fullpage_lv${level}_pressed.png`;
-
-		   });//ズーム段階uiに表示end
-
+		
 		});
 
 	</script>
