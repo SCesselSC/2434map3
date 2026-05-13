@@ -832,7 +832,7 @@ const cfg = mapConfigs[viewer_2434map_new.mapId];	// map設定取得
     let level = Math.floor(Math.log2(scale));
 
     // 実際に描画されたタイル取得
-    const lastDrawn =tiledImage._lastDrawn || [];
+    const lastDrawn =item._lastDrawn || [];
     if(lastDrawn.length > 0){level = lastDrawn[0].level;}// 最初のタイルlevel取得
     console.log("描画タイル level:",level,"item:",item);
 
