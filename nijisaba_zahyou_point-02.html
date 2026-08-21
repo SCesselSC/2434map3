@@ -1,0 +1,2074 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>2434map 座標ポイント確認</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 15px;
+    font-family: sans-serif;
+    background: #eeeeee;
+    color: #222;
+}
+
+h1 {
+    margin: 0 0 15px 0;
+    font-size: 24px;
+}
+
+
+/* ==========================
+   地図切替
+============================= */
+
+.mapSelector {
+    background: white;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.mapSelector button {
+
+    padding: 8px 12px;
+
+    border: 1px solid #bbb;
+    border-radius: 6px;
+
+    background: white;
+
+    cursor: pointer;
+
+    font-weight: bold;
+}
+
+.mapSelector button:hover {
+    background: #eeeeee;
+}
+
+.mapSelector button.active {
+    background: #4285f4;
+    color: white;
+    border-color: #2868c7;
+}
+
+
+/* ==============================
+   コントロール
+================================= */
+
+.control {
+
+    background: white;
+
+    padding: 15px;
+
+    border-radius: 8px;
+
+    margin-bottom: 12px;
+}
+
+.control h3 {
+
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+
+input[type="number"] {
+
+    width: 120px;
+
+    padding: 7px;
+
+    font-size: 16px;
+}
+
+
+button {
+
+    padding: 7px 12px;
+
+    margin: 3px;
+
+    cursor: pointer;
+}
+
+
+#addButton {
+
+    background: #2684ff;
+
+    color: white;
+
+    border: none;
+
+    font-weight: bold;
+
+    border-radius: 5px;
+}
+
+
+#clearButton {
+
+    background: #555;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 5px;
+}
+
+
+.coordinateInfo {
+
+    margin-top: 12px;
+
+    padding: 10px;
+
+    background: #f5f5f5;
+
+    border-radius: 5px;
+
+    font-size: 14px;
+
+    line-height: 1.7;
+}
+
+
+/* ============================
+   タイル情報
+=============================== */
+
+#tileInfo {
+
+    background: #222;
+
+    color: white;
+
+    padding: 12px;
+
+    border-radius: 5px;
+
+    margin-bottom: 10px;
+
+    line-height: 1.7;
+}
+
+
+/* ===============================
+   Canvas
+================================== */
+
+#canvasWrapper {
+
+    position: relative;
+
+    width: 1024px;
+
+    max-width: 100%;
+
+    overflow: auto;
+
+    background: #333;
+
+    border-radius: 5px;
+}
+
+
+#mapCanvas {
+
+    display: block;
+
+    width: 1024px;
+
+    height: 1024px;
+
+    /*
+     * 画像をブラウザ側で1024pxとして表示
+     */
+    image-rendering: auto;
+}
+
+
+/* =====================================
+   マーカー一覧
+======================================== */
+
+#markerList {
+
+    background: white;
+
+    padding: 10px;
+
+    border-radius: 8px;
+
+    margin-top: 15px;
+}
+
+
+#markerList h3 {
+
+    margin-top: 0;
+}
+
+
+.markerItem {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 8px;
+
+    border-bottom: 1px solid #ddd;
+
+    flex-wrap: wrap;
+}
+
+
+.colorInput {
+
+    width: 35px;
+
+    height: 30px;
+
+    padding: 0;
+
+    border: 1px solid #555;
+
+    cursor: pointer;
+}
+
+
+.markerText {
+
+    flex: 1;
+
+    min-width: 250px;
+
+    line-height: 1.5;
+}
+
+
+.deleteButton {
+
+    color: white;
+
+    background: #d33;
+
+    border: none;
+
+    border-radius: 4px;
+}
+
+
+.showButton {
+
+    background: #2684ff;
+
+    color: white;
+
+    border: none;
+
+    border-radius: 4px;
+}
+
+
+/* =======================================
+   スマホ
+========================================== */
+
+@media (max-width: 768px) {
+
+    body {
+        padding: 8px;
+    }
+
+    h1 {
+        font-size: 20px;
+    }
+
+    .mapSelector button {
+        font-size: 12px;
+        padding: 7px 8px;
+    }
+
+    #canvasWrapper {
+        width: 100%;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<h1>新鯖・通常鯖 座標 → 地図ポイント確認</h1>
+
+
+<!-- ================================
+     地図切替
+===================================== -->
+
+<div class="mapSelector">
+
+    <button data-map="main">
+        通常地図
+    </button>
+
+    <button data-map="all">
+        全体地図
+    </button>
+
+    <button data-map="nether">
+        ネザー
+    </button>
+
+    <button data-map="new">
+        新鯖通常
+    </button>
+
+    <button data-map="new_all">
+        新鯖全体
+    </button>
+
+    <button data-map="new_nether">
+        新鯖ネザー
+    </button>
+
+</div>
+
+
+<!-- ================================
+     座標入力
+===================================== -->
+
+<div class="control">
+
+    <h3>Minecraft座標</h3>
+
+
+    <label>
+        X：
+        <input
+            type="number"
+            id="xInput"
+            placeholder="例 -1050"
+        >
+    </label>
+
+
+    <label>
+        Z：
+        <input
+            type="number"
+            id="zInput"
+            placeholder="例 -1200"
+        >
+    </label>
+
+
+    <button id="addButton">
+        座標を追加
+    </button>
+
+
+    <button id="clearButton">
+        全消去
+    </button>
+
+
+    <div class="coordinateInfo">
+
+        <div>
+            <b>現在の地図：</b>
+            <span id="mapName"></span>
+        </div>
+
+        <div>
+            <b>画像フォルダ：</b>
+            <span id="folderName"></span>
+        </div>
+
+        <div>
+            <b>地図範囲：</b>
+            X =
+            <span id="rangeX"></span>
+            ／
+            Z =
+            <span id="rangeZ"></span>
+        </div>
+
+        <div>
+            <b>論理タイルサイズ：</b>
+            <span id="logicalTileSize"></span>
+        </div>
+
+        <div>
+            <b>画像サイズ：</b>
+            <span id="imageSize"></span>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ======================================
+     現在のタイル
+=========================================== -->
+
+<div id="tileInfo">
+
+    <div>
+        現在のタイル：
+        <b id="currentTile">---</b>
+    </div>
+
+    <div>
+        タイル内位置：
+        <span id="currentPixel">---</span>
+    </div>
+
+    <div>
+        画像：
+        <span id="currentImagePath">---</span>
+    </div>
+
+</div>
+
+
+<!-- ==================================
+     Canvas
+======================================= -->
+
+<div id="canvasWrapper">
+
+    <canvas
+        id="mapCanvas"
+        width="1024"
+        height="1024"
+    ></canvas>
+
+</div>
+
+
+<!-- ==========================
+     マーカー一覧
+=============================== -->
+
+<div id="markerList">
+
+    <h3>
+        登録した座標
+    </h3>
+
+    <div id="markerItems">
+        まだ座標がありません。
+    </div>
+
+</div>
+
+
+<script>
+
+
+/* ===================================
+   地図設定
+======================================
+
+   ★ここを変更すれば地図ごとの設定を変更できます。
+
+   folder:
+       倍率フォルダ
+
+   logicalTileSize:
+       地図上で1タイルが何ピクセル相当か
+
+   imageWidth / imageHeight:
+       実際のjpg画像サイズ
+
+   overlap:
+       XMLのOverlap
+
+   例：
+
+   TileSize="256" Overlap="1"
+   → logicalTileSize: 256
+   → imageWidth: 258
+   → imageHeight: 258
+
+========================================================= */
+
+
+const MAPS = {
+
+
+    /* =============================
+       通常地図
+    ================================ */
+
+    main: {
+
+        name: "通常地図",
+
+        folder: "12",
+
+        path: "2434map_files",
+
+        minX: -896 - 64,
+        maxX: 1152 + 64,
+
+        minZ: -448,
+        maxZ: 1088,
+
+        width: 9067,
+        height: 6400,
+
+        logicalTileSize: 256,
+
+        imageWidth: 258,
+        imageHeight: 258,
+
+        overlap: 1
+
+    },
+
+
+    /* ===================================
+       全体地図
+       
+       ★ allだけ13
+    ====================================== */
+
+    all: {
+
+        name: "全体地図",
+
+        folder: "13",
+
+        path: "2434map_all_files",
+
+        minX: -40960,
+        maxX: 10112,
+
+        minZ: -30720,
+        maxZ: 10112,
+
+        width: 18892,
+        height: 15247,
+
+        logicalTileSize: 256,
+
+        imageWidth: 258,
+        imageHeight: 258,
+
+        overlap: 1
+
+    },
+
+
+    /* =====================
+       ネザー
+    ======================== */
+
+    nether: {
+
+        name: "ネザー",
+
+        folder: "12",
+
+        path: "2434map_nether_files",
+
+        minX: -4224,
+        maxX: 1280,
+
+        minZ: -3328,
+        maxZ: 1280,
+
+        width: 11086,
+        height: 8905,
+
+        logicalTileSize: 256,
+
+        imageWidth: 258,
+        imageHeight: 258,
+
+        overlap: 1
+
+    },
+
+
+    /* =================================
+       新鯖通常
+       
+       14 × 13
+       0_0 ～ 13_12
+
+       jpg自体は256×256
+       ただし1タイルは1024×1024相当
+    ==================================== */
+
+    new: {
+
+        name: "新鯖通常",
+
+        folder: "12",
+
+        path: "2434map_new_files_2026",
+
+        minX: -2048 - 64,
+        maxX: 1408 + 64,
+
+        minZ: -2304 - 64,
+        maxZ: 896 + 64,
+
+        width: 14336,
+        height: 13312,
+
+        logicalTileSize: 1024,
+
+        imageWidth: 256,
+        imageHeight: 256,
+
+        overlap: 0
+
+    },
+
+
+    /* =========================
+       新鯖全体
+    ============================ */
+
+    new_all: {
+
+        name: "新鯖全体",
+
+        folder: "12",
+
+        path: "2434map_new_all_files",
+
+        minX: -10240,
+        maxX: 10112,
+
+        minZ: -10240,
+        maxZ: 10112,
+
+        width: 9452,
+        height: 9450,
+
+        logicalTileSize: 256,
+
+        imageWidth: 258,
+        imageHeight: 258,
+
+        overlap: 1
+
+    },
+
+
+    /* ========================
+       新鯖ネザー
+    =========================== */
+
+    new_nether: {
+
+        name: "新鯖ネザー",
+
+        folder: "12",
+
+        path: "2434map_new_nether_files",
+
+        minX: -3968 - 128,
+        maxX: 896 + 128,
+
+        minZ: -2432 - 128,
+        maxZ: 2432 + 128,
+
+        width: 9734,
+        height: 9653,
+
+        logicalTileSize: 256,
+
+        imageWidth: 258,
+        imageHeight: 258,
+
+        overlap: 1
+
+    }
+
+};
+
+
+/* =================
+   DOM
+==================== */
+
+const xInput =
+    document.getElementById("xInput");
+
+const zInput =
+    document.getElementById("zInput");
+
+const addButton =
+    document.getElementById("addButton");
+
+const clearButton =
+    document.getElementById("clearButton");
+
+const canvas =
+    document.getElementById("mapCanvas");
+
+const ctx =
+    canvas.getContext("2d");
+
+const currentTile =
+    document.getElementById("currentTile");
+
+const currentPixel =
+    document.getElementById("currentPixel");
+
+const currentImagePath =
+    document.getElementById("currentImagePath");
+
+const markerItems =
+    document.getElementById("markerItems");
+
+const mapName =
+    document.getElementById("mapName");
+
+const folderName =
+    document.getElementById("folderName");
+
+const rangeX =
+    document.getElementById("rangeX");
+
+const rangeZ =
+    document.getElementById("rangeZ");
+
+const logicalTileSize =
+    document.getElementById("logicalTileSize");
+
+const imageSize =
+    document.getElementById("imageSize");
+
+
+/* =======================
+   現在の地図
+========================== */
+
+let currentMapId = "new";
+
+let currentMap = MAPS.new;
+
+
+/* ===================
+   現在の画像
+====================== */
+
+let currentImage = null;
+
+let currentTileX = null;
+
+let currentTileZ = null;
+
+
+/* ============
+   マーカー
+=============== */
+
+let markers = [];
+
+
+/* =======
+   色
+========== */
+
+const colors = [
+
+    "#ff0000",
+    "#00ff00",
+    "#0080ff",
+    "#ff00ff",
+    "#ffff00",
+    "#00ffff",
+    "#ff8000",
+    "#8000ff",
+    "#ff1493",
+    "#ffffff"
+
+];
+
+
+/* ===================
+   地図情報表示
+====================== */
+
+function updateMapInfo() {
+
+    const cfg = currentMap;
+
+    mapName.textContent =
+        cfg.name;
+
+    folderName.textContent =
+        cfg.path + "/" + cfg.folder + "/";
+
+    rangeX.textContent =
+        cfg.minX + " ～ " + cfg.maxX;
+
+    rangeZ.textContent =
+        cfg.minZ + " ～ " + cfg.maxZ;
+
+    logicalTileSize.textContent =
+        cfg.logicalTileSize + " × " +
+        cfg.logicalTileSize;
+
+    imageSize.textContent =
+        cfg.imageWidth + " × " +
+        cfg.imageHeight;
+
+}
+
+
+/* ================
+   地図切替
+=================== */
+
+document
+.querySelectorAll(".mapSelector button")
+.forEach(button => {
+
+    button.addEventListener(
+        "click",
+        function() {
+
+            const mapId =
+                this.dataset.map;
+
+            switchMap(mapId);
+
+        }
+    );
+
+});
+
+
+function switchMap(mapId) {
+
+    if (!MAPS[mapId]) {
+        return;
+    }
+
+
+    /*
+     * 地図切替時は
+     * マーカーを全消去
+     */
+
+    markers = [];
+
+    updateMarkerList();
+
+
+    /*
+     * 現在地図変更
+     */
+
+    currentMapId =
+        mapId;
+
+    currentMap =
+        MAPS[mapId];
+
+
+    /*
+     * ボタン色
+     */
+
+    document
+    .querySelectorAll(".mapSelector button")
+    .forEach(button => {
+
+        button.classList.toggle(
+            "active",
+            button.dataset.map === mapId
+        );
+
+    });
+
+
+    /*
+     * 情報更新
+     */
+
+    updateMapInfo();
+
+
+    /*
+     * Canvas初期化
+     */
+
+    clearCanvas();
+
+}
+
+
+/* ========================
+   Canvasクリア
+=========================== */
+
+function clearCanvas() {
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    ctx.fillStyle =
+        "#333";
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    ctx.fillStyle =
+        "white";
+
+    ctx.font =
+        "24px sans-serif";
+
+    ctx.textAlign =
+        "center";
+
+    ctx.textBaseline =
+        "middle";
+
+    ctx.fillText(
+        "座標を入力してください",
+        512,
+        512
+    );
+
+
+    currentImage = null;
+
+    currentTileX = null;
+
+    currentTileZ = null;
+
+
+    currentTile.textContent =
+        "---";
+
+    currentPixel.textContent =
+        "---";
+
+    currentImagePath.textContent =
+        "---";
+
+}
+
+
+/* ===============================
+   座標 → 地図全体のピクセル
+================================== */
+
+function coordinateToGlobalPixel(x, z) {
+
+    const cfg =
+        currentMap;
+
+
+    const globalX =
+        (x - cfg.minX)
+        /
+        (cfg.maxX - cfg.minX)
+        *
+        cfg.width;
+
+
+    const globalZ =
+        (z - cfg.minZ)
+        /
+        (cfg.maxZ - cfg.minZ)
+        *
+        cfg.height;
+
+
+    return {
+
+        x: globalX,
+
+        z: globalZ
+
+    };
+
+}
+
+
+/* ===========================
+   座標 → タイル
+============================== */
+
+function coordinateToTile(x, z) {
+
+    const global =
+        coordinateToGlobalPixel(x, z);
+
+
+    const cfg =
+        currentMap;
+
+
+    const tileX =
+        Math.floor(
+            global.x /
+            cfg.logicalTileSize
+        );
+
+
+    const tileZ =
+        Math.floor(
+            global.z /
+            cfg.logicalTileSize
+        );
+
+
+    const pixelX =
+        global.x -
+        tileX *
+        cfg.logicalTileSize;
+
+
+    const pixelZ =
+        global.z -
+        tileZ *
+        cfg.logicalTileSize;
+
+
+    return {
+
+        tileX: tileX,
+
+        tileZ: tileZ,
+
+        pixelX: pixelX,
+
+        pixelZ: pixelZ
+
+    };
+
+}
+
+
+/* =======================
+   タイル画像パス
+========================== */
+
+function getTilePath(tileX, tileZ) {
+
+    const cfg =
+        currentMap;
+
+
+    return (
+
+        cfg.path +
+        "/" +
+        cfg.folder +
+        "/" +
+        tileX +
+        "_" +
+        tileZ +
+        ".jpg"
+
+    );
+
+}
+
+
+/* =======================
+   タイル読み込み
+========================== */
+
+function loadTile(tileX, tileZ) {
+
+    const cfg =
+        currentMap;
+
+
+    const filename =
+        tileX +
+        "_" +
+        tileZ +
+        ".jpg";
+
+
+    const path =
+        getTilePath(
+            tileX,
+            tileZ
+        );
+
+
+    currentTile.textContent =
+        filename;
+
+
+    currentImagePath.textContent =
+        path;
+
+
+    /*
+     * 画像読み込み
+     */
+
+    const img =
+        new Image();
+
+
+    img.onload =
+        function() {
+
+
+            /*
+             * Canvasをクリア
+             */
+
+            ctx.clearRect(
+                0,
+                0,
+                1024,
+                1024
+            );
+
+
+            /*
+             * -------------------------
+             * 256タイル
+             * -------------------------
+             *
+             * 258×258 / Overlap=1 の場合は
+             *
+             * 左上1pxを除いて
+             * 中央256×256を使用。
+             *
+             * これによって隣タイルとのOverlapを
+             * 座標計算に混ぜない。
+             *
+             */
+
+            if (
+                cfg.logicalTileSize === 256 &&
+                cfg.overlap === 1 &&
+                cfg.imageWidth === 258
+            ) {
+
+                ctx.drawImage(
+
+                    img,
+
+                    1,
+                    1,
+                    256,
+                    256,
+
+                    0,
+                    0,
+                    1024,
+                    1024
+
+                );
+
+            }
+
+            /*
+             * -------------
+             * 通常
+             * -------------
+             */
+
+            else {
+
+                ctx.drawImage(
+
+                    img,
+
+                    0,
+                    0,
+
+                    img.width,
+                    img.height,
+
+                    0,
+                    0,
+
+                    1024,
+                    1024
+
+                );
+
+            }
+
+
+            currentImage =
+                img;
+
+            currentTileX =
+                tileX;
+
+            currentTileZ =
+                tileZ;
+
+
+            /*
+             * マーカー表示
+             */
+
+            drawMarkers();
+
+        };
+
+
+    img.onerror =
+        function() {
+
+            clearCanvas();
+
+
+            currentTile.textContent =
+                filename +
+                " が見つかりません";
+
+
+            currentImagePath.textContent =
+                path;
+
+
+            currentImage =
+                null;
+
+        };
+
+
+    /*
+     * GitHub上の画像を直接読み込む
+     */
+
+    img.src =
+        encodeURI(path);
+
+}
+
+
+/* =================
+   座標追加
+==================== */
+
+addButton.addEventListener(
+    "click",
+    addCoordinate
+);
+
+
+/*
+ * Enter
+ */
+
+xInput.addEventListener(
+    "keydown",
+    function(e) {
+
+        if (e.key === "Enter") {
+            addCoordinate();
+        }
+
+    }
+);
+
+
+zInput.addEventListener(
+    "keydown",
+    function(e) {
+
+        if (e.key === "Enter") {
+            addCoordinate();
+        }
+
+    }
+);
+
+
+function addCoordinate() {
+
+    const x =
+        Number(xInput.value);
+
+    const z =
+        Number(zInput.value);
+
+
+    if (
+        !Number.isFinite(x) ||
+        !Number.isFinite(z)
+    ) {
+
+        alert(
+            "XとZを入力してください。"
+        );
+
+        return;
+
+    }
+
+
+    const cfg =
+        currentMap;
+
+
+    /*
+     * 範囲チェック
+     */
+
+    if (
+        x < cfg.minX ||
+        x > cfg.maxX ||
+        z < cfg.minZ ||
+        z > cfg.maxZ
+    ) {
+
+        alert(
+
+            cfg.name +
+            "の地図範囲外です。\n\n" +
+
+            "X: " +
+            cfg.minX +
+            " ～ " +
+            cfg.maxX +
+            "\n" +
+
+            "Z: " +
+            cfg.minZ +
+            " ～ " +
+            cfg.maxZ
+
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * 座標計算
+     */
+
+    const pos =
+        coordinateToTile(
+            x,
+            z
+        );
+
+
+    /*
+     * 色
+     */
+
+    const color =
+        colors[
+            markers.length %
+            colors.length
+        ];
+
+
+    /*
+     * マーカー
+     */
+
+    const marker = {
+
+        id:
+            Date.now() +
+            "_" +
+            Math.random(),
+
+        x: x,
+
+        z: z,
+
+        tileX:
+            pos.tileX,
+
+        tileZ:
+            pos.tileZ,
+
+        pixelX:
+            pos.pixelX,
+
+        pixelZ:
+            pos.pixelZ,
+
+        color:
+            color
+
+    };
+
+
+    markers.push(
+        marker
+    );
+
+
+    /*
+     * タイル表示
+     */
+
+    loadTile(
+
+        pos.tileX,
+
+        pos.tileZ
+
+    );
+
+
+    /*
+     * 一覧
+     */
+
+    updateMarkerList();
+
+
+    /*
+     * 入力欄
+     */
+
+    xInput.value = "";
+
+    zInput.value = "";
+
+}
+
+
+/* ===================
+   マーカー描画
+====================== */
+
+function drawMarkers() {
+
+    if (!currentImage) {
+        return;
+    }
+
+
+    const cfg =
+        currentMap;
+
+
+    /*
+     * 現在のタイルのマーカーだけ
+     */
+
+    const visibleMarkers =
+        markers.filter(
+
+            marker =>
+
+                marker.tileX ===
+                currentTileX &&
+
+                marker.tileZ ===
+                currentTileZ
+
+        );
+
+
+    visibleMarkers.forEach(
+        drawMarker
+    );
+
+
+}
+
+
+/* ====================
+   1個のマーカー
+======================= */
+
+function drawMarker(marker) {
+
+    const cfg =
+        currentMap;
+
+
+    /*
+     * logicalTileSize →
+     * Canvas 1024への倍率
+     */
+
+    const scale =
+        1024 /
+        cfg.logicalTileSize;
+
+
+    const x =
+        marker.pixelX *
+        scale;
+
+
+    const y =
+        marker.pixelZ *
+        scale;
+
+
+    /*
+     * 白い外周
+     */
+
+    ctx.beginPath();
+
+    ctx.arc(
+
+        x,
+        y,
+
+        12,
+
+        0,
+        Math.PI * 2
+
+    );
+
+    ctx.fillStyle =
+        "white";
+
+    ctx.fill();
+
+
+    /*
+     * 色付き円
+     */
+
+    ctx.beginPath();
+
+    ctx.arc(
+
+        x,
+        y,
+
+        8,
+
+        0,
+        Math.PI * 2
+
+    );
+
+    ctx.fillStyle =
+        marker.color;
+
+    ctx.fill();
+
+
+    /*
+     * 黒中心
+     */
+
+    ctx.beginPath();
+
+    ctx.arc(
+
+        x,
+        y,
+
+        3,
+
+        0,
+        Math.PI * 2
+
+    );
+
+    ctx.fillStyle =
+        "black";
+
+    ctx.fill();
+
+
+    /*
+     * 座標文字
+     */
+
+    const text =
+        "(" +
+        marker.x +
+        ", " +
+        marker.z +
+        ")";
+
+
+    ctx.font =
+        "bold 18px sans-serif";
+
+    ctx.textAlign =
+        "left";
+
+    ctx.textBaseline =
+        "bottom";
+
+
+    /*
+     * 黒縁
+     */
+
+    ctx.strokeStyle =
+        "black";
+
+    ctx.lineWidth =
+        5;
+
+    ctx.strokeText(
+
+        text,
+
+        x + 15,
+
+        y - 12
+
+    );
+
+
+    /*
+     * 本文
+     */
+
+    ctx.fillStyle =
+        marker.color;
+
+    ctx.fillText(
+
+        text,
+
+        x + 15,
+
+        y - 12
+
+    );
+
+}
+
+
+/* ====================
+   マーカー一覧
+======================= */
+
+function updateMarkerList() {
+
+    if (
+        markers.length === 0
+    ) {
+
+        markerItems.textContent =
+            "まだ座標がありません。";
+
+        return;
+
+    }
+
+
+    markerItems.innerHTML =
+        "";
+
+
+    markers.forEach(
+
+        function(marker, index) {
+
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+            div.className =
+                "markerItem";
+
+
+            /*
+             * 色変更
+             */
+
+            const colorInput =
+                document.createElement(
+                    "input"
+                );
+
+            colorInput.type =
+                "color";
+
+            colorInput.value =
+                marker.color;
+
+            colorInput.className =
+                "colorInput";
+
+
+            colorInput.addEventListener(
+
+                "input",
+
+                function() {
+
+                    marker.color =
+                        this.value;
+
+
+                    redrawCurrentTile();
+
+                }
+
+            );
+
+
+            /*
+             * 情報
+             */
+
+            const text =
+                document.createElement(
+                    "div"
+                );
+
+            text.className =
+                "markerText";
+
+
+            text.innerHTML =
+
+                "<b>" +
+                (index + 1) +
+                ".</b> " +
+
+                "X=" +
+                marker.x +
+
+                " / Z=" +
+                marker.z +
+
+                "　→　" +
+
+                "<b>" +
+
+                marker.tileX +
+                "_" +
+                marker.tileZ +
+                ".jpg" +
+
+                "</b>" +
+
+                "　タイル内 (" +
+
+                Math.round(
+                    marker.pixelX
+                ) +
+
+                ", " +
+
+                Math.round(
+                    marker.pixelZ
+                ) +
+
+                ")";
+
+
+            /*
+             * 表示ボタン
+             */
+
+            const showButton =
+                document.createElement(
+                    "button"
+                );
+
+            showButton.textContent =
+                "表示";
+
+            showButton.className =
+                "showButton";
+
+
+            showButton.addEventListener(
+
+                "click",
+
+                function() {
+
+                    loadTile(
+
+                        marker.tileX,
+
+                        marker.tileZ
+
+                    );
+
+
+                    currentPixel.textContent =
+
+                        Math.round(
+                            marker.pixelX
+                        ) +
+
+                        ", " +
+
+                        Math.round(
+                            marker.pixelZ
+                        );
+
+                }
+
+            );
+
+
+            /*
+             * 削除ボタン
+             */
+
+            const deleteButton =
+                document.createElement(
+                    "button"
+                );
+
+            deleteButton.textContent =
+                "削除";
+
+            deleteButton.className =
+                "deleteButton";
+
+
+            deleteButton.addEventListener(
+
+                "click",
+
+                function() {
+
+                    markers =
+                        markers.filter(
+
+                            m =>
+                                m.id !==
+                                marker.id
+
+                        );
+
+
+                    redrawCurrentTile();
+
+
+                    updateMarkerList();
+
+                }
+
+            );
+
+
+            /*
+             * DOM追加
+             */
+
+            div.appendChild(
+                colorInput
+            );
+
+            div.appendChild(
+                text
+            );
+
+            div.appendChild(
+                showButton
+            );
+
+            div.appendChild(
+                deleteButton
+            );
+
+
+            markerItems.appendChild(
+                div
+            );
+
+        }
+
+    );
+
+}
+
+
+/* ======================
+   現在のタイルを再描画
+========================= */
+
+function redrawCurrentTile() {
+
+    if (!currentImage) {
+        return;
+    }
+
+
+    const cfg =
+        currentMap;
+
+
+    ctx.clearRect(
+
+        0,
+        0,
+        1024,
+        1024
+
+    );
+
+
+    /*
+     * 元画像を再描画
+     */
+
+    if (
+
+        cfg.logicalTileSize === 256 &&
+        cfg.overlap === 1 &&
+        cfg.imageWidth === 258
+
+    ) {
+
+        ctx.drawImage(
+
+            currentImage,
+
+            1,
+            1,
+            256,
+            256,
+
+            0,
+            0,
+            1024,
+            1024
+
+        );
+
+    }
+
+    else {
+
+        ctx.drawImage(
+
+            currentImage,
+
+            0,
+            0,
+
+            currentImage.width,
+            currentImage.height,
+
+            0,
+            0,
+            1024,
+            1024
+
+        );
+
+    }
+
+
+    drawMarkers();
+
+}
+
+
+/* ============
+   全消去
+=============== */
+
+clearButton.addEventListener(
+
+    "click",
+
+    function() {
+
+        if (
+            markers.length === 0
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            !confirm(
+                "登録した座標をすべて消去しますか？"
+            )
+        ) {
+
+            return;
+
+        }
+
+
+        markers = [];
+
+
+        redrawCurrentTile();
+
+
+        updateMarkerList();
+
+    }
+
+);
+
+
+/* ===============
+   初期化
+================== */
+
+switchMap(
+    "new"
+);
+
+</script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,2003 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>マイクラ座標 → 地図ポイント確認</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 20px;
+    font-family: sans-serif;
+    background: #eee;
+    color: #222;
+}
+
+h1 {
+    margin-top: 0;
+}
+
+
+/* =========================
+   地図切替
+========================= */
+
+.mapButtons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 15px;
+}
+
+.mapButtons button {
+    padding: 8px 12px;
+    border: 1px solid #aaa;
+    background: white;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+.mapButtons button.active {
+    background: #2684ff;
+    color: white;
+    border-color: #1765c1;
+}
+
+
+/* =========================
+   共通コントロール
+========================= */
+
+.control {
+    background: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+input[type="number"],
+input[type="text"] {
+    padding: 7px;
+    font-size: 16px;
+}
+
+input[type="number"] {
+    width: 120px;
+}
+
+input[type="text"] {
+    width: 100%;
+    max-width: 600px;
+}
+
+button {
+    padding: 7px 12px;
+    margin: 3px;
+    cursor: pointer;
+}
+
+
+/* =========================
+   地図設定
+========================= */
+
+#mapSettings {
+    background: #f5f5f5;
+    padding: 10px;
+    border-radius: 6px;
+    margin-top: 10px;
+}
+
+.settingRow {
+    margin: 6px 0;
+}
+
+.settingRow label {
+    display: inline-block;
+    min-width: 150px;
+    font-weight: bold;
+}
+
+.settingSmall {
+    width: 90px !important;
+}
+
+
+/* =========================
+   ボタン
+========================= */
+
+#addButton {
+    background: #2684ff;
+    color: white;
+    border: none;
+    font-weight: bold;
+}
+
+#clearButton {
+    background: #555;
+    color: white;
+    border: none;
+}
+
+.deleteButton {
+    color: white;
+    background: #d33;
+    border: none;
+}
+
+
+/* =========================
+   タイル情報
+========================= */
+
+#tileInfo {
+    background: #222;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+}
+
+
+/* =========================
+   Canvas
+========================= */
+
+#canvasWrapper {
+
+    position: relative;
+
+    width: 1024px;
+    max-width: 100%;
+
+    overflow: auto;
+
+    background: #333;
+}
+
+#mapCanvas {
+
+    display: block;
+
+    width: 1024px;
+    height: 1024px;
+
+    image-rendering: auto;
+}
+
+
+/* =========================
+   マーカー一覧
+========================= */
+
+#markerList {
+
+    background: white;
+
+    padding: 10px;
+
+    border-radius: 8px;
+
+    margin-top: 15px;
+}
+
+.markerItem {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 6px;
+
+    border-bottom: 1px solid #ddd;
+}
+
+.colorBox {
+
+    width: 18px;
+    height: 18px;
+
+    border: 1px solid #555;
+
+    flex-shrink: 0;
+}
+
+.markerText {
+    flex: 1;
+}
+
+
+/* =========================
+   その他
+========================= */
+
+.coordinateInfo {
+
+    margin-top: 10px;
+
+    padding: 8px;
+
+    background: #f5f5f5;
+
+    border-radius: 5px;
+}
+
+.note {
+
+    font-size: 13px;
+
+    color: #666;
+
+    margin-top: 8px;
+}
+
+.warning {
+
+    color: #c00;
+
+    font-weight: bold;
+}
+
+
+/* =========================
+   スマホ
+========================= */
+
+@media (max-width: 768px) {
+
+    body {
+        padding: 10px;
+    }
+
+    .mapButtons button {
+        font-size: 12px;
+        padding: 6px 8px;
+    }
+
+    #mapCanvas {
+        width: 512px;
+        height: 512px;
+    }
+
+    .settingRow label {
+        display: block;
+        margin-bottom: 3px;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<h1>マイクラ座標 → 地図ポイント確認</h1>
+
+
+<!-- =====================================================
+     地図切替
+===================================================== -->
+
+<div class="control">
+
+    <h3>① 地図を選択</h3>
+
+    <div class="mapButtons">
+
+        <button data-map="main">
+            通常地図
+        </button>
+
+        <button data-map="all">
+            全体地図
+        </button>
+
+        <button data-map="nether">
+            ネザー地図
+        </button>
+
+        <button data-map="new">
+            新鯖通常地図
+        </button>
+
+        <button data-map="new_all">
+            新鯖全体地図
+        </button>
+
+        <button data-map="new_nether">
+            新鯖ネザー地図
+        </button>
+
+    </div>
+
+    <div>
+        現在の地図：
+        <strong id="currentMapName">
+            新鯖通常地図
+        </strong>
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     地図設定
+===================================================== -->
+
+<div class="control">
+
+    <h3>② 地図画像設定</h3>
+
+    <div id="mapSettings">
+
+        <div class="settingRow">
+
+            <label>
+                画像フォルダ：
+            </label>
+
+            <input
+                type="text"
+                id="folderInput"
+            >
+
+        </div>
+
+
+        <div class="settingRow">
+
+            <label>
+                倍率フォルダ：
+            </label>
+
+            <input
+                type="text"
+                id="zoomFolderInput"
+                class="settingSmall"
+            >
+
+        </div>
+
+
+        <div class="settingRow">
+
+            <label>
+                タイル数 X：
+            </label>
+
+            <input
+                type="number"
+                id="tileCountXInput"
+                class="settingSmall"
+                min="1"
+            >
+
+        </div>
+
+
+        <div class="settingRow">
+
+            <label>
+                タイル数 Z：
+            </label>
+
+            <input
+                type="number"
+                id="tileCountZInput"
+                class="settingSmall"
+                min="1"
+            >
+
+        </div>
+
+
+        <button id="applySettingsButton">
+            設定を適用
+        </button>
+
+
+        <div class="note">
+
+            例：
+            <br>
+
+            <code>
+            2434map_new_files_2026/12/
+            </code>
+
+            <br>
+
+            のように、HTMLから見た相対パスを指定します。
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     座標入力
+===================================================== -->
+
+<div class="control">
+
+    <h3>③ Minecraft座標</h3>
+
+    <label>
+
+        X：
+
+        <input
+            type="number"
+            id="xInput"
+            placeholder="例 -1050"
+        >
+
+    </label>
+
+
+    <label>
+
+        Z：
+
+        <input
+            type="number"
+            id="zInput"
+            placeholder="例 -1200"
+        >
+
+    </label>
+
+
+    <button id="addButton">
+        座標を追加
+    </button>
+
+
+    <button id="clearButton">
+        全消去
+    </button>
+
+
+    <div class="coordinateInfo">
+
+        <div>
+            地図範囲：
+            X =
+            <span id="rangeX">
+                ---
+            </span>
+        </div>
+
+        <div>
+            地図範囲：
+            Z =
+            <span id="rangeZ">
+                ---
+            </span>
+        </div>
+
+        <div>
+            表示タイル：
+            1024 × 1024
+        </div>
+
+        <div>
+            元画像：
+            256 × 256
+            → 1024 × 1024に拡大表示
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =====================================================
+     タイル情報
+===================================================== -->
+
+<div id="tileInfo">
+
+    現在のタイル：
+
+    <span id="currentTile">
+        ---
+    </span>
+
+</div>
+
+
+
+<!-- =====================================================
+     Canvas
+===================================================== -->
+
+<div id="canvasWrapper">
+
+    <canvas
+        id="mapCanvas"
+        width="1024"
+        height="1024"
+    ></canvas>
+
+</div>
+
+
+
+<!-- =====================================================
+     マーカー一覧
+===================================================== -->
+
+<div id="markerList">
+
+    <h3>
+        登録した座標
+    </h3>
+
+    <div id="markerItems">
+
+        まだ座標がありません。
+
+    </div>
+
+</div>
+
+
+
+<script>
+
+
+/* =========================================================
+   地図設定
+=========================================================
+
+   ★ここが基本設定
+
+   folder
+       HTMLから見た画像フォルダ
+
+   zoom
+       倍率フォルダ
+
+   tileCountX / tileCountZ
+       画像タイルの枚数
+
+   minX / maxX
+       Minecraft X座標範囲
+
+   minZ / maxZ
+       Minecraft Z座標範囲
+
+========================================================= */
+
+
+const MAP_CONFIGS = {
+
+
+    /* =========================
+       通常地図
+    ========================= */
+
+    main: {
+
+        name: "通常地図",
+
+        folder:
+            "2434map_files",
+
+        zoom:
+            "12",
+
+        tileCountX: 9,
+        tileCountZ: 7,
+
+        minX: -960,
+        maxX: 1216,
+
+        minZ: -448,
+        maxZ: 1088,
+
+        width: 9067,
+        height: 6400
+
+    },
+
+
+    /* =========================
+       全体地図
+    ========================= */
+
+    all: {
+
+        name: "全体地図",
+
+        folder:
+            "2434map_all_files",
+
+        zoom:
+            "12",
+
+        tileCountX: 19,
+        tileCountZ: 15,
+
+        minX: -40960,
+        maxX: 10112,
+
+        minZ: -30720,
+        maxZ: 10112,
+
+        width: 18892,
+        height: 15247
+
+    },
+
+
+    /* =========================
+       ネザー
+    ========================= */
+
+    nether: {
+
+        name: "ネザー地図",
+
+        folder:
+            "2434map_nether_files",
+
+        zoom:
+            "12",
+
+        tileCountX: 6,
+        tileCountZ: 5,
+
+        minX: -4224,
+        maxX: 1280,
+
+        minZ: -3328,
+        maxZ: 1280,
+
+        width: 11086,
+        height: 8905
+
+    },
+
+
+    /* =========================
+       新鯖通常
+    ========================= */
+
+    new: {
+
+        name: "新鯖通常地図",
+
+        folder:
+            "2434map_new_files_2026",
+
+        zoom:
+            "12",
+
+        tileCountX: 14,
+        tileCountZ: 13,
+
+        minX: -2048 - 64,
+        maxX: 1408 + 64,
+
+        minZ: -2304 - 64,
+        maxZ: 896 + 64,
+
+        width: 14336,
+        height: 13312
+
+    },
+
+
+    /* =========================
+       新鯖全体
+    ========================= */
+
+    new_all: {
+
+        name: "新鯖全体地図",
+
+        folder:
+            "2434map_new_all_files",
+
+        zoom:
+            "12",
+
+        tileCountX: 10,
+        tileCountZ: 10,
+
+        minX: -10240,
+        maxX: 10112,
+
+        minZ: -10240,
+        maxZ: 10112,
+
+        width: 9452,
+        height: 9450
+
+    },
+
+
+    /* =========================
+       新鯖ネザー
+    ========================= */
+
+    new_nether: {
+
+        name: "新鯖ネザー地図",
+
+        folder:
+            "2434map_new_nether_files",
+
+        zoom:
+            "12",
+
+        tileCountX: 10,
+        tileCountZ: 10,
+
+        minX: -3968 - 128,
+        maxX: 896 + 128,
+
+        minZ: -2432 - 128,
+        maxZ: 2432 + 128,
+
+        width: 9734,
+        height: 9653
+
+    }
+
+};
+
+
+/* =========================================================
+   現在の地図
+========================================================= */
+
+let currentMapId = "new";
+
+let currentConfig =
+    MAP_CONFIGS[currentMapId];
+
+
+/* =========================================================
+   DOM
+========================================================= */
+
+const currentMapName =
+    document.getElementById(
+        "currentMapName"
+    );
+
+const folderInput =
+    document.getElementById(
+        "folderInput"
+    );
+
+const zoomFolderInput =
+    document.getElementById(
+        "zoomFolderInput"
+    );
+
+const tileCountXInput =
+    document.getElementById(
+        "tileCountXInput"
+    );
+
+const tileCountZInput =
+    document.getElementById(
+        "tileCountZInput"
+    );
+
+const applySettingsButton =
+    document.getElementById(
+        "applySettingsButton"
+    );
+
+const xInput =
+    document.getElementById(
+        "xInput"
+    );
+
+const zInput =
+    document.getElementById(
+        "zInput"
+    );
+
+const addButton =
+    document.getElementById(
+        "addButton"
+    );
+
+const clearButton =
+    document.getElementById(
+        "clearButton"
+    );
+
+const canvas =
+    document.getElementById(
+        "mapCanvas"
+    );
+
+const ctx =
+    canvas.getContext("2d");
+
+const currentTile =
+    document.getElementById(
+        "currentTile"
+    );
+
+const markerItems =
+    document.getElementById(
+        "markerItems"
+    );
+
+const rangeX =
+    document.getElementById(
+        "rangeX"
+    );
+
+const rangeZ =
+    document.getElementById(
+        "rangeZ"
+    );
+
+
+/* =========================================================
+   マーカー
+========================================================= */
+
+let markers = [];
+
+
+/* =========================================================
+   色
+========================================================= */
+
+const colors = [
+
+    "#ff0000",
+    "#00ff00",
+    "#0080ff",
+    "#ff00ff",
+    "#ffff00",
+    "#00ffff",
+    "#ff8000",
+    "#8000ff",
+    "#ff1493",
+    "#ffffff"
+
+];
+
+
+/* =========================================================
+   現在表示中の画像
+========================================================= */
+
+let currentImage = null;
+
+let currentTileX = null;
+
+let currentTileZ = null;
+
+
+/* =========================================================
+   設定表示
+========================================================= */
+
+function updateSettingsUI(){
+
+    currentMapName.textContent =
+        currentConfig.name;
+
+
+    folderInput.value =
+        currentConfig.folder;
+
+
+    zoomFolderInput.value =
+        currentConfig.zoom;
+
+
+    tileCountXInput.value =
+        currentConfig.tileCountX;
+
+
+    tileCountZInput.value =
+        currentConfig.tileCountZ;
+
+
+    rangeX.textContent =
+        currentConfig.minX +
+        " ～ " +
+        currentConfig.maxX;
+
+
+    rangeZ.textContent =
+        currentConfig.minZ +
+        " ～ " +
+        currentConfig.maxZ;
+
+}
+
+
+/* =========================================================
+   地図切替
+========================================================= */
+
+document
+.querySelectorAll(".mapButtons button")
+.forEach(button => {
+
+    button.addEventListener(
+        "click",
+        function(){
+
+            const mapId =
+                this.dataset.map;
+
+
+            switchMap(mapId);
+
+
+        }
+    );
+
+});
+
+
+function switchMap(mapId){
+
+    if(!MAP_CONFIGS[mapId]){
+        return;
+    }
+
+
+    /*
+     * 地図を切り替えたら
+     *
+     * ★ 全マーカー消去
+     */
+
+    markers = [];
+
+
+    /*
+     * 現在の地図を変更
+     */
+
+    currentMapId =
+        mapId;
+
+    currentConfig =
+        MAP_CONFIGS[mapId];
+
+
+    /*
+     * Canvasを消去
+     */
+
+    clearCanvas();
+
+
+    currentImage = null;
+
+    currentTileX = null;
+
+    currentTileZ = null;
+
+
+    currentTile.textContent =
+        "---";
+
+
+    /*
+     * 設定UI更新
+     */
+
+    updateSettingsUI();
+
+
+    /*
+     * ボタン色
+     */
+
+    document
+    .querySelectorAll(".mapButtons button")
+    .forEach(button => {
+
+        button.classList.toggle(
+            "active",
+            button.dataset.map === mapId
+        );
+
+    });
+
+
+    /*
+     * マーカー一覧
+     */
+
+    updateMarkerList();
+
+}
+
+
+/* =========================================================
+   設定適用
+========================================================= */
+
+applySettingsButton.addEventListener(
+    "click",
+    function(){
+
+        currentConfig.folder =
+            folderInput.value.trim();
+
+
+        currentConfig.zoom =
+            zoomFolderInput.value.trim();
+
+
+        currentConfig.tileCountX =
+            Number(
+                tileCountXInput.value
+            );
+
+
+        currentConfig.tileCountZ =
+            Number(
+                tileCountZInput.value
+            );
+
+
+        /*
+         * 設定変更時は
+         * 現在の画像を消す
+         */
+
+        clearCanvas();
+
+        currentImage = null;
+
+        currentTile.textContent =
+            "---";
+
+
+        alert(
+            "地図画像設定を適用しました。"
+        );
+
+    }
+);
+
+
+/* =========================================================
+   Canvas消去
+========================================================= */
+
+function clearCanvas(){
+
+    ctx.clearRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+    ctx.fillStyle =
+        "#333";
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+}
+
+
+/* =========================================================
+   Minecraft座標 → 画像全体座標
+========================================================= */
+
+function coordinateToPixel(
+    x,
+    z
+){
+
+    const globalX =
+        (
+            x -
+            currentConfig.minX
+        )
+        /
+        (
+            currentConfig.maxX -
+            currentConfig.minX
+        )
+        *
+        currentConfig.width;
+
+
+    const globalZ =
+        (
+            z -
+            currentConfig.minZ
+        )
+        /
+        (
+            currentConfig.maxZ -
+            currentConfig.minZ
+        )
+        *
+        currentConfig.height;
+
+
+    /*
+     * 1024×1024タイルの番号
+     *
+     * ★重要
+     *
+     * 地図全体画像のwidth/heightから
+     * タイル番号を計算する。
+     */
+
+    const tileX =
+        Math.floor(
+            globalX / 1024
+        );
+
+
+    const tileZ =
+        Math.floor(
+            globalZ / 1024
+        );
+
+
+    /*
+     * タイル内座標
+     */
+
+    const pixelX =
+        globalX -
+        tileX * 1024;
+
+
+    const pixelZ =
+        globalZ -
+        tileZ * 1024;
+
+
+    return {
+
+        tileX: tileX,
+
+        tileZ: tileZ,
+
+        pixelX: pixelX,
+
+        pixelZ: pixelZ,
+
+        globalX: globalX,
+
+        globalZ: globalZ
+
+    };
+
+}
+
+
+/* =========================================================
+   タイル画像読み込み
+========================================================= */
+
+function loadTile(
+    tileX,
+    tileZ
+){
+
+    const filename =
+        tileX +
+        "_" +
+        tileZ +
+        ".jpg";
+
+
+    /*
+     * 画像URL
+     *
+     * 例：
+     *
+     * 2434map_new_files_2026/12/5_6.jpg
+     */
+
+    const imagePath =
+        currentConfig.folder +
+        "/" +
+        currentConfig.zoom +
+        "/" +
+        filename;
+
+
+    currentTile.textContent =
+        filename +
+        " を読み込み中...";
+
+
+    const img =
+        new Image();
+
+
+    img.onload =
+        function(){
+
+            /*
+             * Canvasクリア
+             */
+
+            ctx.clearRect(
+                0,
+                0,
+                1024,
+                1024
+            );
+
+
+            /*
+             * 256×256
+             *
+             * ↓
+             *
+             * 1024×1024
+             */
+
+            ctx.drawImage(
+                img,
+                0,
+                0,
+                1024,
+                1024
+            );
+
+
+            currentImage =
+                img;
+
+
+            currentTileX =
+                tileX;
+
+
+            currentTileZ =
+                tileZ;
+
+
+            currentTile.textContent =
+                filename;
+
+
+            /*
+             * マーカー描画
+             */
+
+            drawMarkers();
+
+        };
+
+
+    img.onerror =
+        function(){
+
+            clearCanvas();
+
+
+            currentImage =
+                null;
+
+
+            currentTile.textContent =
+                filename +
+                " が見つかりません。";
+
+        };
+
+
+    /*
+     * キャッシュ対策ではなく
+     * 普通に相対URLで読み込む
+     */
+
+    img.src =
+        imagePath;
+
+}
+
+
+/* =========================================================
+   座標追加
+========================================================= */
+
+addButton.addEventListener(
+    "click",
+    addCoordinate
+);
+
+
+xInput.addEventListener(
+    "keydown",
+    function(e){
+
+        if(e.key === "Enter"){
+            addCoordinate();
+        }
+
+    }
+);
+
+
+zInput.addEventListener(
+    "keydown",
+    function(e){
+
+        if(e.key === "Enter"){
+            addCoordinate();
+        }
+
+    }
+);
+
+
+/* =========================================================
+   座標追加本体
+========================================================= */
+
+function addCoordinate(){
+
+    const x =
+        Number(
+            xInput.value
+        );
+
+
+    const z =
+        Number(
+            zInput.value
+        );
+
+
+    if(
+        !Number.isFinite(x) ||
+        !Number.isFinite(z)
+    ){
+
+        alert(
+            "XとZを入力してください。"
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * 地図範囲
+     */
+
+    if(
+        x < currentConfig.minX ||
+        x > currentConfig.maxX ||
+        z < currentConfig.minZ ||
+        z > currentConfig.maxZ
+    ){
+
+        alert(
+
+            currentConfig.name +
+            "の範囲外です。\n\n" +
+
+            "X: " +
+            currentConfig.minX +
+            " ～ " +
+            currentConfig.maxX +
+
+            "\n" +
+
+            "Z: " +
+            currentConfig.minZ +
+            " ～ " +
+            currentConfig.maxZ
+
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * 座標→画像位置
+     */
+
+    const pos =
+        coordinateToPixel(
+            x,
+            z
+        );
+
+
+    /*
+     * タイル範囲チェック
+     */
+
+    if(
+        pos.tileX < 0 ||
+        pos.tileX >= currentConfig.tileCountX ||
+        pos.tileZ < 0 ||
+        pos.tileZ >= currentConfig.tileCountZ
+    ){
+
+        alert(
+
+            "計算されたタイル番号 " +
+
+            pos.tileX +
+            "_" +
+            pos.tileZ +
+
+            " は設定されているタイル範囲外です。\n\n" +
+
+            "タイル数：" +
+
+            currentConfig.tileCountX +
+            " × " +
+            currentConfig.tileCountZ +
+
+            "\n\n" +
+
+            "「地図画像設定」でタイル数を確認してください。"
+
+        );
+
+        return;
+
+    }
+
+
+    /*
+     * 色
+     */
+
+    const color =
+        colors[
+            markers.length %
+            colors.length
+        ];
+
+
+    /*
+     * マーカー
+     */
+
+    const marker = {
+
+        id:
+            Date.now() +
+            "_" +
+            Math.random(),
+
+        x: x,
+
+        z: z,
+
+        tileX:
+            pos.tileX,
+
+        tileZ:
+            pos.tileZ,
+
+        pixelX:
+            pos.pixelX,
+
+        pixelZ:
+            pos.pixelZ,
+
+        color:
+            color
+
+    };
+
+
+    markers.push(
+        marker
+    );
+
+
+    /*
+     * タイル表示
+     */
+
+    loadTile(
+        pos.tileX,
+        pos.tileZ
+    );
+
+
+    /*
+     * 一覧更新
+     */
+
+    updateMarkerList();
+
+
+    /*
+     * 入力欄クリア
+     */
+
+    xInput.value = "";
+
+    zInput.value = "";
+
+}
+
+
+/* =========================================================
+   マーカー描画
+========================================================= */
+
+function drawMarkers(){
+
+    if(!currentImage){
+        return;
+    }
+
+
+    const visibleMarkers =
+        markers.filter(
+            marker =>
+
+            marker.tileX === currentTileX &&
+
+            marker.tileZ === currentTileZ
+        );
+
+
+    visibleMarkers.forEach(
+        drawMarker
+    );
+
+}
+
+
+/* =========================================================
+   マーカー1個
+========================================================= */
+
+function drawMarker(
+    marker
+){
+
+    const x =
+        marker.pixelX;
+
+    const y =
+        marker.pixelZ;
+
+
+    /*
+     * 外側白円
+     */
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x,
+        y,
+        12,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fillStyle =
+        "white";
+
+    ctx.fill();
+
+
+    /*
+     * 色付き円
+     */
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x,
+        y,
+        8,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fillStyle =
+        marker.color;
+
+    ctx.fill();
+
+
+    /*
+     * 中心黒点
+     */
+
+    ctx.beginPath();
+
+    ctx.arc(
+        x,
+        y,
+        2,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fillStyle =
+        "black";
+
+    ctx.fill();
+
+
+    /*
+     * 座標文字
+     */
+
+    const text =
+        "(" +
+        marker.x +
+        ", " +
+        marker.z +
+        ")";
+
+
+    ctx.font =
+        "bold 16px sans-serif";
+
+
+    ctx.textAlign =
+        "left";
+
+
+    ctx.textBaseline =
+        "bottom";
+
+
+    /*
+     * 黒縁
+     */
+
+    ctx.strokeStyle =
+        "black";
+
+    ctx.lineWidth =
+        4;
+
+
+    ctx.strokeText(
+        text,
+        x + 14,
+        y - 12
+    );
+
+
+    /*
+     * 本文
+     */
+
+    ctx.fillStyle =
+        marker.color;
+
+
+    ctx.fillText(
+        text,
+        x + 14,
+        y - 12
+    );
+
+}
+
+
+/* =========================================================
+   マーカー一覧
+========================================================= */
+
+function updateMarkerList(){
+
+    if(markers.length === 0){
+
+        markerItems.textContent =
+            "まだ座標がありません。";
+
+        return;
+
+    }
+
+
+    markerItems.innerHTML =
+        "";
+
+
+    markers.forEach(
+        function(
+            marker,
+            index
+        ){
+
+            const div =
+                document.createElement(
+                    "div"
+                );
+
+            div.className =
+                "markerItem";
+
+
+            /*
+             * 色
+             */
+
+            const colorBox =
+                document.createElement(
+                    "div"
+                );
+
+            colorBox.className =
+                "colorBox";
+
+            colorBox.style.background =
+                marker.color;
+
+
+            /*
+             * 情報
+             */
+
+            const text =
+                document.createElement(
+                    "div"
+                );
+
+            text.className =
+                "markerText";
+
+
+            text.innerHTML =
+
+                "<b>" +
+                (index + 1) +
+                ".</b> " +
+
+                "X=" +
+                marker.x +
+
+                " / Z=" +
+                marker.z +
+
+                "　→　" +
+
+                "<b>" +
+
+                marker.tileX +
+                "_" +
+                marker.tileZ +
+                ".jpg" +
+
+                "</b>" +
+
+                "　(" +
+
+                Math.round(
+                    marker.pixelX
+                ) +
+
+                ", " +
+
+                Math.round(
+                    marker.pixelZ
+                ) +
+
+                ")";
+
+
+            /*
+             * 削除ボタン
+             */
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+            button.textContent =
+                "削除";
+
+            button.className =
+                "deleteButton";
+
+
+            button.addEventListener(
+                "click",
+                function(){
+
+                    markers =
+                        markers.filter(
+                            m =>
+                            m.id !==
+                            marker.id
+                        );
+
+
+                    redrawCurrentTile();
+
+
+                    updateMarkerList();
+
+                }
+            );
+
+
+            div.appendChild(
+                colorBox
+            );
+
+            div.appendChild(
+                text
+            );
+
+            div.appendChild(
+                button
+            );
+
+
+            markerItems.appendChild(
+                div
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   現在のタイルを再描画
+========================================================= */
+
+function redrawCurrentTile(){
+
+    if(!currentImage){
+        return;
+    }
+
+
+    ctx.clearRect(
+        0,
+        0,
+        1024,
+        1024
+    );
+
+
+    ctx.drawImage(
+        currentImage,
+        0,
+        0,
+        1024,
+        1024
+    );
+
+
+    drawMarkers();
+
+}
+
+
+/* =========================================================
+   全消去
+========================================================= */
+
+clearButton.addEventListener(
+    "click",
+    function(){
+
+        if(markers.length === 0){
+            return;
+        }
+
+
+        if(
+            !confirm(
+                "登録した座標をすべて消去しますか？"
+            )
+        ){
+
+            return;
+
+        }
+
+
+        markers = [];
+
+
+        redrawCurrentTile();
+
+
+        updateMarkerList();
+
+    }
+);
+
+
+/* =========================================================
+   初期化
+========================================================= */
+
+updateSettingsUI();
+
+
+document
+.querySelector(
+    '.mapButtons button[data-map="new"]'
+)
+.classList.add(
+    "active"
+);
+
+
+clearCanvas();
+
+
+ctx.fillStyle =
+    "white";
+
+
+ctx.font =
+    "24px sans-serif";
+
+
+ctx.textAlign =
+    "center";
+
+
+ctx.textBaseline =
+    "middle";
+
+
+ctx.fillText(
+    "X・Z座標を入力してください",
+    512,
+    512
+);
+
+</script>
+
+
+</body>
+</html>
